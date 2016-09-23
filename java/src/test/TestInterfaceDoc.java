@@ -2,10 +2,7 @@
  * Created by ike on 16-9-20.
  */
 
-import javassist.ClassPool;
-import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.Modifier;
+import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
@@ -26,9 +23,13 @@ import java.util.regex.Pattern;
  */
 public class TestInterfaceDoc {
     private ClassLoader classLoader;
+    private List<Map<String,Object>> halist =new ArrayList<>();
 
     @Test
     public void test2() {
+        apiMain();
+    }
+    public List<Object> apiMain() {
         String entityPrePath = "com.dounine.japi.web";
         String filePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
 //        String entityPrePath = "dnn.web";
@@ -36,8 +37,58 @@ public class TestInterfaceDoc {
         File file = new File(filePath);
         String[] names = file.list();
 
-        webActName(filePath, entityPrePath, names, null);
+        List<Object> listActName = new ArrayList<Object>();
 
+        List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
+        halist =dirToName(filePath, entityPrePath, names, null);
+        for(Map<String,Object> maps : halist){
+            String filePaths = maps.get("filePath").toString();
+            String entityPrePaths = maps.get("entityPrePath").toString();
+            String classname = maps.get("classname").toString();
+            String dir = null;
+            if(maps.get("dir") != null){
+                dir = maps.get("dir").toString();
+            }
+            classList = webActName(filePaths, entityPrePaths, classname, dir);
+            listActName.add(classList);
+        }
+        System.out.println("吃饭hi额外"+listActName);
+
+
+        return listActName;
+    }
+
+    public List<Map<String, Object>> dirToName(String filePath, String entityPrePath, String[] names, String dir) {
+        String filePathName = "";
+        for (String s : names) {
+            Map<String ,Object> map =new HashMap<>();
+            if(s.trim().equals("InterfaceDoc.java")){
+                continue;
+            }
+            //直接是目录
+            if (!s.contains(".java")) {
+                filePathName = filePath + "/" + s;
+                File fileDir = new File(filePathName);// /w
+                if (dir != null) {
+                    s = dir + "." + s;
+                }
+                if (fileDir.isDirectory()) {
+                    String[] fileDirNames = fileDir.list();
+                    for (int i = 0; i < fileDirNames.length; i++) {
+                        dirToName(filePathName, entityPrePath, fileDirNames, s);
+                        break;
+                    }
+                    continue;
+                }
+                continue;
+            }
+            map.put("filePath",filePath);
+            map.put("entityPrePath",entityPrePath);
+            map.put("classname",s);
+            map.put("dir",dir);
+            halist.add(map);
+        }
+        return halist;
     }
 
     public List<Map<String, Object>> anno(String filePath, String classname) {
@@ -110,104 +161,86 @@ public class TestInterfaceDoc {
         return listMap;
     }
 
-    public void webActName(String filePath, String entityPrePath, String[] names, String dir) {
+    public List<Map<String, Object>> webActName(String filePath, String entityPrePath, String  s, String dir) {
         String filePathName = "";
-        for (String s : names) {
-            //直接是目录dir
-            if (!s.contains(".java")) {
-                filePathName = filePath + "/" + s;
-                File fileDir = new File(filePathName);// /w
-                if (dir != null) {
-                    s = dir + "." + s;
-                }
-                if (fileDir.isDirectory()) {
-                    String[] fileDirNames = fileDir.list();
-                    for (int i = 0; i < fileDirNames.length; i++) {
-                        webActName(filePathName, entityPrePath, fileDirNames, s);
-                        break;
-                    }
-                    continue;
-                }
-                continue;
-            }
 
-            //直接是文件.java
-            String[] strings = s.split(".java");
-            Class<?> demo1 = null;
-            List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
-            List<Map<String, Object>> getAnnoInfo = anno(filePath, strings[0]);//解析注释
+        //直接是文件.java
+        String[] strings = s.split(".java");
+        Class<?> demo1 = null;
+        List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> getAnnoInfo = anno(filePath, strings[0]);//解析注释
 
-            try {
-                if (dir != null) {
+        try {
+            if (dir != null) {
 //                    demo1 = Class.forName("com.dounine.japi.web."+dir+"."+ strings[0]);
-                    demo1 = Class.forName(entityPrePath + "." + dir + "." + strings[0]);
-                } else {
+                demo1 = Class.forName(entityPrePath + "." + dir + "." + strings[0]);
+            } else {
 //                    demo1 = Class.forName("com.dounine.japi.web." + strings[0]);
-                    demo1 = Class.forName(entityPrePath + "." + strings[0]);
+                demo1 = Class.forName(entityPrePath + "." + strings[0]);
+            }
+            Method[] dan = demo1.getMethods();//获取所有方法
+            for (Method method : dan) {
+                String methodName = method.getName();
+                switch (methodName) {
+                    case "wait":
+                        continue;
+                    case "equals":
+                        continue;
+                    case "toString":
+                        continue;
+                    case "hashCode":
+                        continue;
+                    case "getClass":
+                        continue;
+                    case "notify":
+                        continue;
+                    case "notifyAll":
+                        continue;
                 }
-                Method[] dan = demo1.getMethods();//获取所有方法
-                for (Method method : dan) {
-                    String methodName = method.getName();
-                    switch (methodName) {
-                        case "wait":
-                            continue;
-                        case "equals":
-                            continue;
-                        case "toString":
-                            continue;
-                        case "hashCode":
-                            continue;
-                        case "getClass":
-                            continue;
-                        case "notify":
-                            continue;
-                        case "notifyAll":
-                            continue;
+                Map<String, Object> mapMethodParams = new HashMap<String, Object>(2);
+                mapMethodParams = writeCheckStatus(getAnnoInfo, mapMethodParams);
+
+                Type[] type = method.getGenericParameterTypes();
+                List<Object> parmType = new ArrayList<Object>(1);
+                for (Type ty : type) {
+                    String pty = ty + "";
+                    if (pty.contains("[")) {
+                        int left = pty.indexOf("[");
+                        pty = pty.substring(0, left) + pty.substring(left + 1);
                     }
-                    Map<String, Object> mapMethodParams = new HashMap<String, Object>(2);
-                    mapMethodParams = writeCheckStatus(getAnnoInfo, mapMethodParams);
+                    parmType.add(pty);
+                    mapMethodParams = paramTypeAndName(demo1, method, mapMethodParams);
+                    mapMethodParams = paramEntityAttr(entityPrePath, ty, mapMethodParams);
+                }
+                mapMethodParams.put("class", s);
+                mapMethodParams.put("methodName", method.getName());
+                mapMethodParams.put("returnType", method.getReturnType().getName());
+                mapMethodParams.put("paramType", parmType);
 
-                    Type[] type = method.getGenericParameterTypes();
-                    List<Object> parmType = new ArrayList<Object>(1);
-                    for (Type ty : type) {
-                        String pty = ty + "";
-                        if (pty.contains("[")) {
-                            int left = pty.indexOf("[");
-                            pty = pty.substring(0, left) + pty.substring(left + 1);
-                        }
-                        parmType.add(pty);
-                        mapMethodParams = paramTypeAndName(demo1, method, mapMethodParams);
-                        mapMethodParams = paramEntityAttr(entityPrePath, ty, mapMethodParams);
-                    }
-                    mapMethodParams.put("class", s);
-                    mapMethodParams.put("methodName", method.getName());
-                    mapMethodParams.put("returnType", method.getReturnType().getName());
-                    mapMethodParams.put("paramType", parmType);
+                MethodRequsetDeal(demo1, method, mapMethodParams);
+                mapMethodParams = mapMethodParamsAdd(method, getAnnoInfo, mapMethodParams);
 
-                    MethodRequsetDeal(demo1, method, mapMethodParams);
-                    mapMethodParams = mapMethodParamsAdd(method, getAnnoInfo, mapMethodParams);
-
-                    if (mapMethodParams.get("paramsValue") != null) {
-                        if (mapMethodParams.get("paramInclude") != null && !mapMethodParams.get("paramInclude").equals("")) {
-                            mapMethodParams = paramInclude(mapMethodParams, "paramInclude");
-                        } else if ((mapMethodParams.get("paramInclude") == null || mapMethodParams.get("paramInclude").equals("")) && mapMethodParams.get("paramExclude") != null) {
-                            mapMethodParams = paramInclude(mapMethodParams, "paramExclude");
-                        } else {
-                            if (mapMethodParams.get("paramsValue") != null) {
-                                String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
-                                mapMethodParams.put("paramTypeList", paramsValue);
-                            }
+                if (mapMethodParams.get("paramsValue") != null) {
+                    if (mapMethodParams.get("paramInclude") != null && !mapMethodParams.get("paramInclude").equals("")) {
+                        mapMethodParams = paramInclude(mapMethodParams, "paramInclude");
+                    } else if ((mapMethodParams.get("paramInclude") == null || mapMethodParams.get("paramInclude").equals("")) && mapMethodParams.get("paramExclude") != null) {
+                        mapMethodParams = paramInclude(mapMethodParams, "paramExclude");
+                    } else {
+                        if (mapMethodParams.get("paramsValue") != null) {
+                            String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
+                            mapMethodParams.put("paramTypeList", paramsValue);
                         }
                     }
+                }
 //                    mapMethodParams.remove("paramType");
 //                    mapMethodParams.remove("paramsValue");
-                    classList.add(mapMethodParams);
-                }
-                System.out.println("秒:" + classList);
-            } catch (Exception e) {
-                e.printStackTrace();
+                classList.add(mapMethodParams);
             }
+            System.out.println("秒:" + classList);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return classList;
     }
 
     public void MethodRequsetDeal(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) {
@@ -315,6 +348,10 @@ public class TestInterfaceDoc {
 
     public Map<String, Object> paramTypeAndName(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) throws Exception {
         ClassPool pool = ClassPool.getDefault();
+        ClassClassPath classPath = new ClassClassPath(demo1);
+        pool.insertClassPath(classPath);
+
+//        ClassPool pool = ClassPool.getDefault();
         CtClass cc = pool.get(demo1.getName());
         CtMethod cm = cc.getDeclaredMethod(method.getName());
         Type[] parameterTypes = method.getGenericParameterTypes();
