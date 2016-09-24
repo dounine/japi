@@ -23,12 +23,15 @@ import java.util.regex.Pattern;
  */
 public class TestInterfaceDoc {
     private ClassLoader classLoader;
-    private List<Map<String,Object>> halist =new ArrayList<>();
+    private List<Map<String, Object>> halist = new ArrayList<>();
+    private String classAn = null;
+    private String packageInfo = null;
 
     @Test
     public void test2() {
         apiMain();
     }
+
     public List<Object> apiMain() {
         String entityPrePath = "com.dounine.japi.web";
         String filePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
@@ -40,19 +43,19 @@ public class TestInterfaceDoc {
         List<Object> listActName = new ArrayList<Object>();
 
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
-        halist =dirToName(filePath, entityPrePath, names, null);
-        for(Map<String,Object> maps : halist){
+        halist = dirToName(filePath, entityPrePath, names, null);
+        for (Map<String, Object> maps : halist) {
             String filePaths = maps.get("filePath").toString();
             String entityPrePaths = maps.get("entityPrePath").toString();
             String classname = maps.get("classname").toString();
             String dir = null;
-            if(maps.get("dir") != null){
+            if (maps.get("dir") != null) {
                 dir = maps.get("dir").toString();
             }
             classList = webActName(filePaths, entityPrePaths, classname, dir);
             listActName.add(classList);
         }
-        System.out.println("吃饭hi额外"+listActName);
+        System.out.println("吃饭hi额外" + listActName);
 
 
         return listActName;
@@ -61,8 +64,11 @@ public class TestInterfaceDoc {
     public List<Map<String, Object>> dirToName(String filePath, String entityPrePath, String[] names, String dir) {
         String filePathName = "";
         for (String s : names) {
-            Map<String ,Object> map =new HashMap<>();
-            if(s.trim().equals("InterfaceDoc.java")){
+            Map<String, Object> map = new HashMap<>();
+            if (s.trim().equals("InterfaceDoc.java")) {
+                continue;
+            }
+            if (s.trim().equals("package-info.java")) {
                 continue;
             }
             //直接是目录
@@ -82,10 +88,10 @@ public class TestInterfaceDoc {
                 }
                 continue;
             }
-            map.put("filePath",filePath);
-            map.put("entityPrePath",entityPrePath);
-            map.put("classname",s);
-            map.put("dir",dir);
+            map.put("filePath", filePath);
+            map.put("entityPrePath", entityPrePath);
+            map.put("classname", s);
+            map.put("dir", dir);
             halist.add(map);
         }
         return halist;
@@ -94,12 +100,18 @@ public class TestInterfaceDoc {
     public List<Map<String, Object>> anno(String filePath, String classname) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
-            List<String> readDocList =  readDocByStream(filePath, classname);
+            List<String> readDocList = readDocByStream(filePath, classname);
             for (String explain : readDocList) {
                 Map<String, Object> map = new HashMap<String, Object>();
                 String[] classSplit = explain.split("class\\s*" + classname + "\\s*\\{");
+                String classSplitLeft = null;
                 if (classSplit.length >= 2) {
                     explain = classSplit[1];
+                    classSplitLeft = classSplit[0];
+                }
+                if (classSplitLeft != null) {
+                    classAn = classAnnotations(classSplitLeft);
+
                 }
                 String[] splits = explain.split("public");
                 if (splits != null && splits.length >= 2) {
@@ -161,7 +173,7 @@ public class TestInterfaceDoc {
         return listMap;
     }
 
-    public List<Map<String, Object>> webActName(String filePath, String entityPrePath, String  s, String dir) {
+    public List<Map<String, Object>> webActName(String filePath, String entityPrePath, String s, String dir) {
         String filePathName = "";
 
         //直接是文件.java
@@ -174,9 +186,17 @@ public class TestInterfaceDoc {
             if (dir != null) {
 //                    demo1 = Class.forName("com.dounine.japi.web."+dir+"."+ strings[0]);
                 demo1 = Class.forName(entityPrePath + "." + dir + "." + strings[0]);
+                packageInfo = readPackageInfo(filePath, "package-info");
+                if (packageInfo == null) {
+                    packageInfo = entityPrePath + "." + dir + "包";
+                }
             } else {
 //                    demo1 = Class.forName("com.dounine.japi.web." + strings[0]);
                 demo1 = Class.forName(entityPrePath + "." + strings[0]);
+                packageInfo = readPackageInfo(filePath, "package-info");
+                if (packageInfo == null) {
+                    packageInfo = entityPrePath + "包";
+                }
             }
             Method[] dan = demo1.getMethods();//获取所有方法
             for (Method method : dan) {
@@ -232,6 +252,13 @@ public class TestInterfaceDoc {
                         }
                     }
                 }
+                if (classAn == null) {
+                    String[] classNameSplit = mapMethodParams.get("class").toString().split(".java");
+                    mapMethodParams.put("classDes", classNameSplit[0]);
+                } else {
+                    mapMethodParams.put("classDes", classAn);
+                }
+                mapMethodParams.put("packageInfo", packageInfo);
 //                    mapMethodParams.remove("paramType");
 //                    mapMethodParams.remove("paramsValue");
                 classList.add(mapMethodParams);
@@ -492,7 +519,7 @@ public class TestInterfaceDoc {
         return map;
     }
 
-    public List<String> readDocByStream(String filePath, String classname) throws FileNotFoundException ,IOException{
+    public List<String> readDocByStream(String filePath, String classname) throws FileNotFoundException, IOException {
         BufferedReader bis = new BufferedReader(new FileReader(filePath + "/" + classname + ".java"));
         StringBuilder sb = new StringBuilder();
         List<String> lines = new ArrayList<String>();
@@ -520,5 +547,67 @@ public class TestInterfaceDoc {
             list.add(contexts);
         }
         return list;
+    }
+
+    public String classAnnotations(String classSplitLeft) {
+        String[] classAnnos = null;
+        String[] classDesc = null;
+        String str = null;
+        classAnnos = classSplitLeft.split("#classDes");
+        if (classAnnos != null && classAnnos.length >= 2) {
+            str = classAnnos[1];
+            classDesc = str.split("\\*+");
+            str = classDesc[0];
+        }
+        return str;
+
+    }
+
+    public String readPackageInfo(String filePath, String classname) throws IOException {
+        FileReader fileReader = null;
+        List<String> list = new ArrayList<String>();
+        try {
+            fileReader = new FileReader(filePath + "/" + classname + ".java");
+
+        } catch (FileNotFoundException e) {
+            System.out.println("该包没写package-info描述:" + e.getMessage());
+        }
+        if (fileReader == null) {
+            return null;
+        }
+        BufferedReader bis = new BufferedReader(fileReader);
+
+        StringBuilder sb = new StringBuilder();
+        List<String> lines = new ArrayList<String>();
+        while (bis.read() != -1) {
+            lines.add(bis.readLine());
+        }
+        for (String s : lines) {
+            sb.append(s);
+        }
+        String context = sb.toString();
+        Pattern leftpattern = Pattern.compile("\\*{2}");
+        Matcher leftmatcher = leftpattern.matcher(context);
+        Pattern rightpattern = Pattern.compile("\\**/");
+        Matcher rightmatcher = rightpattern.matcher(context);
+        String contexts = "";
+        while (leftmatcher.find() && rightmatcher.find()) {
+            while (rightmatcher.start() < leftmatcher.start()) {
+                rightmatcher.find();
+            }
+            contexts = context.substring(leftmatcher.start(), rightmatcher.start());
+            list.add(contexts);
+        }
+        if (list != null && list.size() > 0) {
+            String[] packages = list.get(0).split("\\#packageInfo");
+            if (packages != null && packages.length > 1) {
+                packages = packages[1].split("\\*+");
+                return packages[0].toString();
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
     }
 }
