@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
  */
 public class TestInterfaceDoc {
     private ClassLoader classLoader;
-    private List<Map<String, Object>> halist = new ArrayList<>();
+    private List<Map<String, Object>> halist =null;
     private String classAn = null;
     private String packageInfo = null;
 
@@ -43,6 +43,7 @@ public class TestInterfaceDoc {
         List<Object> listActName = new ArrayList<Object>();
 
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
+        halist =new ArrayList<>();
         halist = dirToName(filePath, entityPrePath, names, null);
         for (Map<String, Object> maps : halist) {
             String filePaths = maps.get("filePath").toString();
@@ -396,7 +397,7 @@ public class TestInterfaceDoc {
                     int left = parameterTypesAndName.indexOf("[");
                     parameterTypesAndName = parameterTypesAndName.substring(0, left) + parameterTypesAndName.substring(left + 1);
                 }
-                paramsValueStr.add(parameterTypesAndName);
+                paramsValueStr.add(parameterTypesAndName.replaceAll(","," "));
             }
             mapMethodParams.put("paramsValue", paramsValueStr);
         }

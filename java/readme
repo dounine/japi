@@ -38,5 +38,20 @@
     若传入的参数是用户自定义的实体,且该实体使用了相关注解,则会有如下返回:
     entityParamAttr :包括(attributeName:属性名,attributeDetail:属性描述)
 
+类描述:#classDes
+   /**
+   *
+   * #classDes 这是xx类
+   *
+   */
+
+包描述:
+   在该包下键一个package-info.java文件,里面包含
+   /**
+   *
+   * #packageInfo 这是一个xx包
+   *
+   */
+
 
 
