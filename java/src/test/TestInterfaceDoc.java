@@ -2,6 +2,7 @@
  * Created by ike on 16-9-20.
  */
 
+import com.dounine.japi.MethodVersionAnnotation;
 import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
@@ -157,6 +158,8 @@ public class TestInterfaceDoc {
                             map = annotationSplit(explainSplit, map, "exclude", "paramExclude");
                         } else if (explainSplit.startsWith("include")) {
                             map = annotationSplit(explainSplit, map, "include", "paramInclude");
+                        } else if (explainSplit.startsWith("version")) {
+                            map = annotationSplit(explainSplit, map, "version", "methodVersion");
                         } else if (explainSplit.startsWith("return")) {
                             map = annotationSplit(explainSplit, map, "return", "return");
                         }
@@ -239,7 +242,13 @@ public class TestInterfaceDoc {
                 mapMethodParams.put("paramType", parmType);
 
                 MethodRequsetDeal(demo1, method, mapMethodParams);
-                mapMethodParams = mapMethodParamsAdd(method, getAnnoInfo, mapMethodParams);
+
+                MethodVersionAnnotation mva =method.getAnnotation(MethodVersionAnnotation.class);
+                String mVersionFromAnnotation = null;
+                if(mva !=null){
+                    mVersionFromAnnotation =mva.version();
+                }
+                mapMethodParams = mapMethodParamsAdd(method, mVersionFromAnnotation, getAnnoInfo, mapMethodParams);
 
                 if (mapMethodParams.get("paramsValue") != null) {
                     if (mapMethodParams.get("paramInclude") != null && !mapMethodParams.get("paramInclude").equals("")) {
@@ -249,7 +258,8 @@ public class TestInterfaceDoc {
                     } else {
                         if (mapMethodParams.get("paramsValue") != null) {
                             String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
-                            mapMethodParams.put("paramTypeList", paramsValue);
+                            paramsValue = paramsValue.replaceFirst("\\[","");
+                            mapMethodParams.put("paramTypeList", paramsValue.substring(0,paramsValue.length()-1));
                         }
                     }
                 }
@@ -367,6 +377,9 @@ public class TestInterfaceDoc {
                 } else if (getAnnoInfo.get(i).get("desc") == null) {
                     mapMethodParams.put("writeCheckStatus", "noAnnotationsForDesc");
                     mapMethodParams.put("writeCheckStatusDes", "该方法的注释没写方法描述信息");
+                }else if (getAnnoInfo.get(i).get("methodVersion") == null) {
+                    mapMethodParams.put("writeCheckStatus", "noAnnotationsForVethodVersion");
+                    mapMethodParams.put("writeCheckStatusDes", "该方法的注释没写方法版本号信息");
                 }
 
             }
@@ -392,11 +405,31 @@ public class TestInterfaceDoc {
             int pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
             for (int i = 0; i < paramsValue.length; i++) {
                 paramsValue[i] = attr.variableName(i + pos);
-                String parameterTypesAndName = parameterTypes[i] + " " + attr.variableName(i + pos);
-                if (parameterTypesAndName.contains("[")) {
-                    int left = parameterTypesAndName.indexOf("[");
-                    parameterTypesAndName = parameterTypesAndName.substring(0, left) + parameterTypesAndName.substring(left + 1);
+                String typeName =parameterTypes[i].getTypeName();
+                if(typeName.contains("java.util.")  ){
+                    typeName = typeName.replaceAll("java.util.","");
                 }
+                if( typeName.contains("java.lang.")){
+                    typeName = typeName.replaceAll("java.lang.","");
+                }
+                if( typeName.contains("java.io.")){
+                    typeName = typeName.replaceAll("java.io.","");
+                }
+                if( typeName.contains("javax.servlet.http.")){
+                    typeName = typeName.replaceAll("javax.servlet.http.","");
+                }else{
+                    String typeNameStr []=typeName.split("\\.");
+                    if(typeNameStr!=null && typeNameStr.length>0){
+                        typeName = typeNameStr[typeNameStr.length-1];
+                    }
+                }
+                if(typeName.equals("HttpServletRequest")){
+                    continue;
+                }
+                if(typeName.equals("HttpServletResponse")){
+                    continue;
+                }
+                String parameterTypesAndName = typeName + " " + attr.variableName(i + pos);
                 paramsValueStr.add(parameterTypesAndName.replaceAll(","," "));
             }
             mapMethodParams.put("paramsValue", paramsValueStr);
@@ -440,6 +473,10 @@ public class TestInterfaceDoc {
         String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
         String[] paramsValueAs1 = paramsValue.split("\\[");
         String[] paramsValueAs2 = paramsValueAs1[1].split("\\]");
+        if(paramsValueAs2 ==null || paramsValueAs2.length<=0){
+            mapMethodParams.put("paramTypeList", null);
+            return mapMethodParams;
+        }
         String[] paramsValueArrs = paramsValueAs2[0].split(",");
         List<Object> paramTypeList = new ArrayList<Object>();
         for (int k = 0; k < paramsValueArrs.length; k++) {
@@ -488,14 +525,17 @@ public class TestInterfaceDoc {
         return mapMethodParams;
     }
 
-    public Map<String, Object> mapMethodParamsAdd(Method method, List<Map<String, Object>> getAnnoInfo, Map<String, Object> mapMethodParams) {
+    public Map<String, Object> mapMethodParamsAdd(Method method,String mVersionFromAnnotation, List<Map<String, Object>> getAnnoInfo, Map<String, Object> mapMethodParams) {
         for (int i = 0; i < getAnnoInfo.size(); i++) {
-            if (method.getName().equals(getAnnoInfo.get(i).get("methodName"))) {
-                mapMethodParams.put("methodName", getAnnoInfo.get(i).get("methodName"));
-                mapMethodParams.put("paramExclude", getAnnoInfo.get(i).get("paramExclude"));
-                mapMethodParams.put("paramInclude", getAnnoInfo.get(i).get("paramInclude"));
-                mapMethodParams.put("return", getAnnoInfo.get(i).get("return"));
-                mapMethodParams.put("desc", getAnnoInfo.get(i).get("desc"));
+            if(mVersionFromAnnotation !=null){
+                if (method.getName().equals(getAnnoInfo.get(i).get("methodName")) && mVersionFromAnnotation.equals(getAnnoInfo.get(i).get("methodVersion"))) {
+                    mapMethodParams.put("methodName", getAnnoInfo.get(i).get("methodName"));
+                    mapMethodParams.put("paramExclude", getAnnoInfo.get(i).get("paramExclude"));
+                    mapMethodParams.put("paramInclude", getAnnoInfo.get(i).get("paramInclude"));
+                    mapMethodParams.put("return", getAnnoInfo.get(i).get("return"));
+                    mapMethodParams.put("desc", getAnnoInfo.get(i).get("desc"));
+                    mapMethodParams.put("methodVersion", getAnnoInfo.get(i).get("methodVersion"));
+                }
             }
         }
         return mapMethodParams;

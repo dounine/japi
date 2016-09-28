@@ -14,6 +14,7 @@
      * 活动分开地
      * #exclude  i
      * #include *
+     * #version 1.2  (这是必须的)
      * #return
      */
 
@@ -22,6 +23,7 @@
      * 第一行或几行用来描述该方法,开头可以不用#
      #exclude :表示排除某个参数,使用参数名 ,*表示排除所有
      #include :表示选中某个参数,使用参数名 ,*表示选中所有 ,默认include优先exclude
+     * #version :方法的版本号,没写的话是不可以调用的 ,前端显示最新版本的
      #return :方法返回值描述
 
 
@@ -52,6 +54,8 @@
    * #packageInfo 这是一个xx包
    *
    */
+
+方法上一定要写注解@MethodVersionAnnotation(version ="对应注释中的版本号")
 
 
 
