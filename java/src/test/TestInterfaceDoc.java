@@ -388,14 +388,18 @@ public class TestInterfaceDoc {
     }
 
     public Map<String, Object> paramTypeAndName(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) throws Exception {
+        Class<?>[] parameterTypes = method.getParameterTypes();
+        String[] paramTypeNames = new String[parameterTypes.length];
+        for (int i = 0; i < parameterTypes.length; i++){
+            paramTypeNames[i] = parameterTypes[i].getName();
+        }
+
         ClassPool pool = ClassPool.getDefault();
         ClassClassPath classPath = new ClassClassPath(demo1);
         pool.insertClassPath(classPath);
-
-//        ClassPool pool = ClassPool.getDefault();
         CtClass cc = pool.get(demo1.getName());
-        CtMethod cm = cc.getDeclaredMethod(method.getName());
-        Type[] parameterTypes = method.getGenericParameterTypes();
+        CtMethod  cm = cc.getDeclaredMethod(method.getName(), pool.get(paramTypeNames));
+
         MethodInfo methodInfo = cm.getMethodInfo();
         CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
         if (codeAttribute != null) {
