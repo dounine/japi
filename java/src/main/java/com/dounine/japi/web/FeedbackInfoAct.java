@@ -2,7 +2,7 @@ package com.dounine.japi.web;
 
 import com.dounine.japi.ClassAnnotation;
 import com.dounine.japi.Entity;
-import com.dounine.japi.MethodAnnotation;
+import com.dounine.japi.MethodVersionAnnotation;
 
 import javax.xml.ws.RequestWrapper;
 import java.util.List;
@@ -19,9 +19,10 @@ public class FeedbackInfoAct {
      * 活动分开地
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
-    @MethodAnnotation(name = "mapload")
+    @MethodVersionAnnotation(version = "1.0")
     public String mapload( Entity entity, String birthday) throws  Exception{
         if(true){
             if(true){
@@ -44,9 +45,10 @@ public class FeedbackInfoAct {
      *凤凰台风
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
-    @MethodAnnotation(name = "ss")
+    @MethodVersionAnnotation(version = "1.0")
     public String ss(List<String> sd)throws  Exception{
         return "";
     }
@@ -56,9 +58,10 @@ public class FeedbackInfoAct {
      * 法国和法规
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
-    @MethodAnnotation(name = "look")
+    @MethodVersionAnnotation(version = "1.0")
     public String look()throws  Exception{
         return "";
     }
@@ -67,8 +70,10 @@ public class FeedbackInfoAct {
      * 的股份土豪
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
+    @MethodVersionAnnotation(version = "1.0")
     public String ld()throws  Exception{
         return "";
     }
@@ -78,8 +83,10 @@ public class FeedbackInfoAct {
      * 儿童分
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
+    @MethodVersionAnnotation(version = "1.0")
     public String ds()throws  Exception{
         return "";
     }
@@ -89,8 +96,10 @@ public class FeedbackInfoAct {
      * 儿童热一个
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
+    @MethodVersionAnnotation(version = "1.0")
     public String sda()throws  Exception{
         return "";
     }
@@ -100,8 +109,10 @@ public class FeedbackInfoAct {
      * 施工
      * #exclude  i
      * #include *
+     * #version 1.0
      * #return
      */
+    @MethodVersionAnnotation(version = "1.0")
     public String sdfg(List<String> sq)throws  Exception{
         return "";
     }
