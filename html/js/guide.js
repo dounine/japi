@@ -1,5 +1,5 @@
 $(function(){
-    ////改变主题
+    //改变主题
     $('.changeColor a').click(function(){
         var style = $(this).attr("id");
         $("link[title='"+style+"']").removeAttr("disabled");
@@ -7,6 +7,9 @@ $(function(){
         $.cookie('mystyle',style,{expires:30});
         $('.changeColor a').show();
         $(this).hide()
+        var $color= $("link[title='"+style+"']").attr('my-color');
+        $('nav a.ac .iconfont').css('color',$color);
+        $('nav a.bc .iconfont').css('color',$color);
 
     });
     //设置cookie
@@ -19,11 +22,11 @@ $(function(){
         $('.changeColor a').show();
         $('#'+cookie_style).hide();
     }
-    var $color = $('header').css('background-color');
-    console.info($('link').attr('disabled','disabled'));
+
     $('.subnav').hide();
     $('.change').hide()
     $('.mainbavClick').click(function(){
+        var $color = $('header').css('background-color');
         if(!$(this).hasClass('ac')){
             $(this).parent('.mainbav').siblings('.mainbav').children('.mainbavClick').removeClass('ac');
             $('.menuClick').removeClass('bc')
@@ -46,6 +49,7 @@ $(function(){
     })
 
     $('.menuClick').click(function(){
+        var $color = $('header').css('background-color');
         if(!$(this).hasClass('bc')){
             $('nav menu a').removeClass('active');
             $('nav a').removeClass('bc')
@@ -87,8 +91,18 @@ $(function(){
                 $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change li').eq(i).children('a').addClass('active');
             }
         }
-       var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
-        window.location.hash = newhash
+        var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
+        if(window.location.hash==="#-1--1--1"){
+            window.location.hash="#0-0-0"
+        }else {
+
+            window.location.hash = newhash;
+        }
+
+
+
+
+        
     })
 
 })

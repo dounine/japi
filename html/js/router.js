@@ -6,7 +6,7 @@ $(function(){
             url:'/html/tpls/tpl_guide/0-0.html',
             type:'GET',
             success:function(data){
-                $('.container').html(data)
+                $('.container').html(data);
             }
         })
     }else {
@@ -14,12 +14,12 @@ $(function(){
             url:'/html/tpls/tpl_guide/'+current+'.html',
             type:'GET',
             success:function(data){
+
                 $('.container').html(data);
                 var $color = $('header').css('background-color');
+
                 var arr =window.location.hash.slice(1,7).split('-');
                 var setgo = window.location.hash.slice(1,7);
-
-
                 $('nav  .mainbav').eq(arr[0]).children('a').next().show();
                 $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').next().show();
                 $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change li').eq(arr[2]).children('a').addClass('active');

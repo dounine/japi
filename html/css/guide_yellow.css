@@ -145,6 +145,10 @@ nav {
         font-size: 14px; }
       .content .main .main_body table tbody tr:nth-child(2n) {
         background: #FFF9F3; }
+      .content .main .main_body table tbody tr:first-child td {
+        border-top: 1px solid #ddd; }
+      .content .main .main_body table tbody tr:last-child td {
+        border-bottom: 1px solid #ddd; }
   .content:last-child {
     min-height: 900px; }
 

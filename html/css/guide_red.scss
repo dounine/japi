@@ -161,7 +161,6 @@ nav{
       }
       table{
         width:100%;
-
         tr{
           height:36px;
           line-height:36px;
@@ -175,7 +174,14 @@ nav{
         }
         tbody{
           tr:nth-child(2n){
+
             background:#FCF0F0;
+          }
+          tr:first-child{
+            td{ border-top:1px solid #ddd;}
+          }
+          tr:last-child{
+            td{ border-bottom:1px solid #ddd;}
           }
 
         }

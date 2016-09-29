@@ -177,7 +177,12 @@ nav{
           tr:nth-child(2n){
             background:#FFF9F3;
           }
-
+          tr:first-child{
+            td{ border-top:1px solid #ddd;}
+          }
+          tr:last-child{
+            td{ border-bottom:1px solid #ddd;}
+          }
         }
       }
 
