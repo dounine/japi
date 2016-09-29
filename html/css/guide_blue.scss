@@ -1,0 +1,210 @@
+*{
+  margin:0;padding:0;font-size:12px;
+  a{
+    text-decoration:none;
+  }
+  ul li{
+    list-style:none;
+  }
+}
+$color:#238DFA;
+header{
+  width:100%;height:80px;background:$color;
+  line-height:80px;
+  position:fixed;
+  top:0;
+  .logo{
+    width:50px;
+    margin-left:50px;
+    float:left;
+    img{vertical-align:middle;}
+  }
+  .search{
+    float:right;
+    width:236px;
+    height:30px;
+    line-height:30px;
+    overflow:hidden;
+    border-radius:15px;
+    margin-top:25px;
+    background:#fff;
+    input{
+      height:30px;
+      font-size:16px;
+      width:180px;
+      text-indent:25px;
+      background:url("/html/img/search_bgb.png;") no-repeat 5px;
+      border:0;
+      padding:0;
+    }
+    button{
+      width:52px;
+      height:28px;
+      background:$color;
+      font-size:16px;
+      text-align:center;
+      color:#fff;
+      border-bottom-right-radius:15px;
+      border-top-right-radius:15px;
+    }
+
+  }
+  .changeColor{
+    float:right;
+    margin:0 50px;
+    a{
+      width:14px;
+      height:14px;
+      display:inline-block;
+      border-radius:50%;
+      margin:0 3px;
+    }
+  }
+}
+nav{
+  width:205px;
+  position:fixed;
+  top:0;
+  bottom:0;
+  padding-top:110px;
+  box-shadow:1px 0 2px rgba(0,0,0,0.1);
+
+
+  div{
+    padding:8px 0 8px 15px;
+    a{
+      font-size:16px;
+      color:#555B5E;
+      display:inline-block;
+      height:25px;
+      line-height:25px;
+      .iconfont{position:absolute;right:20px}
+    }
+    .a_width{
+      width:100%;
+    }
+
+    ul{
+      text-indent:5px;
+      li{
+        a{
+          font-size:14px;
+          color:#99ABC1;
+          &.active{
+            color:$color;
+            border-bottom:2px solid $color;
+          }
+
+        }
+      }
+    }
+  }
+
+}
+.content{
+  padding-top:80px;
+  margin-left:240px;
+  width:80%;
+  height:100%;
+  h4{
+    height:35px;
+    line-height:35px;
+    color:#b3b8bc;
+    font-weight:100;
+    border-bottom:1px solid #ddd;
+  }
+  .main{
+    h5{
+      font-size:16px;
+      height:76px;
+      line-height:76px;
+    }
+    .explain{
+      font-size:14px;
+      color:#575b5e;
+    }
+    .main_nav{
+      margin-top:30px;
+      li{
+        height:20px;
+        line-height:20px;
+        i{
+          display:inline-block;
+          width:6px;
+          height:6px;
+          border-radius:50%;
+          background:$color;
+          margin-bottom:2px;
+          margin-right:10px;
+        }
+        a{
+          font-size:14px;
+          color:$color;
+        }
+      }
+    }
+    .main_body{
+      margin-top:40px;
+      h6{
+        color:#45494b;
+        font-size:16px;
+        margin-bottom:12px;
+      }
+      .command{
+        margin-bottom:47px;
+        margin-top:20px;
+        height:50px;
+        background:#F2F5FA;
+        line-height:50px;
+        padding-left:20px;
+        span{color:#f00}
+      }
+      table{
+        width:100%;
+
+        tr{
+          height:36px;
+          line-height:36px;
+          text-align:left;
+          text-indent:20px;
+        }
+        thead{
+          th{
+            font-size:14px;
+          }
+        }
+        tbody{
+          tr:nth-child(2n){
+            background:#EFFAFE;
+          }
+          tr:first-child{
+            td{ border-top:1px solid #ddd;}
+          }
+          tr:last-child{
+            td{ border-bottom:1px solid #ddd;}
+          }
+        }
+      }
+
+    }
+  }
+  &:last-child{
+    min-height:900px;
+  }
+}
+
+
+
+@font-face {font-family: 'iconfont';
+  src: url('/html/img/iconfont.eot'); /* IE9*/
+  src: url('/html/img/iconfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('/html/img/iconfont.woff') format('woff'), /* chrome、firefox */
+  url('/html/img/iconfont.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('/html/img/iconfont.svg#iconfont') format('svg'); /* iOS 4.1- */
+}
+.iconfont{
+  font-family:"iconfont" !important;
+  font-size:16px;font-style:normal;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-stroke-width: 0.2px;
+  -moz-osx-font-smoothing: grayscale;}
