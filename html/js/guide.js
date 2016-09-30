@@ -97,6 +97,12 @@ $(function(){
         }else {
 
             window.location.hash = newhash;
+            var rhtml = $('nav .mainbav').eq(rootIndex).children('a').html().split('<')[0];
+            var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').html().split('<')[0];
+            var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
+            var contitle = rhtml + '>' + shtml + '>' + lhtml
+
+            $('.conTitle').html(contitle);
         }
 
 
