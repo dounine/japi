@@ -56,6 +56,18 @@ header {
       border-radius: 50%;
       margin: 0 3px; }
 
+.conTitle {
+  position: fixed;
+  top: 80px;
+  left: 240px;
+  height: 35px;
+  line-height: 35px;
+  font-size: 14px;
+  color: #b3b8bc;
+  border-bottom: 1px solid #b3b8bc;
+  width: 85%;
+  background: #fff; }
+
 nav {
   width: 205px;
   position: fixed;
@@ -86,16 +98,10 @@ nav {
           border-bottom: 2px solid #E54A5C; }
 
 .content {
-  padding-top: 80px;
+  padding-top: 130px;
   margin-left: 240px;
   width: 80%;
   height: 100%; }
-  .content h4 {
-    height: 35px;
-    line-height: 35px;
-    color: #b3b8bc;
-    font-weight: 100;
-    border-bottom: 1px solid #ddd; }
   .content .main h5 {
     font-size: 16px;
     height: 76px;

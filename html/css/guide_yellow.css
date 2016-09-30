@@ -56,6 +56,18 @@ header {
       border-radius: 50%;
       margin: 0 3px; }
 
+.conTitle {
+  position: fixed;
+  top: 80px;
+  left: 240px;
+  height: 35px;
+  line-height: 35px;
+  font-size: 14px;
+  color: #b3b8bc;
+  border-bottom: 1px solid #b3b8bc;
+  width: 85%;
+  background: #fff; }
+
 nav {
   width: 205px;
   position: fixed;
@@ -86,7 +98,7 @@ nav {
           border-bottom: 2px solid #FFCC5E; }
 
 .content {
-  padding-top: 80px;
+  padding-top: 130px;
   margin-left: 240px;
   width: 80%;
   height: 100%; }
