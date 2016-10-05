@@ -10,8 +10,8 @@ $(function(){
             success:function(data){
                 $('.container').html(data);
                 var arr = [0,0,0];
-                var rhtml = $('nav .mainbav').eq(arr[0]).children('a').html().split('<')[0];
-                var shtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').html().split('<')[0];
+                var rhtml = $('nav .mainbav').eq(arr[0]).children('a').children('span').html();
+                var shtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').children('span').html();
                 var lhtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change').children('li').eq(arr[2]).children('a').html()
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
                 $('.conTitle').html(contitle)
@@ -28,8 +28,8 @@ $(function(){
             success:function(data){
                 $('.container').html(data);
 
-                var rhtml = $('nav .mainbav').eq(arr[0]).children('a').html().split('<')[0];
-                var shtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').html().split('<')[0];
+                var rhtml = $('nav .mainbav').eq(arr[0]).children('a').children('span').html();
+                var shtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').children('span').html();
                 var lhtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change').children('li').eq(arr[2]).children('a').html()
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
 
@@ -74,8 +74,9 @@ $(function(){
             success:function(data){
                 $('.container').html(data);
 
-                var rhtml = $('nav .mainbav').eq(rootIndex).children('a').html().split('<')[0];
-                var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').html().split('<')[0];
+
+                var rhtml = $('nav .mainbav').eq(rootIndex).children('a').children('span').html();
+                var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').children('span').html();
                 var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
 
