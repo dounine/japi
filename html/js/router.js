@@ -4,9 +4,12 @@ $(function(){
 
     var current = window.location.hash.slice(1,4);
     if(!current){
+        var defaultHtml = $('nav .mainbav').eq(0).find('.menu').eq(0).children('a').attr('id');
+        var myattr = $('nav .mainbav').eq(0).find('.menu').eq(0).children('a').attr('my-attr');
+        myattr ="tpls/tpl_guide/"
         $.ajax({
 
-            url:'/html/tpls/tpl_guide/index1.html',
+            url:'/html/'+myattr+defaultHtml+'.html',
             type:'GET',
             success:function(data){
                 $('.container').html(data);
