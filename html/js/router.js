@@ -5,6 +5,7 @@ $(function(){
     var current = window.location.hash.slice(1,4);
     if(!current){
         $.ajax({
+
             url:'/html/tpls/tpl_guide/index1.html',
             type:'GET',
             success:function(data){
@@ -21,9 +22,10 @@ $(function(){
     }else {
         var arr =window.location.hash.slice(1,7).split('-');
         var listId = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').attr('id');
-
+        var myattr = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').attr('my-attr');
+        myattr ="tpls/tpl_guide/";
         $.ajax({
-            url:'/html/tpls/tpl_guide/'+listId+'.html',
+            url:'/html/'+myattr+listId+'.html',
             type:'GET',
             success:function(data){
                 $('.container').html(data);
@@ -68,18 +70,17 @@ $(function(){
         var sI = secondIndex+1;
         var lI = lastIndex+1
         var myid = $('.active').parents('.menu').children('a').attr('id')
+        var myattr = $('.active').parents('.menu').children('a').attr('my-attr');
+        myattr ="tpls/tpl_guide/";
         $.ajax({
-            url:'/html/tpls/tpl_guide/'+myid+'.html',
+            url:'/html/'+myattr+myid+'.html',
             type:'GET',
             success:function(data){
                 $('.container').html(data);
-
-
                 var rhtml = $('nav .mainbav').eq(rootIndex).children('a').children('span').html();
                 var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').children('span').html();
                 var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
-
                 $('.conTitle').html(contitle)
                 var goId = '#'+rI+'-'+sI+'-'+lI;
                 var actop =$(goId).offset().top;
