@@ -13,6 +13,7 @@ header {
   background: #238DFA;
   line-height: 80px;
   position: fixed;
+  z-index: 100;
   top: 0; }
   header .logo {
     width: 50px;
@@ -74,7 +75,9 @@ nav {
   top: 0;
   bottom: 0;
   padding-top: 110px;
-  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1); }
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  z-index: 99; }
   nav div {
     padding: 8px 0 8px 15px; }
     nav div a {
@@ -83,9 +86,19 @@ nav {
       display: inline-block;
       height: 25px;
       line-height: 25px; }
+      nav div a span {
+        display: inline-block;
+        width: 145px;
+        font-size: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        height: 25px;
+        line-height: 25px;
+        white-space: nowrap; }
       nav div a .iconfont {
         position: absolute;
-        right: 20px; }
+        right: 20px;
+        z-index: 10; }
     nav div .a_width {
       width: 100%; }
     nav div ul {
@@ -151,8 +164,7 @@ nav {
       .content .main .main_body table tr {
         height: 36px;
         line-height: 36px;
-        text-align: left;
-        text-indent: 20px; }
+        text-align: left; }
       .content .main .main_body table thead th {
         font-size: 14px; }
       .content .main .main_body table tbody tr:nth-child(2n) {
@@ -161,6 +173,12 @@ nav {
         border-top: 1px solid #ddd; }
       .content .main .main_body table tbody tr:last-child td {
         border-bottom: 1px solid #ddd; }
+      .content .main .main_body table tbody tr td:nth-child(1) {
+        width: 10%; }
+      .content .main .main_body table tbody tr td:nth-child(2) {
+        width: 10%; }
+      .content .main .main_body table tbody tr td:nth-child(3) {
+        width: 80%; }
   .content:last-child {
     min-height: 900px; }
 
