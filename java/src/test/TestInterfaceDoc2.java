@@ -1,7 +1,6 @@
 /**
  * Created by ike on 16-9-20.
- * 最终版
- * 路径 filepath需要该
+ * 测试版 生成最终版
  */
 
 import com.dounine.japi.MethodVersionAnnotation;
@@ -17,19 +16,21 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * Created by ike on 16-9-14.
  */
-public class TestInterfaceDoc {
+public class TestInterfaceDoc2 {
     private ClassLoader classLoader;
-    private List<Map<String, Object>> halist = null;
+    private List<Map<String, Object>> halist =null;
     private String classAn = null;
     private String packageInfo = null;
-    private int pckIndex = 0;
 
     @Test
     public void test2() {
@@ -39,13 +40,15 @@ public class TestInterfaceDoc {
     public List<Object> apiMain() {
         String entityPrePath = "com.dounine.japi.web";
         String filePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
+//        String entityPrePath = "dnn.web";
+//        String filePath = "/home/ike/java/java/feedback/java/src/main/java/dnn/web";
         File file = new File(filePath);
         String[] names = file.list();
 
         List<Object> listActName = new ArrayList<Object>();
 
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
-        halist = new ArrayList<>();
+        halist =new ArrayList<>();
         halist = dirToName(filePath, entityPrePath, names, null);
         for (Map<String, Object> maps : halist) {
             String filePaths = maps.get("filePath").toString();
@@ -58,8 +61,9 @@ public class TestInterfaceDoc {
             classList = webActName(filePaths, entityPrePaths, classname, dir);
             listActName.add(classList);
         }
-        htmlCreate(listActName);
-//        System.out.println("吃饭hi额外" + listActName);
+        System.out.println("吃饭hi额外" + listActName);
+
+
         return listActName;
     }
 
@@ -99,13 +103,13 @@ public class TestInterfaceDoc {
         return halist;
     }
 
-    public List<Map<String, Object>> anno(String filePath, String classname, Class<?> demo1) {
+    public List<Map<String, Object>> anno(String filePath, String classname) {
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
             List<String> readDocList = readDocByStream(filePath, classname);
             for (String explain : readDocList) {
                 Map<String, Object> map = new HashMap<String, Object>();
-                String[] classSplit = explain.split("(class|interface)\\s*" + classname + "\\s*\\{");
+                String[] classSplit = explain.split("class\\s*" + classname + "\\s*\\{");
                 String classSplitLeft = null;
                 if (classSplit.length >= 2) {
                     explain = classSplit[1];
@@ -135,7 +139,7 @@ public class TestInterfaceDoc {
                 if (map.get("methodName") == null) {
                     continue;
                 }
-                if (splits != null && splits.length > 0) {
+                if (splits != null) {
                     String annotation = splits[0];
                     String[] sqr = annotation.split("\\*\\s*#");
                     for (String explainSplit : sqr) {
@@ -178,38 +182,32 @@ public class TestInterfaceDoc {
     }
 
     public List<Map<String, Object>> webActName(String filePath, String entityPrePath, String s, String dir) {
+        String filePathName = "";
+
         //直接是文件.java
         String[] strings = s.split(".java");
         Class<?> demo1 = null;
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> getAnnoInfo = anno(filePath, strings[0]);//解析注释
 
-        String packageName = "";
         try {
             if (dir != null) {
+//                    demo1 = Class.forName("com.dounine.japi.web."+dir+"."+ strings[0]);
                 demo1 = Class.forName(entityPrePath + "." + dir + "." + strings[0]);
-                packageName = entityPrePath + "." + dir;
                 packageInfo = readPackageInfo(filePath, "package-info");
                 if (packageInfo == null) {
                     packageInfo = entityPrePath + "." + dir + "包";
                 }
             } else {
+//                    demo1 = Class.forName("com.dounine.japi.web." + strings[0]);
                 demo1 = Class.forName(entityPrePath + "." + strings[0]);
-                packageName = entityPrePath;
                 packageInfo = readPackageInfo(filePath, "package-info");
                 if (packageInfo == null) {
                     packageInfo = entityPrePath + "包";
                 }
             }
-
-            List<Map<String, Object>> getAnnoInfo = anno(filePath, strings[0], demo1);//解析注释
-
             Method[] dan = demo1.getMethods();//获取所有方法
             for (Method method : dan) {
-                MethodVersionAnnotation mva = method.getAnnotation(MethodVersionAnnotation.class);
-                String mVersionFromAnnotation = null;
-                if (mva != null) {
-                    mVersionFromAnnotation = mva.version();
-                }
                 String methodName = method.getName();
                 switch (methodName) {
                     case "wait":
@@ -242,14 +240,18 @@ public class TestInterfaceDoc {
                     mapMethodParams = paramTypeAndName(demo1, method, mapMethodParams);
                     mapMethodParams = paramEntityAttr(entityPrePath, ty, mapMethodParams);
                 }
-                mapMethodParams.put("className", strings[0]);
                 mapMethodParams.put("class", s);
-                mapMethodParams.put("packageName", packageName);
                 mapMethodParams.put("methodName", method.getName());
                 mapMethodParams.put("returnType", method.getReturnType().getName());
                 mapMethodParams.put("paramType", parmType);
 
                 MethodRequsetDeal(demo1, method, mapMethodParams);
+
+                MethodVersionAnnotation mva =method.getAnnotation(MethodVersionAnnotation.class);
+                String mVersionFromAnnotation = null;
+                if(mva !=null){
+                    mVersionFromAnnotation =mva.version();
+                }
                 mapMethodParams = mapMethodParamsAdd(method, mVersionFromAnnotation, getAnnoInfo, mapMethodParams);
 
                 if (mapMethodParams.get("paramsValue") != null) {
@@ -260,8 +262,8 @@ public class TestInterfaceDoc {
                     } else {
                         if (mapMethodParams.get("paramsValue") != null) {
                             String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
-                            paramsValue = paramsValue.replaceFirst("\\[", "");
-                            mapMethodParams.put("paramTypeList", "[" + paramsValue.substring(0, paramsValue.length() - 1) + "]");
+                            paramsValue = paramsValue.replaceFirst("\\[","");
+                            mapMethodParams.put("paramTypeList", paramsValue.substring(0,paramsValue.length()-1));
                         }
                     }
                 }
@@ -276,6 +278,7 @@ public class TestInterfaceDoc {
 //                    mapMethodParams.remove("paramsValue");
                 classList.add(mapMethodParams);
             }
+            System.out.println("秒:" + classList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -287,7 +290,7 @@ public class TestInterfaceDoc {
         String[] rmVlues = null;
         for (Annotation annotation : actAnnos) {
             String annoSimpleName = annotation.annotationType().getSimpleName();
-            if ("RequestMapping" .equals(annoSimpleName)) {
+            if ("RequestMapping".equals(annoSimpleName)) {
                 rmVlues = demo1.getDeclaredAnnotation(RequestMapping.class).value();
             }
         }
@@ -378,10 +381,11 @@ public class TestInterfaceDoc {
                 } else if (getAnnoInfo.get(i).get("desc") == null) {
                     mapMethodParams.put("writeCheckStatus", "noAnnotationsForDesc");
                     mapMethodParams.put("writeCheckStatusDes", "该方法的注释没写方法描述信息");
-                } else if (getAnnoInfo.get(i).get("methodVersion") == null) {
+                }else if (getAnnoInfo.get(i).get("methodVersion") == null) {
                     mapMethodParams.put("writeCheckStatus", "noAnnotationsForVethodVersion");
                     mapMethodParams.put("writeCheckStatusDes", "该方法的注释没写方法版本号信息");
                 }
+
             }
         }
         return mapMethodParams;
@@ -389,17 +393,16 @@ public class TestInterfaceDoc {
 
     public Map<String, Object> paramTypeAndName(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) throws Exception {
         Class<?>[] parameterTypes = method.getParameterTypes();
-        Type[] parameterType = method.getGenericParameterTypes();
         String[] paramTypeNames = new String[parameterTypes.length];
-        for (int i = 0; i < parameterTypes.length; i++) {
-            paramTypeNames[i] = parameterTypes[i].getTypeName();
+        for (int i = 0; i < parameterTypes.length; i++){
+            paramTypeNames[i] = parameterTypes[i].getName();
         }
 
         ClassPool pool = ClassPool.getDefault();
         ClassClassPath classPath = new ClassClassPath(demo1);
         pool.insertClassPath(classPath);
         CtClass cc = pool.get(demo1.getName());
-        CtMethod cm = cc.getDeclaredMethod(method.getName(), pool.get(paramTypeNames));
+        CtMethod  cm = cc.getDeclaredMethod(method.getName(), pool.get(paramTypeNames));
 
         MethodInfo methodInfo = cm.getMethodInfo();
         CodeAttribute codeAttribute = methodInfo.getCodeAttribute();
@@ -409,36 +412,33 @@ public class TestInterfaceDoc {
             List<Object> paramsValueStr = new ArrayList<Object>();
             int pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
             for (int i = 0; i < paramsValue.length; i++) {
-//                paramsValue[i] = attr.variableName(i + pos);
-                paramsValue[i] = parameterType[i].getTypeName();
-//                String typeName =parameterTypes[i].getTypeName();
-                String typeName = parameterType[i].getTypeName();
-                if (typeName.contains("java.util.")) {
-                    typeName = typeName.replaceAll("java.util.", "");
+                paramsValue[i] = attr.variableName(i + pos);
+                String typeName =parameterTypes[i].getTypeName();
+                if(typeName.contains("java.util.")  ){
+                    typeName = typeName.replaceAll("java.util.","");
                 }
-                if (typeName.contains("java.lang.")) {
-                    typeName = typeName.replaceAll("java.lang.", "");
+                if( typeName.contains("java.lang.")){
+                    typeName = typeName.replaceAll("java.lang.","");
                 }
-                if (typeName.contains("java.io.")) {
-                    typeName = typeName.replaceAll("java.io.", "");
+                if( typeName.contains("java.io.")){
+                    typeName = typeName.replaceAll("java.io.","");
                 }
-                if (typeName.contains("javax.servlet.http.")) {
-                    typeName = typeName.replaceAll("javax.servlet.http.", "");
-                } else {
-                    String typeNameStr[] = typeName.split("\\.");
-                    if (typeNameStr != null && typeNameStr.length > 0) {
-                        typeName = typeNameStr[typeNameStr.length - 1];
+                if( typeName.contains("javax.servlet.http.")){
+                    typeName = typeName.replaceAll("javax.servlet.http.","");
+                }else{
+                    String typeNameStr []=typeName.split("\\.");
+                    if(typeNameStr!=null && typeNameStr.length>0){
+                        typeName = typeNameStr[typeNameStr.length-1];
                     }
                 }
-//                String parameterTypesAndName = parameterTypes[i] + " " + attr.variableName(i + pos);
-                if (typeName.equals("HttpServletRequest")) {
+                if(typeName.equals("HttpServletRequest")){
                     continue;
                 }
-                if (typeName.equals("HttpServletResponse")) {
+                if(typeName.equals("HttpServletResponse")){
                     continue;
                 }
                 String parameterTypesAndName = typeName + " " + attr.variableName(i + pos);
-                paramsValueStr.add(parameterTypesAndName.replaceAll(",", " "));
+                paramsValueStr.add(parameterTypesAndName.replaceAll(","," "));
             }
             mapMethodParams.put("paramsValue", paramsValueStr);
         }
@@ -447,16 +447,15 @@ public class TestInterfaceDoc {
 
     public Map<String, Object> paramEntityAttr(String entityPrePath, Type ty, Map<String, Object> mapMethodParams) throws Exception {
         List<Map<String, Object>> listAddParams = new ArrayList<Map<String, Object>>(4);
-        List<String> listAddParams2 = new ArrayList<String>();
         //有封装
         String[] parms = ty.toString().split("class ");//对象参数
         if (parms != null && parms.length > 1) {
+            //class com.dounine.japi.Entity
+//                            String[] paramTypeCheckObject = parms[1].split("com");//实体前缀
             String[] changePakageFirst = entityPrePath.split("\\.");
             String[] paramTypeCheckObject = parms[1].split(changePakageFirst[0]);//实体前缀
             if (paramTypeCheckObject != null && paramTypeCheckObject.length > 1) {
                 Field[] fields = Class.forName(changePakageFirst[0] + paramTypeCheckObject[1]).getDeclaredFields();
-                int fieldsIndex = paramTypeCheckObject[1].lastIndexOf(".");
-                String fieldsIndexStr = paramTypeCheckObject[1].substring(fieldsIndex + 1, paramTypeCheckObject[1].length());
                 for (Field field : fields) {
                     Map<String, Object> map = new HashMap<String, Object>(1);
                     map.put("attributeName", field.getName());
@@ -466,15 +465,11 @@ public class TestInterfaceDoc {
                         listAttr.add(annotation);
                     }
                     map.put("attributeDetail", listAttr);
-//                    map.put("paramAttr",fieldsIndexStr);
                     listAddParams.add(map);
-
-                    String attrs = field.getName() + ":" + listAttr + "\n";
-                    listAddParams2.add(attrs);
                 }
-//                mapMethodParams.put("entityParamAttr", listAddParams);
-                mapMethodParams.put(fieldsIndexStr + "EntityParamAttr", listAddParams2);
+                mapMethodParams.put("entityParamAttr", listAddParams);
             }
+
         }
         //无封装  int
         return mapMethodParams;
@@ -486,7 +481,7 @@ public class TestInterfaceDoc {
         String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
         String[] paramsValueAs1 = paramsValue.split("\\[");
         String[] paramsValueAs2 = paramsValueAs1[1].split("\\]");
-        if (paramsValueAs2 == null || paramsValueAs2.length <= 0) {
+        if(paramsValueAs2 ==null || paramsValueAs2.length<=0){
             mapMethodParams.put("paramTypeList", null);
             return mapMethodParams;
         }
@@ -519,7 +514,7 @@ public class TestInterfaceDoc {
                 if (paramIncludeArrs[j].equals("*")) {
                     paramTypeList.clear();
                     if (paramsInclude.equals("paramInclude")) {
-                        paramTypeList.add(paramsValue.replaceAll("\\[", "").replaceAll("\\]", ""));
+                        paramTypeList.add(paramsValue);
                     }
                     break;
                 }
@@ -538,9 +533,9 @@ public class TestInterfaceDoc {
         return mapMethodParams;
     }
 
-    public Map<String, Object> mapMethodParamsAdd(Method method, String mVersionFromAnnotation, List<Map<String, Object>> getAnnoInfo, Map<String, Object> mapMethodParams) {
+    public Map<String, Object> mapMethodParamsAdd(Method method,String mVersionFromAnnotation, List<Map<String, Object>> getAnnoInfo, Map<String, Object> mapMethodParams) {
         for (int i = 0; i < getAnnoInfo.size(); i++) {
-            if (mVersionFromAnnotation != null) {
+            if(mVersionFromAnnotation !=null){
                 if (method.getName().equals(getAnnoInfo.get(i).get("methodName")) && mVersionFromAnnotation.equals(getAnnoInfo.get(i).get("methodVersion"))) {
                     mapMethodParams.put("methodName", getAnnoInfo.get(i).get("methodName"));
                     mapMethodParams.put("paramExclude", getAnnoInfo.get(i).get("paramExclude"));
@@ -584,7 +579,6 @@ public class TestInterfaceDoc {
             sb.append(s);
         }
         String context = sb.toString();
-//        System.out.println(lines+"内容:"+context);
         Pattern leftpattern = Pattern.compile("/\\*{2}");
         Matcher leftmatcher = leftpattern.matcher(context);
 //            Pattern rightpattern = Pattern.compile("\\*/[\\s\\S]*public[\\s\\S]*\\)\\p{Blank}*[\\s\\S]*\\{");
@@ -663,169 +657,6 @@ public class TestInterfaceDoc {
             }
         } else {
             return null;
-        }
-    }
-
-
-    public List<String> htmlCreate(List<Object> listActName) {
-        pckIndex = 0;
-        String filePath = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceApiDoc/html";
-        String filePath1 = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceApiDoc/html/tplGuide";
-        File f = new File(filePath);
-        File f1 = new File(filePath1);
-        if (!f.isDirectory()) {
-            f.mkdir();
-        }
-        if (!f1.isDirectory()) {
-            f1.mkdir();
-        }
-        List<String> list = new ArrayList<>();
-        if (listActName == null && listActName.size() <= 0) {
-            list = null;
-            return list;
-        }
-        Map<String, Object> pckNameMap = new HashMap<>();
-
-        Map<String, Object> pckNameIndexMap = new HashMap<>();
-        String contentsIndex = "<!DOCTYPE html><html lang='en'><head>";
-        StringBuffer sbIndex = new StringBuffer(contentsIndex)
-                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='/html/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='/html/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='/html/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='/html/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='/html/js/jquery.min.js'></script><script src='/html/js/jquery.cookie.js'></script><script src='/html/js/guide.js'></script><script src='/html/js/router.js'></script></head>")
-                .append("<body>")
-                .append("<header><div class='logo'><img src='/html/img/logo.png' ></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
-                .append("<div class='search'><input type='text'><button >搜索</button></div></header>")
-                .append("<nav >");
-
-        for (int i = 0; i < listActName.size(); i++) {
-            List<Map<String, Object>> classList = new ArrayList<>();
-            classList = (List<Map<String, Object>>) listActName.get(i);
-            System.out.println("同一个包:" + classList.get(0).get("packageInfo"));
-            System.out.println("反对:" + classList.get(0));
-            String pckName = classList.get(0).get("packageName").toString();
-            int pckValue = 1;
-            if (pckNameMap.get(pckName) != null) {
-                String pckNameValue = pckNameMap.get(pckName).toString();
-                int index = pckNameValue.indexOf("-");
-                pckValue = Integer.parseInt(pckNameValue.substring(index + 1, pckNameValue.length()).trim()) + 1;
-                pckNameValue = pckNameValue.substring(0, index);
-                pckNameMap.put(pckName, pckNameValue + "-" + pckValue);
-                if (pckIndex > Integer.parseInt(pckNameValue.trim())) {
-                    pckIndex = pckIndex;
-                } else {
-                    pckIndex = Integer.parseInt(pckNameValue.trim());
-                }
-            } else {
-                pckIndex = pckIndex + 1;
-                pckNameMap.put(pckName, pckIndex + "-" + pckValue);
-                pckNameIndexMap.put(pckName, "");
-            }
-
-            String strClassName = "";
-            String strClassNameLast = "";
-
-            StringBuffer liIndex = new StringBuffer("");
-
-            String fileName = "";
-            for (Map<String, Object> maps : classList) {
-                fileName = maps.get("className").toString();
-            }
-            String paths = filePath1 + "/" + fileName;
-            String fileContents = "";
-            StringBuffer sb = new StringBuffer(fileContents).append("<div id='" + pckIndex + "'> <div id='" + pckIndex + "-" + pckValue + "'>");
-            for (int j = 0; j < classList.size(); j++) {
-                Map<String, Object> map = new HashMap<>();
-                map = classList.get(j);
-                sb.append("<div div class='content' id='" + pckIndex + "-" + pckValue + "-" + j + "'>")
-                        .append("<h4>文档 <span>&gt;</span> OBJECTIVE-C(IOS/MAC)使用指南1-2-2 </h4><div class='main'>")
-                        .append("<h5>说明</h5>")
-                        .append("<p class='explain'>包说明:</br>" + map.get("packageInfo") + "</br>类说明:</br>" + map.get("classDes") + "</br>方法说明:" + map.get("desc") + "</p>")
-                        .append("<ul class='main_nav'><li><i></i><a href='javascript:;'>方法名:" + map.get("methodName") + "</a></li><li><i></i><a href='javascript:;'>方法版本号:" + map.get("methodVersion") + "</a></li><li><i></i><a href='javascript:;'>待续</a></li></ul>")
-                        .append("<div class='main_body'><h6>demoUrl</h6><p>使用下面的链接可以访问，命令如下：</p><div class='command'><span>demo:</span> " + map.get("demo") + "</div>")
-                        .append("<h6>参数</h6>")
-                        .append("<table  cellspacing='0'><thead><tr><th>参数类型</th><th>参数名</th><th>参数约束说明</th></tr></thead><tbody>");
-                if (map.get("paramTypeList") != null && !"" .equals(map.get("paramTypeList"))) {
-                    int first = map.get("paramTypeList").toString().indexOf("[");
-                    int last = map.get("paramTypeList").toString().lastIndexOf("]");
-                    String str = map.get("paramTypeList").toString().substring(first + 1, last);
-                    String[] params = str.split(",");
-                    for (String param : params) {
-                        int paramSplit = param.lastIndexOf(" ");
-                        String ptype = "";
-                        String pname = "";
-                        if (paramSplit == -1) {
-                            ptype = param;
-                            pname = param;
-                        } else {
-                            ptype = param.substring(0, paramSplit);
-                            pname = param.substring(paramSplit + 1, param.length());
-                        }
-                        String attrConstrains = "";
-                        if (map.get(ptype.trim() + "EntityParamAttr") != null) {
-                            attrConstrains = map.get(ptype.trim() + "EntityParamAttr").toString();
-                        }
-
-                        sb.append("<tr ><td>" + ptype + "</td><td>" + pname + "</td><td>" + attrConstrains + "</td></tr>");
-                    }
-                }
-                sb.append("</tbody>")
-                        .append("</table>")
-                        .append("</div>");
-
-                Set set = pckNameIndexMap.entrySet();
-                Iterator iterator = set.iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<String, String> entry1 = (Map.Entry<String, String>) iterator.next();
-                    if (entry1.getKey().equals(map.get("packageName").toString())) {
-                        strClassName = "<div class='menu'> <a href='javascript:void(0)' class='a_width menuClick' id='" + fileName + "'>" + fileName + "类<i class='iconfont'>&#xe608;</i></a>" +
-                                "<ul class=' change'>";
-                        liIndex.append("<li><a href='javascript:void(0)'  class='submenu'>" + map.get("methodName") + "方法</a></li>");
-                        strClassNameLast = "</ul></div>";
-                    }
-                }
-            }
-            String preMap = pckNameIndexMap.get(pckName).toString();
-            String mapValue = preMap + strClassName + liIndex.toString() + strClassNameLast;
-            pckNameIndexMap.put(pckName, mapValue);
-
-            sb.append("</div>")
-                    .append("</div>");
-            fileContents = sb.toString();
-            htmls(paths, fileContents);//生成子内容xx.html
-        }
-
-        Set set = pckNameIndexMap.entrySet();  //生成guide.html
-        Iterator iterator = set.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> entry1 = (Map.Entry<String, String>) iterator.next();
-            String ss = pckNameIndexMap.get(entry1.getKey()).toString();
-            String subnavStr = "<div class='subnav'>" + ss + "</div>";
-
-            String mainbavStr = " <div class='mainbav'><a href='javascript:void(0)' class='a_width mainbavClick ' >" + entry1.getKey() + "<i class='iconfont'>&#xe608;</i></a>";
-            String mainbavLastStr = "</div>";
-
-            String mainbavStrs = mainbavStr + subnavStr + mainbavLastStr;
-            sbIndex.append(mainbavStrs);
-
-        }
-        sbIndex.append("</nav>")
-                .append("<div class='container '></div>")
-                .append("</body></html>");
-        htmls(filePath + "/guide", sbIndex.toString());
-        return list;
-    }
-
-    public void htmls(String paths, String fileContents) {
-        String fileame = ".html";
-        fileame = paths + fileame;//生成的html文件保存路径。
-        FileOutputStream fileoutputstream = null;// 建立文件输出流
-        try {
-            fileoutputstream = new FileOutputStream(fileame);
-            byte tag_bytes[] = fileContents.getBytes();
-            fileoutputstream.write(tag_bytes);
-            fileoutputstream.close();//关闭输出流
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
