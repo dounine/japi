@@ -31,9 +31,22 @@
                         </thead>
                         <tbody>
                             <tr >
-                                <td>7.1.X/AFNEWORKING-3.X</td>
-                                <td>IOS 7</td>
-                                <td>OS X 10.9</td>
+                                <td >7.1.X/AFNEWORKING-3.X</td>
+                                <td >IOS 7</td>
+                                <td >[UNAME_MIN_SIZE:[]
+                                    , UNAME_MAX_SIZE:[]
+                                    , TOKEN_NAME:[]
+                                    , username:[@org.hibernate.validator.constraints.NotBlank(message=用户名不能空, payload=[], groups=[interface dnn.common.validation.Add]), @org.hibernate.validator.constraints.Length(groups=[interface dnn.common.validation.Add], min=6, message=用户名长度在 {min} 到 {max} 之间, payload=[], max=20)]
+                                    , password:[@org.hibernate.validator.constraints.NotBlank(message=密码不能空, payload=[], groups=[interface dnn.common.validation.Add]), @dnn.common.jsr303.PasswordValid(groups=[interface dnn.common.validation.Add], min=8, message=密码长度在 {min} 到 {max} 之间, payload=[], max=20)]
+                                    , tags:[]
+                                    , status:[]
+                                    , details:[]
+                                    , age:[]
+                                    , money:[]
+                                    , height:[]
+                                    , accessTime:[]
+                                    , userType:[]
+                                    ]</td>
                             </tr>
                             <tr>
                                 <td>7.1.X/AFNEWORKING-2.X</td>
