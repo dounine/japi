@@ -55,15 +55,13 @@ $(function(){
                 var goid = '#'+rid+'-'+sid+'-'+lid;
                 var gotop = $(goid).offset().top;
                 $(window).scrollTop(gotop);
-                //$('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).siblings('.menu').children('a').children('.iconfont').html("&#xe608;").css("color","#555B5E");
-
-
             }
         })
     }
 
 
-    $('nav a').click(function(){
+    $('nav .menu a').click(function(){
+
         var lastIndex = $('.active').parent().index();
         var secondIndex = $('.active').parents('.menu').index();
         var rootIndex = $('.active').parents('.mainbav').index();
