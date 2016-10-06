@@ -60,24 +60,25 @@ header {
 .conTitle {
   position: fixed;
   top: 80px;
-  left: 240px;
+  left: 290px;
   height: 35px;
   line-height: 35px;
   font-size: 14px;
   color: #b3b8bc;
   border-bottom: 1px solid #b3b8bc;
-  width: 85%;
+  width: 80%;
   background: #fff; }
 
 nav {
-  width: 205px;
+  width: 255px;
   position: fixed;
   top: 0;
   bottom: 0;
   padding-top: 110px;
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  z-index: 99; }
+  background: #fff;
+  z-index: 99;
+  overflow-y: auto; }
   nav div {
     padding: 8px 0 8px 15px; }
     nav div a {
@@ -88,7 +89,7 @@ nav {
       line-height: 25px; }
       nav div a span {
         display: inline-block;
-        width: 145px;
+        width: 190px;
         font-size: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -97,22 +98,28 @@ nav {
         white-space: nowrap; }
       nav div a .iconfont {
         position: absolute;
-        right: 20px;
+        right: 10px;
         z-index: 10; }
+    nav div .menu span {
+      width: 162px; }
     nav div .a_width {
       width: 100%; }
     nav div ul {
       text-indent: 5px; }
       nav div ul li a {
         font-size: 14px;
-        color: #99ABC1; }
+        color: #99ABC1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        width: 155px; }
         nav div ul li a.active {
           color: #0BC8E1;
           border-bottom: 2px solid #0BC8E1; }
 
 .content {
   padding-top: 130px;
-  margin-left: 240px;
+  margin-left: 290px;
   width: 80%;
   height: 100%; }
   .content h4 {
@@ -121,64 +128,91 @@ nav {
     color: #b3b8bc;
     font-weight: 100;
     border-bottom: 1px solid #ddd; }
-  .content .main h5 {
-    font-size: 16px;
-    height: 76px;
-    line-height: 76px; }
-  .content .main .explain {
-    font-size: 14px;
-    color: #575b5e; }
-  .content .main .main_nav {
-    margin-top: 30px; }
-    .content .main .main_nav li {
-      height: 20px;
-      line-height: 20px; }
-      .content .main .main_nav li i {
-        display: inline-block;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: #0BC8E1;
-        margin-bottom: 2px;
-        margin-right: 10px; }
-      .content .main .main_nav li a {
-        font-size: 14px;
-        color: #0BC8E1; }
-  .content .main .main_body {
-    margin-top: 40px; }
-    .content .main .main_body h6 {
-      color: #45494b;
+  .content .main {
+    padding-left: 30px; }
+    .content .main h5 {
       font-size: 16px;
-      margin-bottom: 12px; }
-    .content .main .main_body .command {
-      margin-bottom: 47px;
-      margin-top: 20px;
-      height: 50px;
-      background: #F2F5FA;
-      line-height: 50px;
-      padding-left: 20px; }
-      .content .main .main_body .command span {
-        color: #f00; }
-    .content .main .main_body table {
-      width: 100%; }
-      .content .main .main_body table tr {
-        height: 36px;
-        line-height: 36px;
-        text-align: left; }
-      .content .main .main_body table thead th {
-        font-size: 14px; }
-      .content .main .main_body table tbody tr:nth-child(2n) {
-        background: #E8FBFF; }
-      .content .main .main_body table tbody tr:first-child td {
-        border-top: 1px solid #ddd; }
-      .content .main .main_body table tbody tr:last-child td {
-        border-bottom: 1px solid #ddd; }
-      .content .main .main_body table tbody tr td:nth-child(1) {
-        width: 10%; }
-      .content .main .main_body table tbody tr td:nth-child(2) {
-        width: 10%; }
-      .content .main .main_body table tbody tr td:nth-child(3) {
-        width: 80%; }
+      height: 76px;
+      line-height: 76px; }
+    .content .main .icon_m {
+      background: url("/html/img/icon-m.png") no-repeat;
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      position: relative;
+      top: 28px;
+      left: -25px; }
+    .content .main .icon_d {
+      background: url("/html/img/icon-d.png") no-repeat;
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      position: relative;
+      top: 28px;
+      left: -25px; }
+    .content .main .icon_p {
+      background: url("/html/img/icon-p.png") no-repeat;
+      display: inline-block;
+      width: 25px;
+      height: 25px;
+      position: relative;
+      top: 28px;
+      left: -25px; }
+    .content .main .explain {
+      font-size: 14px;
+      color: #575b5e; }
+    .content .main .main_nav {
+      margin-top: 30px; }
+      .content .main .main_nav li {
+        height: 20px;
+        line-height: 20px; }
+        .content .main .main_nav li i {
+          display: inline-block;
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: #0BC8E1;
+          margin-bottom: 2px;
+          margin-right: 10px; }
+        .content .main .main_nav li a {
+          font-size: 14px;
+          color: #0BC8E1; }
+    .content .main .main_body {
+      margin-top: 40px; }
+      .content .main .main_body h6 {
+        color: #45494b;
+        font-size: 16px;
+        margin-bottom: 12px; }
+      .content .main .main_body .command {
+        margin-bottom: 47px;
+        margin-top: 20px;
+        background: #F2F5FA;
+        padding: 15px;
+        letter-spacing: 1px; }
+        .content .main .main_body .command span {
+          color: #f00;
+          font-size: 14px; }
+        .content .main .main_body .command .com_con {
+          font-size: 14px;
+          padding: 5px 20px; }
+      .content .main .main_body table {
+        width: 100%; }
+        .content .main .main_body table tr {
+          height: 36px;
+          line-height: 36px;
+          text-align: left; }
+        .content .main .main_body table thead th {
+          font-size: 14px; }
+        .content .main .main_body table tbody tr:nth-child(2n) {
+          background: #E8FBFF; }
+        .content .main .main_body table tbody tr td {
+          border-bottom: 1px solid #ddd; }
+        .content .main .main_body table tbody tr td:nth-child(1) {
+          width: 10%; }
+        .content .main .main_body table tbody tr td:nth-child(2) {
+          width: 10%; }
+        .content .main .main_body table tbody tr td:nth-child(3) {
+          width: 80%; }
   .content:last-child {
     min-height: 900px; }
 
