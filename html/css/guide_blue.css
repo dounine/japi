@@ -113,10 +113,11 @@ nav {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        width: 155px; }
+        width: 155px;
+        text-indent: 10px; }
         nav div ul li a.active {
           color: #238DFA;
-          border-bottom: 2px solid #238DFA; }
+          background: url("/html/img/dot-b.png") no-repeat 0 center; }
 
 .content {
   padding-top: 130px;
@@ -158,8 +159,13 @@ nav {
         color: #45494b;
         font-size: 16px;
         margin-bottom: 12px; }
-      .content .main .main_body .Interface p {
-        color: #888a8c; }
+      .content .main .main_body .Interface .method p {
+        color: #494d4f; }
+        .content .main .main_body .Interface .method p span {
+          width: 80px;
+          display: inline-block;
+          height: 20px;
+          color: #000; }
       .content .main .main_body .Interface .command {
         margin-bottom: 47px;
         margin-top: 20px;
