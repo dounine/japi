@@ -124,9 +124,10 @@ nav{
           text-overflow:ellipsis;
           white-space:nowrap;
           width:155px;
+          text-indent:10px;
           &.active{
             color:$color;
-            border-bottom:2px solid $color;
+            background:url("/html/img/dot-b.png") no-repeat 0 center;
           }
 
         }
@@ -188,8 +189,16 @@ nav{
           font-size:16px;
           margin-bottom:12px;
         }
-        p{
-          color:#888a8c;
+        .method{
+          p{
+            color:#494d4f;
+            span{
+              width:80px;
+              display:inline-block;
+              height:20px;
+              color:#000;
+            }
+          }
         }
         .command{
           margin-bottom:47px;
