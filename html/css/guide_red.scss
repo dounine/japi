@@ -1,5 +1,6 @@
 *{
   margin:0;padding:0;font-size:12px;
+  font-family:"Microsoft YaHei";
   a{
     text-decoration:none;
   }
@@ -141,116 +142,117 @@ nav{
   height:100%;
 
   .main{
-    padding-left:30px;
+
     h5{
       font-size:16px;
       height:76px;
       line-height:76px;
     }
-    .icon_m{
-      background:url("/html/img/icon-m-r.png") no-repeat;
-      display:inline-block;
-      width:25px;
-      height:25px;
-      position:relative;
-      top:28px;
-      left:-25px;
-    }
-    .icon_d{
-      background:url("/html/img/icon-d-r.png") no-repeat;
-      display:inline-block;
-      width:25px;
-      height:25px;
-      position:relative;
-      top:28px;
-      left:-25px;
-    }
-    .icon_p{
-      background:url("/html/img/icon-p-r.png") no-repeat;
-      display:inline-block;
-      width:25px;
-      height:25px;
-      position:relative;
-      top:28px;
-      left:-25px;
-    }
-    .explain{
-      font-size:14px;
-      color:#575b5e;
-    }
-    .main_nav{
-      margin-top:30px;
-      li{
-        height:20px;
-        line-height:20px;
-        i{
-          display:inline-block;
-          width:6px;
-          height:6px;
-          border-radius:50%;
-          background:$color;
-          margin-bottom:2px;
-          margin-right:10px;
-        }
-        a{
-          font-size:14px;
-          color:$color;
+
+    .useGuide{
+      background:url("/html/img/icon-m-r.png") no-repeat 0 28px;
+      padding-left:30px;
+      .explain{
+        font-size:14px;
+        color:#575b5e;
+      }
+      .main_nav{
+        margin-top:30px;
+        li{
+          height:20px;
+          line-height:20px;
+          i{
+            display:inline-block;
+            width:6px;
+            height:6px;
+            border-radius:50%;
+            background:$color;
+            margin-bottom:2px;
+            margin-right:10px;
+          }
+          a{
+            font-size:14px;
+            color:$color;
+          }
         }
       }
     }
+
     .main_body{
       margin-top:40px;
-      h6{
-        color:#45494b;
-        font-size:16px;
-        margin-bottom:12px;
-      }
-      .command{
-        margin-bottom:47px;
-        margin-top:20px;
-        background:#F2F5FA;
-        padding:15px;
-        letter-spacing:1px;
-        span{
-          color:#f00;
-          font-size:14px;
-
+      .Interface{
+        background:url("/html/img/icon-d-r.png") no-repeat;
+        padding-left:30px;
+        h6{
+          color:#45494b;
+          font-size:16px;
+          margin-bottom:12px;
         }
-        .com_con{
-          font-size:14px;
-          padding:5px 20px;
-
+        p{
+          color:#888a8c;
         }
-      }
-      table{
-        width:100%;
-        tr{
-          height:36px;
-          line-height:36px;
-          text-align:left;
-        }
-        thead{
-          th{
+        .command{
+          margin-bottom:47px;
+          margin-top:20px;
+          background:#F2F5FA;
+          padding:15px;
+          letter-spacing:1px;
+          span{
+            color:#f00;
             font-size:14px;
+
+          }
+          .com_con{
+            font-size:14px;
+            padding:5px 20px;
+
           }
         }
-        tbody{
-          tr:nth-child(2n){
 
-            background:#FCF0F0;
-          }
+      }
+      .parameter{
+        background:url("/html/img/icon-p-r.png") no-repeat;
+        padding-left:30px;
+        h6{
+          color:#45494b;
+          font-size:16px;
+          margin-bottom:12px;
+        }
+        table{
+          width:100%;
           tr{
-            td{ border-bottom:1px solid #ddd;}
+            height:36px;
+            line-height:36px;
+            text-align:left;
           }
-
-          tr{
-            td:nth-child(1){width:10%}
-            td:nth-child(2){width:10%}
-            td:nth-child(3){width:80%}
+          thead{
+            th{
+              font-size:12px;
+              color:#717f8d;
+              border-bottom:1px solid #ddd
+            }
           }
+          tbody{
+            tr:nth-child(2n){
 
+              background:#FCF0F0;
+            }
+
+            tr{
+
+              td{ border-bottom:1px solid #ddd;color:#45494b;}
+            }
+
+            tr{
+              td:nth-child(1){width:10%}
+              td:nth-child(2){width:10%}
+              td:nth-child(3){width:80%}
+            }
+
+          }
         }
       }
+
 
     }
   }
