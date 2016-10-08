@@ -35,7 +35,7 @@ header{
       font-size:16px;
       width:180px;
       text-indent:25px;
-      background:url("/html/img/search_bg.png;") no-repeat 5px;
+      background:url("/html/img/search_bgb.png;") no-repeat 5px;
       border:0;
       padding:0;
     }
@@ -180,9 +180,9 @@ nav{
     }
 
     .main_body{
-      margin-top:40px;
+      margin-top:70px;
       .Interface{
-        background:url("/html/img/icon-d-b.png") no-repeat;
+        background:url("/html/img/icon-d-b.png") no-repeat 0 2px;
         padding-left:30px;
         h6{
           color:#45494b;
@@ -190,22 +190,28 @@ nav{
           margin-bottom:12px;
         }
         .method{
+          margin-top:30px;
           p{
             color:#494d4f;
+            font-size:14px;
+
             span{
               width:80px;
               display:inline-block;
-              height:20px;
+              height:30px;
+              font-size:14px;
               color:#000;
+              font-weight:700;
             }
           }
         }
         .command{
           margin-bottom:47px;
           margin-top:20px;
-          background:#F2F5FA;
           padding:15px;
           letter-spacing:1px;
+          border:1px solid #ddd;
+          border-radius:5px;
           span{
             color:#f00;
             font-size:14px;
@@ -220,7 +226,7 @@ nav{
 
       }
       .parameter{
-        background:url("/html/img/icon-p-b.png") no-repeat;
+        background:url("/html/img/icon-p-b.png") no-repeat 0 2px;
         padding-left:30px;
         h6{
           color:#45494b;
@@ -236,16 +242,13 @@ nav{
           }
           thead{
             th{
+              background:#FCF0F0;
               font-size:12px;
               color:#717f8d;
               border-bottom:1px solid #ddd
             }
           }
           tbody{
-            tr:nth-child(2n){
-
-              background:#EFFAFE;
-            }
 
             tr{
 
@@ -253,9 +256,9 @@ nav{
             }
 
             tr{
-              td:nth-child(1){width:10%}
-              td:nth-child(2){width:10%}
-              td:nth-child(3){width:80%}
+              td:nth-child(1){width:15%}
+              td:nth-child(2){width:15%}
+              td:nth-child(3){width:70%}
             }
 
           }
