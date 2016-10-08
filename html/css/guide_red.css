@@ -200,25 +200,14 @@ nav {
           background: #FCF0F0;
           font-size: 12px;
           color: #717f8d;
-<<<<<<< HEAD
-          border-bottom: 1px solid #ddd; }
-=======
           border-bottom: 1px solid #ddd;
           height: 36px;
           line-height: 36px; }
->>>>>>> upstream/master
         .content .main .main_body .parameter table tbody tr td {
           border-bottom: 1px solid #ddd;
           color: #45494b;
           padding-left: 5px; }
         .content .main .main_body .parameter table tbody tr td:nth-child(1) {
-<<<<<<< HEAD
-          width: 15%; }
-        .content .main .main_body .parameter table tbody tr td:nth-child(2) {
-          width: 15%; }
-        .content .main .main_body .parameter table tbody tr td:nth-child(3) {
-          width: 70%; }
-=======
           width: 15%;
           line-height: 34px; }
         .content .main .main_body .parameter table tbody tr td:nth-child(2) {
@@ -227,7 +216,6 @@ nav {
         .content .main .main_body .parameter table tbody tr td:nth-child(3) {
           width: 70%;
           line-height: 20px; }
->>>>>>> upstream/master
   .content:last-child {
     min-height: 900px; }
 
