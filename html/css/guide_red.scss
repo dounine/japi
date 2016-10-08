@@ -109,6 +109,7 @@ nav{
         span{
           width:162px;
         }
+        .iconfont{font-size:14px}
       }
       .a_width{
         width:100%;
@@ -125,6 +126,7 @@ nav{
             white-space:nowrap;
             width:155px;
             text-indent:10px;
+
             &.active{
               color:$color;
               background:url("/html/img/dot-r.png") no-repeat 0 center;
@@ -212,15 +214,9 @@ nav{
           letter-spacing:1px;
           border:1px solid #ddd;
           border-radius:5px;
-          span{
-            color:#f00;
-            font-size:14px;
-
-          }
-          .com_con{
-            font-size:14px;
-            padding:5px 20px;
-
+          div{
+            height:20px;
+            line-height:20px;
           }
         }
 
@@ -236,29 +232,41 @@ nav{
         table{
           width:100%;
           tr{
-            height:36px;
-            line-height:36px;
+
             text-align:left;
+            th{
+              padding-left:5px;
+
+            }
           }
           thead{
             th{
               background:#FCF0F0;
               font-size:12px;
               color:#717f8d;
-              border-bottom:1px solid #ddd
+              border-bottom:1px solid #ddd;
+              height:36px;
+              line-height:36px;
             }
           }
           tbody{
 
             tr{
 
-              td{ border-bottom:1px solid #ddd;color:#45494b;}
+
+              td{ border-bottom:1px solid #ddd;color:#45494b;padding-left:5px}
             }
 
             tr{
+<<<<<<< HEAD
               td:nth-child(1){width:15%}
               td:nth-child(2){width:15%}
               td:nth-child(3){width:70%}
+=======
+              td:nth-child(1){width:15%;line-height:34px;}
+              td:nth-child(2){width:15%;line-height:34px;}
+              td:nth-child(3){width:70%;line-height:20px;}
+>>>>>>> upstream/master
             }
 
           }
