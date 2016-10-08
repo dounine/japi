@@ -1,7 +1,7 @@
 $(function(){
 
 
-
+    var $color = $('header').css('background-color');
     var current = window.location.hash.slice(1,4);
     if(!current){
         var defaultHtml = $('nav .mainbav').eq(0).find('.menu').eq(0).children('a').attr('id');
@@ -18,7 +18,13 @@ $(function(){
                 var shtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').children('span').html();
                 var lhtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change').children('li').eq(arr[2]).children('a').html()
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
-                $('.conTitle').html(contitle)
+                $('.conTitle').html(contitle);
+                $('nav  .mainbav').eq(arr[0]).children('a').next().show();
+                $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').next().show();
+                $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change li').eq(arr[2]).children('a').addClass('active');
+                $('nav  .mainbav').eq(arr[0]).children('a').addClass('ac').children('.iconfont').html("&#xe607;").css("color",$color);
+                $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').addClass('bc').children('.iconfont').html("&#xe607;").css("color",$color);
+                window.location.hash='#0-0-0';
 
             }
         })
@@ -39,7 +45,7 @@ $(function(){
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
 
                 $('.conTitle').html(contitle)
-                var $color = $('header').css('background-color');
+
 
                 var setgo = window.location.hash.slice(1,7);
                 $('nav  .mainbav').eq(arr[0]).children('a').next().show();
