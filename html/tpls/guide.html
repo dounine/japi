@@ -22,7 +22,9 @@
         <a href="javascript:void(0)" id="theme_green" style="background:#22CB56"></a>
         <a href="javascript:void(0)" id="theme_red" style="background:#F65866;display:none" ></a>
     </div>
-    <div class="search"><input type="text"><button >搜索</button></div>
+    <div class="search"><input type="text" id="search"><button class="searchBtn">搜索</button>
+        <div class="searchtxt"></div>
+    </div>
 </header>
 <div class="conTitle"></div>
 <nav >
@@ -33,7 +35,7 @@
                 <a href="javascript:void(0)" title="二级目录" class="a_width menuClick" my-attr = 'web.dnn.admin' id="index1"><span>文档ds1fsafafdfdsfdsfsda</span><i class="iconfont">&#xe608;</i></a>
                 <ul class=" change">
                     <li><a href="javascript:void(0)"  class="submenu">OBJECTIVE 1-1-1111111111111111</a></li>
-                    <li><a href="javascript:void(0)"  class="submenu">OBJECTIVE 1-1-2</a></li>
+                    <li><a href="javascript:void(0)"  class="submenu">OBq</a></li>
                 </ul>
             </div>
             <div class="menu">
@@ -73,3 +75,10 @@
 </div>
 </body>
 </html>
+<script>
+    $(function(){
+        $('.searchtxt a').click(function(){
+            alert()
+        });
+    })
+</script>
