@@ -68,7 +68,23 @@ $(function(){
         }
     });
     $('.submenu').click(function(){
+        var $color = $('header').css('background-color');
         $('.change .submenu').removeClass('active');
+        $(this).parents('.mainbav').siblings('.mainbav').children('.subnav').hide();
+        $('.mainbavClick').removeClass('ac');
+        $('.menuClick').removeClass('bc');
+        $(this).parents('.mainbav').children('a').addClass('ac');
+        $(this).parents('.mainbav').children('a').children('i').html("&#xe607;");
+        $(this).parents('.mainbav').children('a').children('i').css("color",$color);
+        $(this).parent('.mainbav').siblings('.mainbav').children('.subnav').hide()
+        $(this).parents('.mainbav').children('a').next().show()
+
+        $(this).parents('.menu').children('a').addClass('bc');
+        $(this).parents('.menu').children('a').children('i').html("&#xe607;");
+        $(this).parents('.menu').children('a').children('i').css("color",$color);
+        $(this).parents('.menu').siblings('.menu').children('a').children('.iconfont').html("&#xe608;").css("color","#555B5E");
+        $(this).parents('.menu').siblings('.menu').children('.change').hide();
+        $(this).parents('.menu').children('a').next().show()
         $(this).addClass('active')
     })
 
@@ -107,6 +123,41 @@ $(function(){
     })
 
 
+    //搜索框
+    var searchArr = new Array();
+    var searchLen = $('nav').find('.submenu').length;
+    for(var i=0;i<searchLen; i++){
+        var allsubmenu = $('nav').find('.submenu').eq(i).text();
+        searchArr.push(allsubmenu)
+
+    }
+    $('#search').keyup(function(){
+        var inputTxt = $('#search').val();
+
+        if(inputTxt!=""){
+            $('.searchtxt').show();
+            var tab ="<ul style='max-height:100px'>";
+            $.each(searchArr,function(n,item){
+                if(item.indexOf(inputTxt)!=-1){
+                    tab+="<li><a href='javascript:void(0)'>"+item+"</a></li>"
+                }
+            })
+            tab+="</ul>";
+            $('.searchtxt').html(tab);
+            $('.searchtxt a').click(function(){
+                var findmenu = $(this).text();
+
+                var mainindex = $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').index();
+                var menuindex = $("nav .submenu:contains('"+findmenu+"')").parents('.menu').index();
+                var subindex = $("nav .submenu:contains('"+findmenu+"')").parent().index();
+                $("nav .submenu:contains('"+findmenu+"')").click()
+                $('.searchtxt').hide();
+            });
+        }else{
+            $('.searchtxt').hide();
+        }
+
+    })
 
 
 
