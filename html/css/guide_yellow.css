@@ -241,6 +241,16 @@ nav {
           .content .main .main_body .parameter table tbody tr td:nth-child(3) {
             width: 70%;
             line-height: 20px; }
+            .content .main .main_body .parameter table tbody tr td:nth-child(3) b {
+              font-size: 14px; }
+              .content .main .main_body .parameter table tbody tr td:nth-child(3) b > div {
+                width: 70%;
+                margin-left: 22px; }
+                .content .main .main_body .parameter table tbody tr td:nth-child(3) b > div i {
+                  margin-left: 10px; }
+              .content .main .main_body .parameter table tbody tr td:nth-child(3) b span {
+                margin-left: 60px;
+                display: inline-block; }
   .content:last-child {
     min-height: 900px; }
 
