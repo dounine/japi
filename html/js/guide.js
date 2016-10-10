@@ -102,7 +102,7 @@ $(function(){
             ll = i+1
             var scrId = '#'+rl+'-'+sl+'-'+ll
 
-            if($(scrId).offset().top<=wst){
+            if($(scrId).offset().top<=wst+80){
                 $('.change a').removeClass('active');
                 $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change li').eq(i).children('a').addClass('active');
             }
