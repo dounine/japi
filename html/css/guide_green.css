@@ -205,9 +205,6 @@ nav {
           letter-spacing: 1px;
           border: 1px solid #ddd;
           border-radius: 5px; }
-          .content .main .main_body .Interface .command div {
-            height: 20px;
-            line-height: 20px; }
       .content .main .main_body .parameter {
         background: url("/html/img/icon-p.png") no-repeat 0 2px;
         padding-left: 30px; }
