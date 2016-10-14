@@ -34,23 +34,23 @@ public class TestInterfaceDoc {
     private int pckIndex = -1;
     private int pckIndex1 = -1;
     private String htmlFilePath = "/home/ike/java/java/japi/java/src/xx";
+    private String entityPrePath = "com.dounine.japi.web";
+    private String webFilePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
 
     @Test
     public void test2() {
-        apiMain();
+        apiMain(webFilePath, entityPrePath , htmlFilePath);
     }
 
-    public void apiMain() {
-        String entityPrePath = "com.dounine.japi.web";
-        String filePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
-        File file = new File(filePath);
+    public void apiMain(String webFilePaths , String webPackageName , String htmlFilePaths) {
+        File file = new File(webFilePaths);
         String[] names = file.list();
 
         List<Object> listActName = new ArrayList<Object>();
 
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
         halist = new ArrayList<>();
-        halist = dirToName(filePath, entityPrePath, names, null);
+        halist = dirToName(webFilePaths, webPackageName, names, null);
         for (Map<String, Object> maps : halist) {
             String filePaths = maps.get("filePath").toString();
             String entityPrePaths = maps.get("entityPrePath").toString();
@@ -62,7 +62,7 @@ public class TestInterfaceDoc {
             classList = webActName(filePaths, entityPrePaths, classname, dir);
             listActName.add(classList);
         }
-        htmlCreate(listActName);
+        htmlCreate(listActName , htmlFilePaths);
     }
 
     public List<Map<String, Object>> dirToName(String filePath, String entityPrePath, String[] names, String dir) {
@@ -447,7 +447,7 @@ public class TestInterfaceDoc {
                     //字段深入判断
                     String oo =objectFieldFromObject(field, parms[1]);
                     if(listAttr.size()>0){
-                        listAddParams.add(oo+"<div style='width:70%;margin-left:22px;'><i style='margin-left:10px'>约束:"+listAttr+"</i></div>");
+                        listAddParams.add(oo+"<div><i>约束:"+listAttr+"</i></div>");
                     }else{
                         listAddParams.add(oo+"<br/>");
                     }
@@ -701,7 +701,7 @@ public class TestInterfaceDoc {
 
     }
 
-    public List<String> htmlCreate(List<Object> listActName) {
+    public List<String> htmlCreate(List<Object> listActName ,String htmlFilePaths) {
         pckIndex = -1;
         pckIndex1 = -1;
 
@@ -889,7 +889,7 @@ public class TestInterfaceDoc {
             fileContents = sb.toString();
             pckPath = classList.get(0).get("packageName").toString().replaceAll("\\.", "/");
 
-            String paths = mkHtmlDir(htmlFilePath, pckPath, fileName);
+            String paths = mkHtmlDir(htmlFilePaths, pckPath, fileName);
             htmls(paths, fileContents);//生成子内容xx.html
         }
 
@@ -913,8 +913,8 @@ public class TestInterfaceDoc {
                 .append("<div class='container '></div>")
                 .append("</body></html>");
         String[] pckPaths = pckPath.split("/");
-        htmls(htmlFilePath + "/" + pckPaths[0] + "/guide", sbIndex.toString());
-        htmls(htmlFilePath + "/" + pckPaths[0] + "/index", indexHtml());
+        htmls(htmlFilePaths + "/" + pckPaths[0] + "/guide", sbIndex.toString());
+        htmls(htmlFilePaths + "/" + pckPaths[0] + "/index", indexHtml());
         return list;
     }
 
