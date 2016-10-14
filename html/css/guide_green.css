@@ -58,8 +58,10 @@ header {
       text-indent: 25px;
       background: url("/html/img/search_bgg.png;") no-repeat 5px;
       border: 0;
-      padding: 0; }
+      padding: 0;
+      outline: none; }
     header .search button {
+      outline: none;
       width: 52px;
       height: 28px;
       background: #0BC8E1;

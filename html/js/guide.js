@@ -133,7 +133,6 @@ $(function(){
     }
     $('#search').keyup(function(){
         var inputTxt = $('#search').val();
-
         if(inputTxt!=""){
             $('.searchtxt').show();
             var tab ="<ul style='max-height:100px'>";
@@ -147,15 +146,21 @@ $(function(){
             $('.searchtxt a').click(function(){
                 var findmenu = $(this).text();
 
-                var mainindex = $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').index();
-                var menuindex = $("nav .submenu:contains('"+findmenu+"')").parents('.menu').index();
-                var subindex = $("nav .submenu:contains('"+findmenu+"')").parent().index();
+                //var mainindex = $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').index();
+                //var menuindex = $("nav .submenu:contains('"+findmenu+"')").parents('.menu').index();
+                //var subindex = $("nav .submenu:contains('"+findmenu+"')").parent().index();
                 $("nav .submenu:contains('"+findmenu+"')").click()
                 $('.searchtxt').hide();
+                $('#search').val(findmenu);
             });
         }else{
             $('.searchtxt').hide();
         }
+
+    });
+    $('.searchBtn').click(function(){
+        var findmenu = $('#search').val();
+        $("nav .submenu:contains('"+findmenu+"')").click()
 
     })
 
