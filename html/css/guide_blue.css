@@ -58,8 +58,10 @@ header {
       text-indent: 25px;
       background: url("/html/img/search_bgb.png;") no-repeat 5px;
       border: 0;
-      padding: 0; }
+      padding: 0;
+      outline: none; }
     header .search button {
+      outline: none;
       width: 52px;
       height: 28px;
       background: #238DFA;
@@ -205,9 +207,6 @@ nav {
           letter-spacing: 1px;
           border: 1px solid #ddd;
           border-radius: 5px; }
-          .content .main .main_body .Interface .command div {
-            height: 20px;
-            line-height: 20px; }
       .content .main .main_body .parameter {
         background: url("/html/img/icon-p-b.png") no-repeat 0 2px;
         padding-left: 30px; }
@@ -241,6 +240,16 @@ nav {
           .content .main .main_body .parameter table tbody tr td:nth-child(3) {
             width: 70%;
             line-height: 20px; }
+            .content .main .main_body .parameter table tbody tr td:nth-child(3) b {
+              font-size: 14px; }
+              .content .main .main_body .parameter table tbody tr td:nth-child(3) b > div {
+                width: 70%;
+                margin-left: 22px; }
+                .content .main .main_body .parameter table tbody tr td:nth-child(3) b > div i {
+                  margin-left: 10px; }
+              .content .main .main_body .parameter table tbody tr td:nth-child(3) b span {
+                margin-left: 60px;
+                display: inline-block; }
   .content:last-child {
     min-height: 900px; }
 

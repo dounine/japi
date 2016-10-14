@@ -62,8 +62,10 @@ header{
       background:url("/html/img/search_bg.png;") no-repeat 5px;
       border:0;
       padding:0;
+      outline:none;
     }
     button{
+      outline:none;
       width:52px;
       height:28px;
       background:$color;
@@ -243,10 +245,6 @@ nav{
           letter-spacing:1px;
           border:1px solid #ddd;
           border-radius:5px;
-          div{
-            height:20px;
-            line-height:20px;
-          }
         }
 
       }
@@ -289,7 +287,24 @@ nav{
             tr{
               td:nth-child(1){width:15%;line-height:34px;}
               td:nth-child(2){width:15%;line-height:34px;}
-              td:nth-child(3){width:70%;line-height:20px;}
+              td:nth-child(3){
+                width:70%;
+                line-height:20px;
+                b{
+                  font-size:14px;
+                  >div{
+                    width:70%;
+                    margin-left:22px;
+                    i{
+                      margin-left:10px;
+                    }
+                  }
+                  span{
+                    margin-left:60px;
+                    display:inline-block;
+                  }
+                }
+              }
             }
 
           }
