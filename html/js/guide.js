@@ -71,6 +71,7 @@ $(function(){
         var $color = $('header').css('background-color');
         $('.change .submenu').removeClass('active');
         $(this).parents('.mainbav').siblings('.mainbav').children('.subnav').hide();
+        $(this).parents('.mainbav').siblings('.mainbav').children('.mainbavClick').children('i').html("&#xe608;").css('color',"#555B5E");
         $('.mainbavClick').removeClass('ac');
         $('.menuClick').removeClass('bc');
         $(this).parents('.mainbav').children('a').addClass('ac');
@@ -108,51 +109,53 @@ $(function(){
             }
         }
         var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
-        if(window.location.hash==="#-1--1--1"){
-            window.location.hash="#0-0-0"
-        }else {
-
             window.location.hash = newhash;
             var rhtml = $('nav .mainbav').eq(rootIndex).children('a').children('span').html();
             var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').children('span').html();
             var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
             var contitle = rhtml + '>' + shtml + '>' + lhtml
             $('.conTitle').html(contitle);
-        }
+
 
     })
 
 
     //搜索框
-    var searchArr = new Array();
+    var searchArr = [];
     var searchLen = $('nav').find('.submenu').length;
     for(var i=0;i<searchLen; i++){
         var allsubmenu = $('nav').find('.submenu').eq(i).text();
-        searchArr.push(allsubmenu)
-
+        var allid = $('nav').find('.submenu').eq(i).attr('id');
+        var obj = {};
+        obj.text = allsubmenu;
+        obj.id = allid;
+        searchArr.push(obj)
     }
+
     $('#search').keyup(function(){
         var inputTxt = $('#search').val();
         if(inputTxt!=""){
             $('.searchtxt').show();
             var tab ="<ul style='max-height:100px'>";
             $.each(searchArr,function(n,item){
-                if(item.indexOf(inputTxt)!=-1){
-                    tab+="<li><a href='javascript:void(0)'>"+item+"</a></li>"
+                if(item.text.indexOf(inputTxt)!=-1){
+                    tab+="<li><a href='javascript:void(0)' myid ='"+ item.id+"'>"+item.text+"</a></li>"
                 }
             })
             tab+="</ul>";
             $('.searchtxt').html(tab);
+            $('.searchtxt li a').eq(0).addClass('active')
             $('.searchtxt a').click(function(){
                 var findmenu = $(this).text();
-
-                //var mainindex = $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').index();
-                //var menuindex = $("nav .submenu:contains('"+findmenu+"')").parents('.menu').index();
-                //var subindex = $("nav .submenu:contains('"+findmenu+"')").parent().index();
-                $("nav .submenu:contains('"+findmenu+"')").click()
+                var findid = $(this).attr('myid');
+                $('#'+findid).click()
                 $('.searchtxt').hide();
                 $('#search').val(findmenu);
             });
+            $('.searchtxt li a').mouseover(function(){
+                $('.searchtxt li a').removeClass('active')
+                $(this).addClass('active')
+            })
         }else{
             $('.searchtxt').hide();
         }
@@ -160,11 +163,12 @@ $(function(){
     });
     $('.searchBtn').click(function(){
         var findmenu = $('#search').val();
-        $("nav .submenu:contains('"+findmenu+"')").click()
+        if(!findmenu){
+            return;
+        }
+        $("nav .submenu:contains('"+findmenu+"')").eq(0).click()
 
     })
-
-
 
 
 })

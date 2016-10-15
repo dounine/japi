@@ -49,7 +49,7 @@ header {
           width: 100%;
           height: 25px;
           color: #000; }
-          header .search .searchtxt li a:hover {
+          header .search .searchtxt li a.active {
             background: #ccc; }
     header .search input {
       height: 30px;

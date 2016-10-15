@@ -48,9 +48,10 @@ header{
           width:100%;
           height:25px;
           color:#000;
-          &:hover{
+          &.active{
             background:#ccc;
           }
+
         }
       }
     }
