@@ -85,20 +85,22 @@ $(function(){
         $(this).parents('.menu').children('a').children('i').css("color",$color);
         $(this).parents('.menu').siblings('.menu').children('a').children('.iconfont').html("&#xe608;").css("color","#555B5E");
         $(this).parents('.menu').siblings('.menu').children('.change').hide();
-        $(this).parents('.menu').children('a').next().show()
-        $(this).addClass('active')
+        $(this).parents('.menu').children('a').next().show();
+        $(this).addClass('active');
+
+
     })
 
     //滚动监听
+
     $(window).scroll(function(){
         var wst = $(window).scrollTop();
         var i= 0,j= 0,rl,sl,ll;
-        var lastIndex = $('.active').parent().index();
-        var secondIndex = $('.active').parents('.menu').index();
-        var rootIndex = $('.active').parents('.mainbav').index();
-
+        var lastIndex = $('nav .active').parent('li').index();
+        var secondIndex = $('nav .active').parents('.menu').index();
+        var rootIndex = $('nav .active').parents('.mainbav').index();
         rl=rootIndex+1;sl=secondIndex+1;ll=lastIndex+1
-        var navLen = $('.active').parents('.change').children('li').length;
+        var navLen = $('nav .active').parents('.change').children('li').length;
         for(var i=0;i<navLen; i++){
             ll = i+1
             var scrId = '#'+rl+'-'+sl+'-'+ll
@@ -144,11 +146,27 @@ $(function(){
             })
             tab+="</ul>";
             $('.searchtxt').html(tab);
-            $('.searchtxt li a').eq(0).addClass('active')
+            $('.searchtxt li a').eq(0).addClass('act')
             $('.searchtxt a').click(function(){
+                $('nav span').removeClass('allsear')
                 var findmenu = $(this).text();
+                var $color = $('header').css('background-color');
                 var findid = $(this).attr('myid');
-                $('#'+findid).click()
+                var arr = findid.slice('3').split('-');
+                $('nav .mainbav').eq(arr[0]).children('a').click();
+                $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').click();
+                $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change li').eq(arr[2]).children('a').click();
+
+
+
+
+
+                $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').children('a').children('span').addClass('allsear');
+                $("nav .submenu:contains('"+findmenu+"')").parents('.menu').children('a').children('span').addClass('allsear');
+                // $("nav .change a:contains('"+findmenu+"')").css('color','#40fc07')
+                //$("nav .submenu:contains('"+findmenu+"')").click()
+
+
                 $('.searchtxt').hide();
                 $('#search').val(findmenu);
             });
