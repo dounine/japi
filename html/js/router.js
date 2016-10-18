@@ -48,7 +48,6 @@ $(function(){
                 $('.conTitle').html(contitle)
 
 
-                var setgo = window.location.hash.slice(1,7);
                 $('nav  .mainbav').eq(arr[0]).children('a').next().show();
                 $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').next().show();
                 $('nav  .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change li').eq(arr[2]).children('a').addClass('active');
@@ -68,18 +67,17 @@ $(function(){
 
 
     $('nav .menu a').click(function(){
-
-        var lastIndex = $('.active').parent().index();
-        var secondIndex = $('.active').parents('.menu').index();
-        var rootIndex = $('.active').parents('.mainbav').index();
+        var lastIndex = $('nav .active').parent().index();
+        var secondIndex = $('nav .active').parents('.menu').index();
+        var rootIndex = $('nav .active').parents('.mainbav').index();
         var hash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
         window.location.hash = hash;
+
         var rI = rootIndex+1;
         var sI = secondIndex+1;
         var lI = lastIndex+1
-        var myid = $('.active').parents('.menu').children('a').attr('id')
-
-        var myattr = $('.active').parents('.menu').children('a').attr('my-attr');
+        var myid = $('nav .active').parents('.menu').children('a').attr('id')
+        var myattr = $('nav .active').parents('.menu').children('a').attr('my-attr');
         myattr ="tpls/tpl_guide/";
         $.ajax({
             url:'/html/'+myattr+myid+'.html',

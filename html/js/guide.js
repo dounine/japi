@@ -71,6 +71,7 @@ $(function(){
         var $color = $('header').css('background-color');
         $('.change .submenu').removeClass('active');
         $(this).parents('.mainbav').siblings('.mainbav').children('.subnav').hide();
+        $(this).parents('.mainbav').siblings('.mainbav').children('.mainbavClick').children('i').html("&#xe608;").css('color',"#555B5E");
         $('.mainbavClick').removeClass('ac');
         $('.menuClick').removeClass('bc');
         $(this).parents('.mainbav').children('a').addClass('ac');
@@ -84,20 +85,22 @@ $(function(){
         $(this).parents('.menu').children('a').children('i').css("color",$color);
         $(this).parents('.menu').siblings('.menu').children('a').children('.iconfont').html("&#xe608;").css("color","#555B5E");
         $(this).parents('.menu').siblings('.menu').children('.change').hide();
-        $(this).parents('.menu').children('a').next().show()
-        $(this).addClass('active')
+        $(this).parents('.menu').children('a').next().show();
+        $(this).addClass('active');
+
+
     })
 
     //滚动监听
+
     $(window).scroll(function(){
         var wst = $(window).scrollTop();
         var i= 0,j= 0,rl,sl,ll;
-        var lastIndex = $('.active').parent().index();
-        var secondIndex = $('.active').parents('.menu').index();
-        var rootIndex = $('.active').parents('.mainbav').index();
-
+        var lastIndex = $('nav .active').parent('li').index();
+        var secondIndex = $('nav .active').parents('.menu').index();
+        var rootIndex = $('nav .active').parents('.mainbav').index();
         rl=rootIndex+1;sl=secondIndex+1;ll=lastIndex+1
-        var navLen = $('.active').parents('.change').children('li').length;
+        var navLen = $('nav .active').parents('.change').children('li').length;
         for(var i=0;i<navLen; i++){
             ll = i+1
             var scrId = '#'+rl+'-'+sl+'-'+ll
@@ -108,51 +111,69 @@ $(function(){
             }
         }
         var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
-        if(window.location.hash==="#-1--1--1"){
-            window.location.hash="#0-0-0"
-        }else {
-
             window.location.hash = newhash;
             var rhtml = $('nav .mainbav').eq(rootIndex).children('a').children('span').html();
             var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').children('span').html();
             var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
             var contitle = rhtml + '>' + shtml + '>' + lhtml
             $('.conTitle').html(contitle);
-        }
+
 
     })
 
 
     //搜索框
-    var searchArr = new Array();
+    var searchArr = [];
     var searchLen = $('nav').find('.submenu').length;
     for(var i=0;i<searchLen; i++){
         var allsubmenu = $('nav').find('.submenu').eq(i).text();
-        searchArr.push(allsubmenu)
-
+        var allid = $('nav').find('.submenu').eq(i).attr('id');
+        var obj = {};
+        obj.text = allsubmenu;
+        obj.id = allid;
+        searchArr.push(obj)
     }
+
     $('#search').keyup(function(){
         var inputTxt = $('#search').val();
         if(inputTxt!=""){
             $('.searchtxt').show();
             var tab ="<ul style='max-height:100px'>";
             $.each(searchArr,function(n,item){
-                if(item.indexOf(inputTxt)!=-1){
-                    tab+="<li><a href='javascript:void(0)'>"+item+"</a></li>"
+                if(item.text.indexOf(inputTxt)!=-1){
+                    tab+="<li><a href='javascript:void(0)' myid ='"+ item.id+"'>"+item.text+"</a></li>"
                 }
             })
             tab+="</ul>";
             $('.searchtxt').html(tab);
+            $('.searchtxt li a').eq(0).addClass('act')
             $('.searchtxt a').click(function(){
+                $('nav span').removeClass('allsear')
                 var findmenu = $(this).text();
+                var $color = $('header').css('background-color');
+                var findid = $(this).attr('myid');
+                var arr = findid.slice('3').split('-');
+                $('nav .mainbav').eq(arr[0]).children('a').click();
+                $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').click();
+                $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change li').eq(arr[2]).children('a').click();
 
-                //var mainindex = $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').index();
-                //var menuindex = $("nav .submenu:contains('"+findmenu+"')").parents('.menu').index();
-                //var subindex = $("nav .submenu:contains('"+findmenu+"')").parent().index();
-                $("nav .submenu:contains('"+findmenu+"')").click()
+
+
+
+
+                $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').children('a').children('span').addClass('allsear');
+                $("nav .submenu:contains('"+findmenu+"')").parents('.menu').children('a').children('span').addClass('allsear');
+                // $("nav .change a:contains('"+findmenu+"')").css('color','#40fc07')
+                //$("nav .submenu:contains('"+findmenu+"')").click()
+
+
                 $('.searchtxt').hide();
                 $('#search').val(findmenu);
             });
+            $('.searchtxt li a').mouseover(function(){
+                $('.searchtxt li a').removeClass('active')
+                $(this).addClass('active')
+            })
         }else{
             $('.searchtxt').hide();
         }
@@ -160,11 +181,12 @@ $(function(){
     });
     $('.searchBtn').click(function(){
         var findmenu = $('#search').val();
-        $("nav .submenu:contains('"+findmenu+"')").click()
+        if(!findmenu){
+            return;
+        }
+        $("nav .submenu:contains('"+findmenu+"')").eq(0).click()
 
     })
-
-
 
 
 })

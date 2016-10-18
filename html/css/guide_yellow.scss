@@ -48,9 +48,10 @@ header{
           width:100%;
           height:25px;
           color:#000;
-          &:hover{
+          &.act{
             background:#ccc;
           }
+
         }
       }
     }
@@ -59,7 +60,7 @@ header{
       font-size:16px;
       width:180px;
       text-indent:25px;
-      background:url("/html/img/search_bgy.png;") no-repeat 5px;
+      background:url("/html/img/search_bgy.png") no-repeat 5px;
       border:0;
       padding:0;
       outline:none;
@@ -111,6 +112,9 @@ nav{
   background:#fff;
   z-index:99;
   overflow-y:auto;
+  .allsear{
+    color:#22cb56;
+  }
   div{
     padding:8px 0 8px 15px;
     a{
