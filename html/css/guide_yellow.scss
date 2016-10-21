@@ -125,19 +125,36 @@ nav{
       line-height:25px;
       span{
         display:inline-block;
-        width:190px;
+        max-width:190px;
         font-size:16px;
         overflow:hidden;
         text-overflow:ellipsis;
+        white-space:nowrap;
         height:25px;
         line-height:25px;
-        white-space:nowrap;
+        position:relative;
+        padding-right:25px;
+        .new{
+          background:url("/html/img/new.png");
+          width:29px;
+          height:12px;
+          position:absolute;
+          right:0;
+        }
       }
       .iconfont{position:absolute;right:10px;z-index:10}
     }
     .menu{
       span{
-        width:162px;
+        max-width:162px;
+        .point{
+          background:url("/html/img/red-piont.png");
+          position:absolute;
+          width:6px;
+          height:6px;
+          right:15px;
+          top:10px;
+        }
       }
       .iconfont{font-size:14px}
     }
