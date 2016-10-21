@@ -186,8 +186,11 @@ $(function(){
         }
         $("nav .submenu:contains('"+findmenu+"')").eq(0).click()
 
+     	$('.searchtxt').hide();
     })
-
+    $('body').click(function(){
+        $('.searchtxt').hide();
+    })
 
 })
 
