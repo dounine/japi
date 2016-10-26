@@ -190,14 +190,14 @@ $(function(){
         $('.searchtxt').hide();
     })
 
-    
+
+
     $('nav .menuClick').click(function(){
         $(this).find('.point').remove();
         if($(this).parents('.mainbav').find('.point').length==0){
             $(this).parents('.mainbav').find('.new').remove()
         }
     })
-
 })
 
 
