@@ -114,7 +114,7 @@ nav {
       line-height: 25px; }
       nav div a span {
         display: inline-block;
-        max-width: 190px;
+        max-width: 170px;
         font-size: 16px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -125,6 +125,7 @@ nav {
         padding-right: 25px; }
         nav div a span .new {
           background: url("/html/img/new.png");
+          opacity: 0.7;
           width: 29px;
           height: 12px;
           position: absolute;
@@ -134,14 +135,14 @@ nav {
         right: 10px;
         z-index: 10; }
     nav div .menu span {
-      max-width: 162px; }
+      max-width: 152px; }
       nav div .menu span .point {
         background: url("/html/img/red-piont.png");
         position: absolute;
         width: 6px;
         height: 6px;
         right: 15px;
-        top: 10px; }
+        top: 3px; }
     nav div .menu .iconfont {
       font-size: 14px; }
     nav div .a_width {

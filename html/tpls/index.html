@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>文档</title>
-    <link rel="stylesheet" href="/html/css/index_red.css">
+    <link rel="stylesheet" href="/html/css/index_red.css" my-color="#E54A5C" title="theme_red">
+    <link rel="stylesheet" href="/html/css/index_blue.css" my-color="#238DFA" title="theme_blue" disabled="disabled">
+    <link rel="stylesheet" href="/html/css/index_green.css" my-color="#0BC8E1" title="theme_green" disabled="disabled">
+    <link rel="stylesheet" href="/html/css/index_yellow.css" my-color="#FFCC5E" title="theme_yellow" disabled="disabled">
     <script src="/html/js/jquery.min.js"></script>
     <script src="/html/js/index.js"></script>
+    <script src="/html/js/jquery.cookie.js"></script>
 </head>
 <body>
     <header>
         <div class="logo">
             <img src="/html/img/logo.png" ></div>
         <div class="changeColor">
-            <a href="javascript:;" class="blue" style="background:#238DFA"></a>
-            <a href="javascript:;" class="yellow" style="background:#FBE786"></a>
-            <a href="javascript:void(0)" class="green" style="background:#22CB56"></a>
-            <a href="javascript:void(0)" class="red" style="background:#F65866;display:none" ></a>
+            <a href="javascript:void(0)" id="theme_blue" style="background:#238DFA" ></a>
+            <a href="javascript:void(0)" id="theme_yellow" style="background:#FBE786"></a>
+            <a href="javascript:void(0)" id="theme_green" style="background:#22CB56"></a>
+            <a href="javascript:void(0)" id="theme_red" style="background:#F65866;display:none" ></a>
         </div>
         <div class="search"><input type="text"><a href="javascript:;">搜索</a></div>
     </header>
@@ -38,7 +42,7 @@
                     </span>
                 </div>
                 <div class="btn">
-                    <a href="javascript:;">文档</a>
+                    <a href="guide.html">文档</a>
                 </div>
                 <div class="new">新</div>
             </li>
