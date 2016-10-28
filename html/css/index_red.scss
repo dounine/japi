@@ -110,10 +110,11 @@ header{
         width:75px;
         margin:15px auto;
         height:20px;
-        line-height:20px;
-        border-radius:10px;
+        border-radius:13px;
         border:1px solid $color;
         background:#FEEEEF;
+        padding:3px 10px 0;
+
         a{
           color:$color;
           display:inline-block;
@@ -124,6 +125,7 @@ header{
       &:hover{
         .btn{
           background:$color;
+          box-shadow:10px 10px 8px #999;
           a{
             color:#fff;
           }
