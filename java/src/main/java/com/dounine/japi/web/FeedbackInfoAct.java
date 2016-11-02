@@ -1,16 +1,13 @@
 package com.dounine.japi.web;
 
-import com.dounine.japi.ClassAnnotation;
 import com.dounine.japi.Entity;
 import com.dounine.japi.MethodVersionAnnotation;
 
-import javax.xml.ws.RequestWrapper;
 import java.util.List;
 
 /**
  * Created by ike on 16-9-13.
  */
-@ClassAnnotation(className = "FeedbackInfo/fbi")
 public class FeedbackInfoAct {
 
     /**

@@ -17,5 +17,5 @@ dependencies {
     compile "javassist:javassist:3.12.1.GA"
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
-
+    compile group: 'commons-io', name: 'commons-io', version: '2.2'
 }
