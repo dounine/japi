@@ -1,17 +1,11 @@
-/**
- * Created by ike on 16-9-20.
- * 最终版
- * 路径 filepath需要该
- */
 
 import com.dounine.japi.MethodVersionAnnotation;
 import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
-import org.junit.Test;
-import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -23,9 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by ike on 16-9-14.
+ * Created by ike on 16-10-28..最新,前面是interfacedocnew
  */
-public class TestInterfaceDoc {
+@RestController
+@RequestMapping("interfaceApiDoc")
+public class TestInterfaceDoc3 {
     private ClassLoader classLoader;
     private List<Map<String, Object>> halist = null;
     private String classAn = null;//类描述
@@ -33,16 +29,56 @@ public class TestInterfaceDoc {
     private String packageNameInfo = null;
     private int pckIndex = -1;
     private int pckIndex1 = -1;
-    private String htmlFilePath = "/home/ike/java/java/japi/java/src/xx";
-    private String entityPrePath = "com.dounine.japi.web";
-    private String webFilePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
+    private String entityPrePath = "dnn.web";
+    private String filePath = "/home/ike/java/java/feedback/java/src/main/java/dnn/web";
+    private String htmlFilePath = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceapidoc";
 
-    @Test
-    public void test2() {
-        apiMain(webFilePath, entityPrePath , htmlFilePath);
+
+    public String format(String jsonStr) {
+        int level = 0;
+        StringBuffer jsonForMatStr = new StringBuffer();
+        for (int i = 0,len = jsonStr.length(); i < len; i++) {
+            char c = jsonStr.charAt(i);
+            if (level > 0 && '\n' == jsonForMatStr.charAt(jsonForMatStr.length() - 1)) {
+                jsonForMatStr.append(getLevelStr(level));
+            }
+            switch (c) {
+                case '{':
+                case '[':
+                    jsonForMatStr.append(c + "</span><br/>\n");
+                    level++;
+                    break;
+                case ',':
+                    jsonForMatStr.append(c + "</span><br/>\n");
+                    break;
+                case '}':
+                case ']':
+                    jsonForMatStr.append("</span><br/>\n");
+                    level--;
+                    jsonForMatStr.append(getLevelStr(level));
+                    jsonForMatStr.append(c);
+                    break;
+                default:
+                    jsonForMatStr.append(c);
+                    break;
+            }
+        }
+
+        return jsonForMatStr.toString();
+
     }
 
-    public void apiMain(String webFilePaths , String webPackageName , String htmlFilePaths) {
+    private String getLevelStr(int level) {
+        StringBuffer levelStr = new StringBuffer();
+        for (int levelI = 0; levelI < level; levelI++) {
+            levelStr.append("&nbsp;&nbsp;&nbsp;");
+        }
+        levelStr.replace(0,levelStr.length(),"<span>"+levelStr.toString());
+        return levelStr.toString();
+    }
+
+
+    public void FirstMethod(String webFilePaths , String webPackageName , String htmlFilePaths) {
         File file = new File(webFilePaths);
         String[] names = file.list();
 
@@ -62,7 +98,7 @@ public class TestInterfaceDoc {
             classList = webActName(filePaths, entityPrePaths, classname, dir);
             listActName.add(classList);
         }
-        htmlCreate(listActName , htmlFilePaths);
+        htmlCreate(listActName ,htmlFilePaths);
     }
 
     public List<Map<String, Object>> dirToName(String filePath, String entityPrePath, String[] names, String dir) {
@@ -430,6 +466,7 @@ public class TestInterfaceDoc {
 
     public Map<String, Object> paramEntityAttr( Type ty, Map<String, Object> mapMethodParams) throws Exception {
         List<String> listAddParams = new ArrayList<String>();
+        //有封装
         String[] parms = ty.toString().split("class ");//对象参数
         if (parms != null && parms.length > 1) {
             //class com.dounine.japi.Entity
@@ -441,6 +478,10 @@ public class TestInterfaceDoc {
                     Annotation[] annos = field.getAnnotations();
                     List<Object> listAttr = new ArrayList<>();
                     for (Annotation annotation : annos) {
+//                        System.out.println("复:"+annotation);
+//                        System.out.println("复合物:"+annotation.annotationType());
+                        String annotationType =annotation.annotationType().getCanonicalName();
+//                        System.out.println("物:" + annotation.annotationType().getCanonicalName());
                         listAttr.add(annotation);
                     }
 
@@ -457,6 +498,7 @@ public class TestInterfaceDoc {
             }
 
         }
+        //无封装  int
         return mapMethodParams;
     }
 
@@ -686,49 +728,6 @@ public class TestInterfaceDoc {
         return list;
     }
 
-    public String format(String jsonStr) {
-        int level = 0;
-        StringBuffer jsonForMatStr = new StringBuffer();
-        for (int i = 0,len = jsonStr.length(); i < len; i++) {
-            char c = jsonStr.charAt(i);
-            if (level > 0 && '\n' == jsonForMatStr.charAt(jsonForMatStr.length() - 1)) {
-                jsonForMatStr.append(getLevelStr(level));
-            }
-            switch (c) {
-                case '{':
-                case '[':
-                    jsonForMatStr.append(c + "</span><br/>\n");
-                    level++;
-                    break;
-                case ',':
-                    jsonForMatStr.append(c + "</span><br/>\n");
-                    break;
-                case '}':
-                case ']':
-                    jsonForMatStr.append("</span><br/>\n");
-                    level--;
-                    jsonForMatStr.append(getLevelStr(level));
-                    jsonForMatStr.append(c);
-                    break;
-                default:
-                    jsonForMatStr.append(c);
-                    break;
-            }
-        }
-
-        return jsonForMatStr.toString();
-
-    }
-
-    private String getLevelStr(int level) {
-        StringBuffer levelStr = new StringBuffer();
-        for (int levelI = 0; levelI < level; levelI++) {
-            levelStr.append("&nbsp;&nbsp;&nbsp;");
-        }
-        levelStr.replace(0,levelStr.length(),"<span>"+levelStr.toString());
-        return levelStr.toString();
-    }
-
     public String packageSplitInfo(List<String> list, String splitStr) {
         if (list != null && list.size() > 0) {
             String[] packages = list.get(0).split(splitStr);
@@ -857,8 +856,8 @@ public class TestInterfaceDoc {
                                 "<div class='command'>" +
                                 "" + examples[1] + "" +
                                 "</div>" +
-                                "<div class='command'>" +
-                                "响应报文 : <br/>"+returnMessage+"" +
+                                "响应报文 :<div class='command'>" +
+                                ""+returnMessage+"" +
                                 "</div></div><br/>")
                         .append("<div class='parameter'>")
                         .append("<h6>参数</h6>");
@@ -1171,3 +1170,4 @@ public class TestInterfaceDoc {
         return sbu.toString();
     }
 }
+

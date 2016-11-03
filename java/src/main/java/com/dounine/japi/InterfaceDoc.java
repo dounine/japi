@@ -1,31 +1,38 @@
-/**
- * Created by ike on 16-9-20.
- * 最终版
- * 路径 filepath需要该
- */
+package com.dounine.japi;
 
 import com.dounine.japi.MethodVersionAnnotation;
+import com.dounine.japi.Utils.FileMD5Util;
+import com.dounine.japi.Utils.JspFileDealUtil;
+import com.dounine.japi.jspFormat.Format;
 import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
-import org.junit.Test;
-import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by ike on 16-9-14.
+ * Created by ike on 16-10-28.
  */
-public class TestInterfaceDoc {
+
+
+@RestController
+@RequestMapping("interfaceApiDoc")
+public class InterfaceDoc {
     private ClassLoader classLoader;
     private List<Map<String, Object>> halist = null;
     private String classAn = null;//类描述
@@ -33,16 +40,24 @@ public class TestInterfaceDoc {
     private String packageNameInfo = null;
     private int pckIndex = -1;
     private int pckIndex1 = -1;
-    private String htmlFilePath = "/home/ike/java/java/japi/java/src/xx";
-    private String entityPrePath = "com.dounine.japi.web";
-    private String webFilePath = "/home/ike/java/java/japi/java/src/main/java/com/dounine/japi/web";
+    private String contentNewFlag ="";
+    private String guideNewFlag ="";
 
-    @Test
-    public void test2() {
-        apiMain(webFilePath, entityPrePath , htmlFilePath);
+    @GetMapping("tpl/{act}")
+    public ModelAndView index1(@PathVariable String act) {
+        System.out.println(act.replace("-", "/"));
+        return new ModelAndView(".././views/interfaceapidoc/" + act.replace("-", "/"));
     }
 
-    public void apiMain(String webFilePaths , String webPackageName , String htmlFilePaths) {
+    @GetMapping("findInterface")
+    public ModelAndView findInterfaceApiDoc() {
+//        FirstMethod( filePath , entityPrePath , htmlFilePath);
+//        return new ModelAndView("interfaceapidoc/dnn/guide");
+        return new ModelAndView("../../views/interfaceapidoc/index");
+    }
+
+
+    public String FirstMethod(String webProjectName ,String webFilePaths , String webPackageName , String htmlFilePaths , List<String> newFile ) {
         File file = new File(webFilePaths);
         String[] names = file.list();
 
@@ -50,7 +65,7 @@ public class TestInterfaceDoc {
 
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
         halist = new ArrayList<>();
-        halist = dirToName(webFilePaths, webPackageName, names, null);
+        halist = dirToName(webFilePaths, webPackageName.trim(), names, null);
         for (Map<String, Object> maps : halist) {
             String filePaths = maps.get("filePath").toString();
             String entityPrePaths = maps.get("entityPrePath").toString();
@@ -62,7 +77,13 @@ public class TestInterfaceDoc {
             classList = webActName(filePaths, entityPrePaths, classname, dir);
             listActName.add(classList);
         }
-        htmlCreate(listActName , htmlFilePaths);
+        List<String> htls = htmlCreate(webProjectName ,webFilePaths ,webPackageName ,listActName ,htmlFilePaths ,newFile);
+        StringBuffer sb= new StringBuffer("");
+        for(String str :htls){
+            sb.append(str);
+            sb.append(",");
+        }
+        return sb.toString();
     }
 
     public List<Map<String, Object>> dirToName(String filePath, String entityPrePath, String[] names, String dir) {
@@ -141,7 +162,6 @@ public class TestInterfaceDoc {
                 if (map.get("methodName") == null) {
                     continue;
                 }
-//                System.out.println("测试方法名:"+map.get("methodName"));
                 if (splits != null && splits.length > 0) {
                     String annotation = splits[0];
                     String[] sqr = annotation.split("\\*\\s*#");
@@ -245,7 +265,6 @@ public class TestInterfaceDoc {
                         pty = pty.substring(0, left) + pty.substring(left + 1);
                     }
                     parmType.add(pty);
-//                        System.out.println("参数个数:"+pty);
                     mapMethodParams = paramTypeAndName(demo1, method, mapMethodParams);
                     mapMethodParams = paramEntityAttr( ty, mapMethodParams);
                 }
@@ -284,7 +303,6 @@ public class TestInterfaceDoc {
 //                    mapMethodParams.remove("paramsValue");
                 classList.add(mapMethodParams);
             }
-            System.out.println("秒:" + classList);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -378,12 +396,10 @@ public class TestInterfaceDoc {
 
 
     public Map<String, Object> paramTypeAndName(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) throws Exception {
-//        CtMethod cm = cc.getDeclaredMethod(method.getName());
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] parameterType = method.getGenericParameterTypes();
         String[] paramTypeNames = new String[parameterTypes.length];
         for (int i = 0; i < parameterTypes.length; i++) {
-//            paramTypeNames[i] = parameterTypes[i].getName();
             paramTypeNames[i] = parameterTypes[i].getTypeName();
         }
 
@@ -401,9 +417,7 @@ public class TestInterfaceDoc {
             List<Object> paramsValueStr = new ArrayList<Object>();
             int pos = Modifier.isStatic(cm.getModifiers()) ? 0 : 1;
             for (int i = 0; i < paramsValue.length; i++) {
-//                paramsValue[i] = attr.variableName(i + pos);
                 paramsValue[i] = parameterType[i].getTypeName();
-//                String typeName =parameterTypes[i].getTypeName();
                 String typeName = parameterType[i].getTypeName();
                 List<String> typePre = Arrays.asList("java.util.", "java.lang.", "java.io.",
                         "javax.servlet.http.");
@@ -457,6 +471,7 @@ public class TestInterfaceDoc {
             }
 
         }
+        //无封装  int
         return mapMethodParams;
     }
 
@@ -610,7 +625,6 @@ public class TestInterfaceDoc {
         String context = sb.toString();
         Pattern leftpattern = Pattern.compile("/\\*{2}");
         Matcher leftmatcher = leftpattern.matcher(context);
-//            Pattern rightpattern = Pattern.compile("\\*/[\\s\\S]*public[\\s\\S]*\\)\\p{Blank}*[\\s\\S]*\\{");
         Pattern rightpattern = Pattern.compile("\\;");
         Matcher rightmatcher = rightpattern.matcher(context);
 
@@ -686,49 +700,6 @@ public class TestInterfaceDoc {
         return list;
     }
 
-    public String format(String jsonStr) {
-        int level = 0;
-        StringBuffer jsonForMatStr = new StringBuffer();
-        for (int i = 0,len = jsonStr.length(); i < len; i++) {
-            char c = jsonStr.charAt(i);
-            if (level > 0 && '\n' == jsonForMatStr.charAt(jsonForMatStr.length() - 1)) {
-                jsonForMatStr.append(getLevelStr(level));
-            }
-            switch (c) {
-                case '{':
-                case '[':
-                    jsonForMatStr.append(c + "</span><br/>\n");
-                    level++;
-                    break;
-                case ',':
-                    jsonForMatStr.append(c + "</span><br/>\n");
-                    break;
-                case '}':
-                case ']':
-                    jsonForMatStr.append("</span><br/>\n");
-                    level--;
-                    jsonForMatStr.append(getLevelStr(level));
-                    jsonForMatStr.append(c);
-                    break;
-                default:
-                    jsonForMatStr.append(c);
-                    break;
-            }
-        }
-
-        return jsonForMatStr.toString();
-
-    }
-
-    private String getLevelStr(int level) {
-        StringBuffer levelStr = new StringBuffer();
-        for (int levelI = 0; levelI < level; levelI++) {
-            levelStr.append("&nbsp;&nbsp;&nbsp;");
-        }
-        levelStr.replace(0,levelStr.length(),"<span>"+levelStr.toString());
-        return levelStr.toString();
-    }
-
     public String packageSplitInfo(List<String> list, String splitStr) {
         if (list != null && list.size() > 0) {
             String[] packages = list.get(0).split(splitStr);
@@ -744,7 +715,9 @@ public class TestInterfaceDoc {
 
     }
 
-    public List<String> htmlCreate(List<Object> listActName ,String htmlFilePaths) {
+    public List<String> htmlCreate(String webProjectName ,String webFilePaths ,String webPackageName , List<Object> listActName ,String htmlFilePaths ,List<String> newfile) {
+        List<String> htmlsFile = new ArrayList<>();
+        guideNewFlag ="";
         pckIndex = -1;
         pckIndex1 = -1;
 
@@ -760,16 +733,15 @@ public class TestInterfaceDoc {
         Map<Object, Object> pckNameIndexMap1 = new HashMap<>();
         Map<String, Object> pckDescIndexMap = new HashMap<>();
         Map<String, Object> pckNameDescMap = new HashMap<>();
-        String contentsIndex = "<%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\"\n" +
-                "\tpageEncoding=\"UTF-8\"%><!DOCTYPE html><html lang='en'><head>";
+        String contentsIndex = " <%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\" pageEncoding=\"UTF-8\"%><!DOCTYPE html><html lang='en'><head>";
         StringBuffer sbIndex = new StringBuffer(contentsIndex)
                 .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='${ctx}/html/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='${ctx}/html/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='${ctx}/html/js/jquery.min.js'></script><script src='${ctx}/html/js/jquery.cookie.js'></script><script src='${ctx}/html/js/guide.js'></script><script src='/html/js/router.js'></script></head>")
                 .append("<body>")
-                .append("<header><div class='logo'><img src='${ctx}/html/img/logo.png' ></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
+                .append("<header><div class='logo'><a href='${ctx}/views/interfaceapidoc/index.jsp'><img src='${ctx}/html/img/logo.png' ></a></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
                 .append("<div class='search'><input type='text' id='search'><button class='searchBtn'>搜索</button><div class='searchtxt'></div></div>")
                 .append("</header>")
                 .append("<div class=\"conTitle\"></div>")
-                .append("<nav >");
+                .append("<nav ><span hidden id='spanId'>"+webProjectName+"</span>");
 
         for (int i = 0; i < listActName.size(); i++) {
             List<Map<String, Object>> classList = new ArrayList<>();
@@ -808,6 +780,18 @@ public class TestInterfaceDoc {
                 fileName = maps.get("className").toString();
             }
 
+            contentNewFlag ="";
+            String jspPath  = htmlFilePaths+"/"+webProjectName+"/"+classList.get(0).get("packageName").toString().replaceAll("\\.", "/")+"/"+fileName+".jsp";
+            if( newfile != null && newfile.size()>0 ){
+                for(String item :newfile){
+                    if( item.trim().equals(jspPath.trim())){
+                        contentNewFlag ="新图标";
+                        guideNewFlag = "新图标";
+                        break;
+                    }
+                }
+            }
+
             String pckDescIndexMapContent = "";
             String pckNameDescMapContent = "";
             int pckIndexInt = pckIndex + 1;
@@ -839,7 +823,7 @@ public class TestInterfaceDoc {
                 }
                 String returnMessage = "无";
                 if (map.get("return") != null && map.get("return") != "") {
-                    returnMessage = format(map.get("return").toString());
+                    returnMessage = Format.format(map.get("return").toString());
                 }
                 int thirdIndex = j + 1;
                 sb.append("<div div class='content' id='" + pckIndexInt + "-" + pckValueInt + "-" + thirdIndex + "'>")
@@ -857,14 +841,13 @@ public class TestInterfaceDoc {
                                 "<div class='command'>" +
                                 "" + examples[1] + "" +
                                 "</div>" +
-                                "<div class='command'>" +
-                                "响应报文 : <br/>"+returnMessage+"" +
+                                "响应报文 :<div class='command'>" +
+                                ""+returnMessage+"" +
                                 "</div></div><br/>")
                         .append("<div class='parameter'>")
                         .append("<h6>参数</h6>");
 
                 if (map.get("paramTypeList") != null && !"".equals(map.get("paramTypeList")) && !"[]".equals(map.get("paramTypeList"))) {
-                    System.out.println(map.get("paramTypeList"));
                     sb.append("<table  cellspacing='0'><thead><tr><th>参数类型</th><th>参数名</th><th>参数约束说明</th></tr></thead><tbody>");
                     int first = map.get("paramTypeList").toString().indexOf("[");
                     int last = map.get("paramTypeList").toString().lastIndexOf("]");
@@ -883,7 +866,6 @@ public class TestInterfaceDoc {
                             pname = param.substring(paramSplit + 1, param.length());
                         }
                         String attrLists = "";
-                        System.out.println("的成功分一二五日:" + map.get(ptype + "ObjectEntityParamAttr"));
                         if (map.get(ptype.trim() + "ObjectEntityParamAttr") != null) {
                             attrLists = map.get(ptype.trim() + "ObjectEntityParamAttr").toString();
                         }
@@ -899,20 +881,24 @@ public class TestInterfaceDoc {
                 sb.append("</div></div>")
                         .append("</div></div>");
 
-                String pckPathAttr = map.get("packageName").toString().replaceAll("\\.", "-");
+                String pckPathAttr =webProjectName+"-"+ map.get("packageName").toString().replaceAll("\\.", "-");
                 Set set = pckNameIndexMap.entrySet();
                 Iterator iterator = set.iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<String, String> entry1 = (Map.Entry<String, String>) iterator.next();
                     if (entry1.getKey().equals(map.get("packageName").toString())) {
                         strClassName = "<div class='menu'> " +
-                                "<a href='javascript:void(0)' class='a_width menuClick' my-attr = '" + pckPathAttr + "' id='" + fileName + "' title='" + map.get("classDes") + "'>" +
-                                "<span>" + map.get("classDes") + "</span><i class='iconfont'>&#xe608;</i></a>" +
-                                "<ul class=' change'>";
-                        if (map.get("nameDes") != null && map.get("nameDes") != "") {
-                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu'>" + map.get("nameDes") + "</a></li>");
+                                "<a href='javascript:void(0)' class='a_width menuClick' my-attr = '" + pckPathAttr + "' id='" + fileName + "' title='" + map.get("classDes") + "'>";
+                        if (StringUtils.isNotBlank(contentNewFlag)) {
+                            strClassName = strClassName + "<span>" + map.get("classDes") + "<strong class='point'></strong></span><i class='iconfont'>&#xe608;</i></a>";
                         } else {
-                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu'>" + map.get("methodName") + "</a></li>");
+                            strClassName = strClassName + "<span>" + map.get("classDes") + "</span><i class='iconfont'>&#xe608;</i></a>";
+                        }
+                        strClassName = strClassName + "<ul class=' change'>";
+                        if (map.get("nameDes") != null && map.get("nameDes") != "") {
+                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu' id='nav" + (int) (pckIndexInt - 1) + "-" + (pckValueInt - 1) + "-" + (thirdIndex - 1) + "'>" + map.get("nameDes") + "</a></li>");
+                        } else {
+                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu' id='nav" + (int) (pckIndexInt - 1) + "-" + (pckValueInt - 1) + "-" + (thirdIndex - 1) + "'>" + map.get("methodName") + "</a></li>");
                         }
                         strClassNameLast = "</ul></div>";
                     }
@@ -932,8 +918,10 @@ public class TestInterfaceDoc {
             fileContents = sb.toString();
             pckPath = classList.get(0).get("packageName").toString().replaceAll("\\.", "/");
 
-            String paths = mkHtmlDir(htmlFilePaths, pckPath, fileName);
-            htmls(paths, fileContents);//生成子内容xx.html
+            String paths = JspFileDealUtil.mkHtmlDir(webProjectName ,htmlFilePaths, pckPath, fileName);
+            JspFileDealUtil.htmls(paths, fileContents);//生成子内容xx.html
+            htmlsFile.add(paths+".jsp");
+            JspFileDealUtil.htmlTxtFile( paths);
         }
 
         for (int i = 0; i < pckNameIndexMap1.size(); i++) {//生成guide.jsp
@@ -945,7 +933,12 @@ public class TestInterfaceDoc {
             }
 
             String subnavStr = "<div class='subnav'>" + ss + "</div>";
-            String mainbavStr = " <div class='mainbav'><a href='javascript:void(0)' class='a_width mainbavClick ' title='" + pckDescIndexMap.get(guideIndexStr) + "' ><span>" + pckDes + "</span><i class='iconfont'>&#xe608;</i></a>";
+            String mainbavStr = "";
+            if( ss.contains("<strong class='point'></strong>")){
+                mainbavStr = " <div class='mainbav'><a href='javascript:void(0)' class='a_width mainbavClick ' title='" + pckDescIndexMap.get(guideIndexStr) + "' ><span>" + pckDes + "<strong class='new'></strong></span><i class='iconfont'>&#xe608;</i></a>";
+            } else {
+                mainbavStr = " <div class='mainbav'><a href='javascript:void(0)' class='a_width mainbavClick ' title='" + pckDescIndexMap.get(guideIndexStr) + "' ><span>" + pckDes + "</span><i class='iconfont'>&#xe608;</i></a>";
+            }
             String mainbavLastStr = "</div>";
 
             String mainbavStrs = mainbavStr + subnavStr + mainbavLastStr;
@@ -956,54 +949,19 @@ public class TestInterfaceDoc {
                 .append("<div class='container '></div>")
                 .append("</body></html>");
         String[] pckPaths = pckPath.split("/");
-        htmls(htmlFilePaths + "/" + pckPaths[0] + "/guide", sbIndex.toString());
-        htmls(htmlFilePaths + "/" + pckPaths[0] + "/index", indexHtml());
-        return list;
-    }
 
-    public String mkHtmlDir(String filePath, String pckPath, String fileName) {
-        String[] pckPaths = pckPath.split("/");
-        String contextPath = "";
-        File filePathFile = new File(filePath);
-        if (!filePathFile.isDirectory()) {
-            filePathFile.mkdir();
-        }
-        for (String pckPathStr : pckPaths) {
-            contextPath = contextPath + "/" + pckPathStr;
-            String filePathContent = filePath.trim() + "/" + contextPath.trim();
-            File f = new File(filePathContent);
-            if (!f.isDirectory()) {
-                f.mkdir();
-            }
-        }
-        String paths = filePath + "/" + pckPath + "/" + fileName;
-        return paths;
+        JspFileDealUtil.htmls(htmlFilePaths + "/" + webProjectName + "guide", sbIndex.toString());
+        htmlsFile.add(htmlFilePaths + "/" + "/"+pckPaths[1]+ "guide.jsp");
+        return htmlsFile;
     }
 
 
-    public void htmls(String paths, String fileContents) {
-        String fileame = ".jsp";
-        fileame = paths + fileame;//生成的html文件保存路径。
-        FileOutputStream fileoutputstream = null;// 建立文件输出流
-        try {
-            fileoutputstream = new FileOutputStream(fileame);
-            byte tag_bytes[] = fileContents.getBytes();
-            fileoutputstream.write(tag_bytes);
-            fileoutputstream.close();//关闭输出流
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public List<String> curlExampleData(String data){ //data : {username:'1243',password:'123'}
         List<String> arr = new ArrayList<>();
-        System.out.println(data);
         int lastBraceIndex = data.lastIndexOf("}");
         data = data.replaceFirst("\\{", "").substring(0,lastBraceIndex-1);
         String[] dataList = data.split(",");
-        System.out.println(data);
         for (String dataStr : dataList) {//username:'1243'
             if (StringUtils.isNotEmpty(dataStr) && StringUtils.isNotBlank(dataStr)) {
                 int index = dataStr.lastIndexOf(":");
@@ -1050,7 +1008,6 @@ public class TestInterfaceDoc {
     public String[] exampleValueHtml(Map<String,Object> map ,String dData){ //拼接页面中的curl
         String[] strings = new String[3];
         String crulType = "";
-//        StringBuffer sbf = new StringBuffer("");
         StringBuffer crulData = new StringBuffer("");
         if (map.get("demo") != "" && map.get("demo") != null) {
             String[] cruls = map.get("demo").toString().split("\\,");
@@ -1059,7 +1016,6 @@ public class TestInterfaceDoc {
                 if (crulTypeIndex != -1) {
                     crulType = cls.substring(0, crulTypeIndex).replace("[", "");
                     String httpUrl = cls.substring(crulTypeIndex + 2, cls.length()).replace("]", "");
-//                    sbf.append("<div class='com_con'>" + httpUrl + "</div>");
                     String dDatas ="请自己在这里拼参数";
                     if (StringUtils.isNotBlank(dData) || StringUtils.isNotEmpty(dData)) {
                         dDatas = dData.substring(1, dData.length() - 1);
@@ -1068,10 +1024,8 @@ public class TestInterfaceDoc {
                         dDatas = (StringUtils.isNotBlank(dData) || StringUtils.isNotEmpty(dData)) ? dData : "请自己在这里拼参数";
                         crulData.append("<div class='com_con'> curl -X " + crulType.trim() + "  --cookie 'token=b42a5e5845c046c49eec3d01c63365c0.2130706433.1476337615937'" + " -d " + dDatas + "&nbsp;'" + httpUrl.trim() + "'</div>");
                     } else if (crulType.trim().equals("GET") || crulType.trim().equals("PUT") || crulType.trim().equals("DELETE")) {
-//                            String dDatas = dData.substring(1, dData.length() - 1);
                         crulData.append("<div class='com_con'> curl -X " + crulType.trim() + "  --cookie 'token=b42a5e5845c046c49eec3d01c63365c0.2130706433.1476337615937'" + " '" + httpUrl.trim() + "?" + dDatas + "'</div>");
                     } else if (crulType.trim().equals("HEAD")) {
-//                            String dDatas = dData.substring(1, dData.length() - 1);
                         crulData.append("<div class='com_con'> curl -i -X " + crulType.trim() + "  --cookie 'token=b42a5e5845c046c49eec3d01c63365c0.2130706433.1476337615937'" + " '" + httpUrl.trim() + "?" + dDatas + "'</div>");
                     }
 
@@ -1085,89 +1039,6 @@ public class TestInterfaceDoc {
         return strings;
     }
 
-    public String indexHtml() {
-        StringBuffer sbu = new StringBuffer("");
-        sbu.append("<%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\"\n" +
-                "\tpageEncoding=\"UTF-8\"%><!DOCTYPE html>\n" +
-                "<html lang='en'>\n" +
-                "<head>\n" +
-                "    <meta charset='UTF-8'>\n" +
-                "    <title>文档</title>\n" +
-                "    <link rel='stylesheet' href='${ctx}/html/css/index_red.css'>\n" +
-                "    <script src='${ctx}/html/js/jquery.min.js'></script>\n" +
-                "    <script src='${ctx}/html/js/index.js'></script>\n" +
-                "</head>")
-                .append("<body>")
-                .append("<header>\n" +
-                        "        <div class='logo'><a href=\"javascript:void(0) \">\n" +
-                        "            <img src='${ctx}/html/img/logo.png' ></a></div>\n" +
-                        "        <div class='changeColor'>\n" +
-                        "            <a href='javascript:;' class='blue' style='background:#238DFA'></a>\n" +
-                        "            <a href='javascript:;' class='yellow' style='background:#FBE786'></a>\n" +
-                        "            <a href='javascript:void(0)' class='green' style='background:#22CB56'></a>\n" +
-                        "            <a href='javascript:void(0)' class='red' style='background:#F65866;display:none' ></a>\n" +
-                        "        </div>\n" +
-                        "        <div class='search'><input type='text'><a href='javascript:;'>搜索</a></div>\n" +
-                        "    </header>")
-                .append("<div class='notice'>\n" +
-                        "        <i class='iconfont'>&#xe604;</i><span>公告:警告！警告！黄焕来是逗逼！</span>\n" +
-                        "    </div>")
-                .append("<div class='mainbody'>")
-                .append("<ul>")
-                .append("<li>\n" +
-                        "                <i class='iconfont'>&#xe605;</i>\n" +
-                        "                <p>OBJECTIVE(IOS/MAC)</p>\n" +
-                        "                <div class='list'>\n" +
-                        "                    <span>\n" +
-                        "                        <i class='iconfont '>&#xe600;</i>\n" +
-                        "                        <span>V7.101</span>\n" +
-                        "                    </span>\n" +
-                        "                    <span style='border-left:1px solid #999;padding-left:5px'>\n" +
-                        "                        <i class='iconfont '>&#xe601;</i>\n" +
-                        "                        <span>2016.09.21</span>\n" +
-                        "                    </span>\n" +
-                        "                </div>\n" +
-                        "                <div class='btn'>\n" +
-                        "                    <a href='javascript:;'>文档</a>\n" +
-                        "                </div>\n" +
-                        "                <div class='new'>新</div>\n" +
-                        "            </li>")
-                .append("<li>\n" +
-                        "                <i class='iconfont' style='color:#A4CA39;'>&#xe606;</i>\n" +
-                        "                <p>OBJECTIVE(IOS/MAC)</p>\n" +
-                        "                <div class='list'>\n" +
-                        "                    <span>\n" +
-                        "                        <i class='iconfont '>&#xe600;</i>\n" +
-                        "                        <span>V7.101</span>\n" +
-                        "                    </span>\n" +
-                        "                    <span style='border-left:1px solid #999;padding-left:5px'>\n" +
-                        "                        <i class='iconfont '>&#xe601;</i>\n" +
-                        "                        <span>2016.09.21</span>\n" +
-                        "                    </span>\n" +
-                        "                </div>\n" +
-                        "                <div class='btn'>\n" +
-                        "                    <a href='javascript:;'>文档</a>\n" +
-                        "                </div>\n" +
-                        "            </li>")
-                .append("</ul>\n" +
-                        "    </div>")
-                .append("<footer>\n" +
-                        "        <a href='javascript:;' class='previous '><img src='${ctx}/html/img/previous.png'></a>\n" +
-                        "        <ul class='page'>\n" +
-                        "            <li ><a href='javascript:;' class='active'>1</a></li>\n" +
-                        "            <li><a href='javascript:;'>2</a></li>\n" +
-                        "            <li><a href='javascript:;'>3</a></li>\n" +
-                        "            <li><a href='javascript:;'>4</a></li>\n" +
-                        "            <li><a href='javascript:;'>5</a></li>\n" +
-                        "            <li><a href='javascript:;'>6</a></li>\n" +
-                        "        </ul>\n" +
-                        "        <a href='javascript:;' class='next'><img src='${ctx}/html/img/next.png'></a>\n" +
-                        "        <div class='jump'>跳转到：<input type='text' size='2'>\n" +
-                        "            <a href='javascript:;'>GO</a>\n" +
-                        "        </div>\n" +
-                        "    </footer>")
-                .append("</body>\n" +
-                        "</html>");
-        return sbu.toString();
-    }
+
 }
+

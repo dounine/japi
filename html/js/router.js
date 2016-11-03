@@ -1,14 +1,13 @@
 $(function(){
 
 
-
+    var $color = $('header').css('background-color');
     var current = window.location.hash.slice(1,4);
     if(!current){
         var defaultHtml = $('nav .mainbav').eq(0).find('.menu').eq(0).children('a').attr('id');
         var myattr = $('nav .mainbav').eq(0).find('.menu').eq(0).children('a').attr('my-attr');
         myattr ="tpls/tpl_guide/"
         $.ajax({
-
             url:'/html/'+myattr+defaultHtml+'.html',
             type:'GET',
             success:function(data){
@@ -17,6 +16,7 @@ $(function(){
                 var arr = [0,0,0];
                 var rhtml = $('nav .mainbav').eq(arr[0]).children('a').children('span').html();
                 var shtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').children('span').html();
+
                 var lhtml = $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change').children('li').eq(arr[2]).children('a').html()
                 var contitle = rhtml + '>' + shtml + '>' + lhtml
                 $('.conTitle').html(contitle);
