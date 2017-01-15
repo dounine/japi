@@ -25,7 +25,7 @@ targetCompatibility = 1.8
 
 
 dependencies {
-    compile "org.springframework:spring-webmvc:4.3.3.RELEASE"
+    compile "org.springframework:spring-webmvc:4.3.5.RELEASE"
     compile "javassist:javassist:3.12.1.GA"
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
