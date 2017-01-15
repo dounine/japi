@@ -1,4 +1,4 @@
-package com.dounine.japi.Utils;
+package com.dounine.japi.utils;
 
 import org.apache.commons.io.FileUtils;
 

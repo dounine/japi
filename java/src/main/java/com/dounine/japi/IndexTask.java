@@ -1,14 +1,12 @@
-package csio.server;
+package com.dounine.japi;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 /**
  * Created by ike on 16-10-17.

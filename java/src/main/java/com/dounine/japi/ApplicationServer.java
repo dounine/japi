@@ -1,6 +1,6 @@
-package csio.server;
+package com.dounine.japi;
 
-import com.dounine.japi.Utils.FilePath;
+import com.dounine.japi.utils.FilePath;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  * Created by ike on 16-10-15.
  */
-public class Server {
+public class ApplicationServer {
    /* @Test
     public void test() throws IOException{
         FilePath filePath = new FilePath();
@@ -23,14 +23,13 @@ public class Server {
     public static void main(String[] args) throws IOException{
         FilePath filePath = new FilePath();
 //        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
-        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
-        serverStart(filePath.getServerIndexHtmlPath());
+        filePath.setServerIndexHtmlPath("/Users/huanghuanlai/dounine/github/testdir/interfaceapidoc");
+        serverStart(8989,filePath.getServerIndexHtmlPath());
     }
 
-    public static void serverStart(String serverJspSavePath )throws IOException {
-        int port = 8899;
+    public static void serverStart(int listenerPort, String serverJspSavePath )throws IOException {
 
-        final ServerSocket server = new ServerSocket(port);
+        final ServerSocket server = new ServerSocket(listenerPort);
         System.out.println("等待与客户端建立连接...");
 
         File f = new File(serverJspSavePath);

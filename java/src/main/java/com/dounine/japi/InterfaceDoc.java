@@ -1,9 +1,8 @@
 package com.dounine.japi;
 
-import com.dounine.japi.MethodVersionAnnotation;
-import com.dounine.japi.Utils.FileMD5Util;
-import com.dounine.japi.Utils.JspFileDealUtil;
-import com.dounine.japi.jspFormat.Format;
+import com.dounine.japi.annotation.MethodVersion;
+import com.dounine.japi.utils.JspFileDealUtil;
+import com.dounine.japi.format.JSPFormat;
 import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
@@ -17,10 +16,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -53,7 +48,7 @@ public class InterfaceDoc {
     public ModelAndView findInterfaceApiDoc() {
 //        FirstMethod( filePath , entityPrePath , htmlFilePath);
 //        return new ModelAndView("interfaceapidoc/dnn/guide");
-        return new ModelAndView("../../views/interfaceapidoc/index");
+        return new ModelAndView("/interfaceapidoc/index");
     }
 
 
@@ -237,7 +232,7 @@ public class InterfaceDoc {
             List<Map<String, Object>> getAnnoInfo = anno(filePath, strings[0], demo1);//解析注释
             Method[] dan = demo1.getMethods();//获取所有方法
             for (Method method : dan) {
-                MethodVersionAnnotation mva = method.getAnnotation(MethodVersionAnnotation.class);
+                MethodVersion mva = method.getAnnotation(MethodVersion.class);
                 String mVersionFromAnnotation = null;
                 if (mva != null) {
                     mVersionFromAnnotation = mva.version();
@@ -823,7 +818,7 @@ public class InterfaceDoc {
                 }
                 String returnMessage = "无";
                 if (map.get("return") != null && map.get("return") != "") {
-                    returnMessage = Format.format(map.get("return").toString());
+                    returnMessage = JSPFormat.format(map.get("return").toString());
                 }
                 int thirdIndex = j + 1;
                 sb.append("<div div class='content' id='" + pckIndexInt + "-" + pckValueInt + "-" + thirdIndex + "'>")

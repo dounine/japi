@@ -1,5 +1,5 @@
 
-import com.dounine.japi.MethodVersionAnnotation;
+import com.dounine.japi.MethodVersion;
 import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
@@ -253,7 +253,7 @@ public class TestInterfaceDoc3 {
             List<Map<String, Object>> getAnnoInfo = anno(filePath, strings[0], demo1);//解析注释
             Method[] dan = demo1.getMethods();//获取所有方法
             for (Method method : dan) {
-                MethodVersionAnnotation mva = method.getAnnotation(MethodVersionAnnotation.class);
+                MethodVersion mva = method.getAnnotation(MethodVersion.class);
                 String mVersionFromAnnotation = null;
                 if (mva != null) {
                     mVersionFromAnnotation = mva.version();

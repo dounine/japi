@@ -1,4 +1,4 @@
-package com.dounine.japi.Utils;
+package com.dounine.japi.utils;
 
 import java.io.File;
 import java.io.FileInputStream;

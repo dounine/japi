@@ -1,10 +1,9 @@
-package csio.client;
+package com.dounine.japi;
 
-import com.dounine.japi.InterfaceDoc;
-import com.dounine.japi.Utils.AddGuideMd5;
-import com.dounine.japi.Utils.FileMD5Util;
-import com.dounine.japi.Utils.FilePath;
-import com.dounine.japi.Utils.GetAllFIle;
+import com.dounine.japi.utils.AddGuideMd5;
+import com.dounine.japi.utils.FileMD5Util;
+import com.dounine.japi.utils.FilePath;
+import com.dounine.japi.utils.GetAllFIle;
 
 import java.io.*;
 import java.net.Socket;

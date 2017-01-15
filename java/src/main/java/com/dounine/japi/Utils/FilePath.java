@@ -1,4 +1,4 @@
-package com.dounine.japi.Utils;
+package com.dounine.japi.utils;
 
 /**
  * Created by ike on 16-10-19.

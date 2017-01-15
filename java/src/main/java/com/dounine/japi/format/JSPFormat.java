@@ -1,9 +1,9 @@
-package com.dounine.japi.jspFormat;
+package com.dounine.japi.format;
 
 /**
  * Created by ike on 16-10-28.
  */
-public class Format {
+public class JSPFormat {
 
     public static String format(String jsonStr) {
         int level = 0;
