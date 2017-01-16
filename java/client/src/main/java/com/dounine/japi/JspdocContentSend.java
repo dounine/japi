@@ -27,11 +27,10 @@ public class JspdocContentSend {
         String jspDoc = interfaceDoc.FirstMethod(webProjectName, webFilePath, filePackage, htmlPath, listnewDocName);
         AddGuideMd5.createMd5ForGuideJsp(htmlPath , webProjectName);
         //传给服务器的jsp路径以及jsp内容
-//        AllFileAndContent(htmlPath , sb);
-//        return sb.toString().getBytes();
+//
     }
 
-    public static void AllFileAndContent(Socket clients, String filepathstr, String webProjectName) throws IOException {
+    public static void AllFileAndContent(Socket clients, String filepathstr,String savePath, String webProjectName) throws IOException {
         List<String> list = new ArrayList<>();
         File filepath = new File(filepathstr);
         List<String> listFiles = getAllFile(filepath, list);
@@ -39,33 +38,33 @@ public class JspdocContentSend {
         OutputStream os = clients.getOutputStream();
         DataOutputStream dos = new DataOutputStream(os);
         DataInputStream dis = new DataInputStream(is);
-        for (String fileString : listFiles) {
-            String relative = relativePath(fileString ,webProjectName); //  dnn/web/admin/admin.jsp
-            dos.writeUTF(relative);    //传给服务器文件相对路径
-            File file = new File(fileString);
-            //获取内容
-            InputStream content = readJspDocIs(file );
-            System.out.println("客户端:" + fileString);
-            dos.writeLong(file.length());
-            byte[] temp = new byte[1024];
-            int len = -1;
-            while ((len = content.read(temp)) != -1) {      //  传给服务器文件内容
-                dos.write(temp, 0, len);
+        if(listFiles.size()>0){
+            for (String fileString : listFiles) {
+                String relative = relativePath(fileString,savePath); //  dnn/web/admin/admin.html
+                dos.writeUTF(webProjectName+"/"+relative);    //传给服务器文件相对路径
+                dos.flush();
+                File file = new File(fileString);
+                //获取内容
+                InputStream content = readJspDocIs(file );
+                System.out.println("客户端:" + fileString);
+                dos.writeLong(file.length());
+                byte[] temp = new byte[1024];
+                int len = -1;
+                while ((len = content.read(temp)) != -1) {      //  传给服务器文件内容
+                    dos.write(temp, 0, len);
+                }
+                dos.flush();
+                content.close();
+                dis.readUTF();
             }
+            dos.writeUTF("finish");
             dos.flush();
-            content.close();
-            dis.readUTF();
         }
-        dos.writeUTF("finish");
-        dos.flush();
     }
-    public static String relativePath(String readStr ,String webProjectName) {
-        String str = "/WEB-INF/";
-        int indexs = readStr.trim().lastIndexOf(str);
-        String pathSuffix = readStr.trim().substring(indexs + str.length(), readStr.trim().length());
-        int webIndex = pathSuffix.indexOf(webProjectName);
-        pathSuffix = pathSuffix.substring(webIndex,pathSuffix.length());
-        return pathSuffix;
+    ///home/ike/java/github/japi/java/server/src/main/webapp/
+    // WEB-INF/views/interfaceapidoc/demo-card-consumer/com/bjike/goddess/card/action/Card1Action.html
+    public static String relativePath(String absolutePath,String savePath) {
+        return absolutePath.substring(savePath.length()+1);
     }
 
     public static List<String> getAllFile(File file, List<String> list) {

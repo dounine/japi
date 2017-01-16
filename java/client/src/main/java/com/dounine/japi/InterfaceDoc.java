@@ -715,9 +715,9 @@ public class InterfaceDoc {
         Map<String, Object> pckNameDescMap = new HashMap<>();
         String contentsIndex = " <!DOCTYPE html><html lang='en'><head>";
         StringBuffer sbIndex = new StringBuffer(contentsIndex)
-                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='${ctx}/html/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='${ctx}/html/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='${ctx}/html/js/jquery.min.js'></script><script src='${ctx}/html/js/jquery.cookie.js'></script><script src='${ctx}/html/js/guide.js'></script><script src='/html/js/router.js'></script></head>")
+                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='/static/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='/static/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='/static/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='/static/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='/static/js/jquery.min.js'></script><script src='/static/js/jquery.cookie.js'></script><script src='/static/js/guide.js'></script><script src='/static/js/router.js'></script></head>")
                 .append("<body>")
-                .append("<header><div class='logo'><a href='${ctx}/views/interfaceapidoc/index.html'><img src='${ctx}/html/img/logo.png' ></a></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
+                .append("<header><div class='logo'><a href='/index.html'><img src='/static/img/logo.png' ></a></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
                 .append("<div class='search'><input type='text' id='search'><button class='searchBtn'>搜索</button><div class='searchtxt'></div></div>")
                 .append("</header>")
                 .append("<div class=\"conTitle\"></div>")
@@ -860,7 +860,7 @@ public class InterfaceDoc {
                 sb.append("</div></div>")
                         .append("</div></div>");
 
-                String pckPathAttr =webProjectName+"-"+ map.get("packageName").toString().replaceAll("\\.", "-");
+                String pckPathAttr =webProjectName+"/"+ map.get("packageName").toString().replaceAll("\\.", "-");
                 Set set = pckNameIndexMap.entrySet();
                 Iterator iterator = set.iterator();
                 while (iterator.hasNext()) {
@@ -903,7 +903,7 @@ public class InterfaceDoc {
             JspFileDealUtil.htmlTxtFile( paths);
         }
 
-        for (int i = 0; i < pckNameIndexMap1.size(); i++) {//生成guide.jsp
+        for (int i = 0; i < pckNameIndexMap1.size(); i++) {//生成guide.html
             String guideIndexStr = pckNameIndexMap1.get(i).toString();
             String ss = pckNameIndexMap.get(guideIndexStr).toString();
             String pckDes = pckNameDescMap.get(guideIndexStr).toString();

@@ -14,11 +14,13 @@ public class ClientHeartTask implements Runnable {
     private ClientDocCheckTask clientDocCheckTask = new ClientDocCheckTask();
     private static int heartflag = 1;//1表示发心跳,0表示不发心跳
     private static String fistFlag="first";//说明客户端刚刚启动
+    private String savePath;
 //    private static byte[] bt;
 
-    public ClientHeartTask(Socket client , FilePath filePath ) {
+    public ClientHeartTask(Socket client , FilePath filePath ,String savePath) {
         this.clients = client;
         this.filePath = filePath;
+        this.savePath = savePath;
     }
     @Override
     public void run() {
@@ -41,6 +43,7 @@ public class ClientHeartTask implements Runnable {
                         if ( flag==true || fistFlag.equals("first")) {
                             heartflag =0;
                             dos.writeUTF("update-doc");
+                            dos.flush();
                             fistFlag = "no-first";
                         }
                         break;
@@ -49,48 +52,17 @@ public class ClientHeartTask implements Runnable {
                         //TODO send file
                         System.out.println("client1:"+System.currentTimeMillis());
                         dos.writeUTF("send-ready");
+                        dos.flush();
                         System.out.println("client1:"+System.currentTimeMillis());
                         break;
                     case "file-receive":
                         heartflag =0;
-                        //send fileInputStream
-                        JspdocContentSend.AllFileAndContent(clients , filePath.getClientHtmlPath() ,filePath.getWeProjectbName() );
-//                        dos.write(str);
+                        JspdocContentSend.AllFileAndContent(clients , filePath.getClientHtmlPath(),savePath ,filePath.getWeProjectbName() );
                         System.out.println("传输局:"+status);
-//                        System.out.println("传输局:"+str);
                         heartflag =1;
-//                        dos.writeUTF("哈哈");
                         break;
                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//                if (status.equals("update-yes")) {
-//                    System.out.println("Cliect[port:" + clients.getLocalPort() + "] 消息文档");
-//                    dos.writeUTF("send-ready-yes");
-////                    //发送文档
-////                    StringBuffer sb = new StringBuffer("");
-////                    String strs = JspdocContentSend.getAllFileAndContent( filePath.getClientHtmlPath() , sb );
-////                    dos.write(strs.getBytes());
-//                    //dos.writeUTF( strs );
-//                } else if (status.equals("update-no")) {
-//                    System.out.println("Cliect[port:" + clients.getLocalPort() + "] 消息发送成功liveuno");
-//
-//                } else if (status.equals("receive-update-yes")) {
-//                    System.out.println("Cliect[port:" + clients.getLocalPort() + "] 消息发送成功");
-//                }
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

@@ -11,20 +11,6 @@ import java.util.concurrent.CountDownLatch;
  * Created by ike on 16-10-15.
  */
 public class ApplicationServer {
-   /* @Test
-    public void test() throws IOException{
-        FilePath filePath = new FilePath();
-//        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
-        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
-        serverStart(filePath.getServerIndexHtmlPath());
-    }*/
-
-//    public static void main(String[] args) throws IOException{
-//        FilePath filePath = new FilePath();
-////        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
-//        filePath.setServerIndexHtmlPath("/Users/huanghuanlai/dounine/github/testdir/interfaceapidoc");
-//        serverStart(8989,filePath.getServerIndexHtmlPath());
-//    }
 
     public static void serverStart(int listenerPort, String serverJspSavePath )throws IOException {
 

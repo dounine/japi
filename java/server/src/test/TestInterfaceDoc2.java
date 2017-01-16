@@ -669,8 +669,8 @@ public class TestInterfaceDoc2 {
 
     public List<String> htmlCreate(List<Object> listActName) {
         pckIndex = 0;
-        String filePath = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceApiDoc/html";
-        String filePath1 = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceApiDoc/html/tplGuide";
+        String filePath = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceApiDoc/static";
+        String filePath1 = "/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceApiDoc/static/tplGuide";
         File f = new File(filePath);
         File f1 = new File(filePath1);
         if (!f.isDirectory()) {
@@ -687,11 +687,11 @@ public class TestInterfaceDoc2 {
         Map<String, Object> pckNameMap = new HashMap<>();
 
         Map<String, Object> pckNameIndexMap = new HashMap<>();
-        String contentsIndex = "<!DOCTYPE html><html lang='en'><head>";
+        String contentsIndex = "<!DOCTYPE static><static lang='en'><head>";
         StringBuffer sbIndex = new StringBuffer(contentsIndex)
-                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='/html/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='/html/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='/html/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='/html/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='/html/js/jquery.min.js'></script><script src='/html/js/jquery.cookie.js'></script><script src='/html/js/guide.js'></script><script src='/html/js/router.js'></script></head>")
+                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='/static/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='/static/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='/static/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='/static/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='/static/js/jquery.min.js'></script><script src='/static/js/jquery.cookie.js'></script><script src='/static/js/guide.js'></script><script src='/static/js/router.js'></script></head>")
                 .append("<body>")
-                .append("<header><div class='logo'><img src='/html/img/logo.png' ></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
+                .append("<header><div class='logo'><img src='/static/img/logo.png' ></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
                 .append("<div class='search'><input type='text'><button >搜索</button></div></header>")
                 .append("<nav >");
 
@@ -789,10 +789,10 @@ public class TestInterfaceDoc2 {
             sb.append("</div>")
                     .append("</div>");
             fileContents = sb.toString();
-            htmls(paths, fileContents);//生成子内容xx.html
+            htmls(paths, fileContents);//生成子内容xx.static
         }
 
-        Set set = pckNameIndexMap.entrySet();  //生成guide.html
+        Set set = pckNameIndexMap.entrySet();  //生成guide.static
         Iterator iterator = set.iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, String> entry1 = (Map.Entry<String, String>) iterator.next();
@@ -808,13 +808,13 @@ public class TestInterfaceDoc2 {
         }
         sbIndex.append("</nav>")
                 .append("<div class='container '></div>")
-                .append("</body></html>");
+                .append("</body></static>");
         htmls(filePath + "/guide", sbIndex.toString());
         return list;
     }
 
     public void htmls(String paths, String fileContents) {
-        String fileame = ".html";
+        String fileame = ".static";
         fileame = paths + fileame;//生成的html文件保存路径。
         FileOutputStream fileoutputstream = null;// 建立文件输出流
         try {

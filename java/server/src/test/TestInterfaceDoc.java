@@ -760,12 +760,12 @@ public class TestInterfaceDoc {
         Map<Object, Object> pckNameIndexMap1 = new HashMap<>();
         Map<String, Object> pckDescIndexMap = new HashMap<>();
         Map<String, Object> pckNameDescMap = new HashMap<>();
-        String contentsIndex = "<%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\"\n" +
-                "\tpageEncoding=\"UTF-8\"%><!DOCTYPE html><html lang='en'><head>";
+        String contentsIndex = "<%@ page language=\"java\" contentType=\"text/static; charset=UTF-8\"\n" +
+                "\tpageEncoding=\"UTF-8\"%><!DOCTYPE static><static lang='en'><head>";
         StringBuffer sbIndex = new StringBuffer(contentsIndex)
-                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='${ctx}/html/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='${ctx}/html/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='${ctx}/html/js/jquery.min.js'></script><script src='${ctx}/html/js/jquery.cookie.js'></script><script src='${ctx}/html/js/guide.js'></script><script src='/html/js/router.js'></script></head>")
+                .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='${ctx}/static/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='${ctx}/static/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='${ctx}/static/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='${ctx}/static/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='${ctx}/static/js/jquery.min.js'></script><script src='${ctx}/static/js/jquery.cookie.js'></script><script src='${ctx}/static/js/guide.js'></script><script src='/static/js/router.js'></script></head>")
                 .append("<body>")
-                .append("<header><div class='logo'><img src='${ctx}/html/img/logo.png' ></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
+                .append("<header><div class='logo'><img src='${ctx}/static/img/logo.png' ></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
                 .append("<div class='search'><input type='text' id='search'><button class='searchBtn'>搜索</button><div class='searchtxt'></div></div>")
                 .append("</header>")
                 .append("<div class=\"conTitle\"></div>")
@@ -814,7 +814,7 @@ public class TestInterfaceDoc {
             int pckValueInt = pckValue + 1;
             String fileContents = "";
             StringBuffer sb = new StringBuffer(fileContents)
-                    .append("<%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\" pageEncoding=\"UTF-8\"%>")
+                    .append("<%@ page language=\"java\" contentType=\"text/static; charset=UTF-8\" pageEncoding=\"UTF-8\"%>")
                     .append("<div id='" + pckIndexInt + "'> <div id='" + pckIndexInt + "-" + pckValueInt + "'>");
             for (int j = 0; j < classList.size(); j++) {
                 Map<String, Object> map = new HashMap<>();
@@ -933,7 +933,7 @@ public class TestInterfaceDoc {
             pckPath = classList.get(0).get("packageName").toString().replaceAll("\\.", "/");
 
             String paths = mkHtmlDir(htmlFilePaths, pckPath, fileName);
-            htmls(paths, fileContents);//生成子内容xx.html
+            htmls(paths, fileContents);//生成子内容xx.static
         }
 
         for (int i = 0; i < pckNameIndexMap1.size(); i++) {//生成guide.jsp
@@ -954,7 +954,7 @@ public class TestInterfaceDoc {
 
         sbIndex.append("</nav>")
                 .append("<div class='container '></div>")
-                .append("</body></html>");
+                .append("</body></static>");
         String[] pckPaths = pckPath.split("/");
         htmls(htmlFilePaths + "/" + pckPaths[0] + "/guide", sbIndex.toString());
         htmls(htmlFilePaths + "/" + pckPaths[0] + "/index", indexHtml());
@@ -1087,20 +1087,20 @@ public class TestInterfaceDoc {
 
     public String indexHtml() {
         StringBuffer sbu = new StringBuffer("");
-        sbu.append("<%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\"\n" +
-                "\tpageEncoding=\"UTF-8\"%><!DOCTYPE html>\n" +
-                "<html lang='en'>\n" +
+        sbu.append("<%@ page language=\"java\" contentType=\"text/static; charset=UTF-8\"\n" +
+                "\tpageEncoding=\"UTF-8\"%><!DOCTYPE static>\n" +
+                "<static lang='en'>\n" +
                 "<head>\n" +
                 "    <meta charset='UTF-8'>\n" +
                 "    <title>文档</title>\n" +
-                "    <link rel='stylesheet' href='${ctx}/html/css/index_red.css'>\n" +
-                "    <script src='${ctx}/html/js/jquery.min.js'></script>\n" +
-                "    <script src='${ctx}/html/js/index.js'></script>\n" +
+                "    <link rel='stylesheet' href='${ctx}/static/css/index_red.css'>\n" +
+                "    <script src='${ctx}/static/js/jquery.min.js'></script>\n" +
+                "    <script src='${ctx}/static/js/index.js'></script>\n" +
                 "</head>")
                 .append("<body>")
                 .append("<header>\n" +
                         "        <div class='logo'><a href=\"javascript:void(0) \">\n" +
-                        "            <img src='${ctx}/html/img/logo.png' ></a></div>\n" +
+                        "            <img src='${ctx}/static/img/logo.png' ></a></div>\n" +
                         "        <div class='changeColor'>\n" +
                         "            <a href='javascript:;' class='blue' style='background:#238DFA'></a>\n" +
                         "            <a href='javascript:;' class='yellow' style='background:#FBE786'></a>\n" +
@@ -1152,7 +1152,7 @@ public class TestInterfaceDoc {
                 .append("</ul>\n" +
                         "    </div>")
                 .append("<footer>\n" +
-                        "        <a href='javascript:;' class='previous '><img src='${ctx}/html/img/previous.png'></a>\n" +
+                        "        <a href='javascript:;' class='previous '><img src='${ctx}/static/img/previous.png'></a>\n" +
                         "        <ul class='page'>\n" +
                         "            <li ><a href='javascript:;' class='active'>1</a></li>\n" +
                         "            <li><a href='javascript:;'>2</a></li>\n" +
@@ -1161,13 +1161,13 @@ public class TestInterfaceDoc {
                         "            <li><a href='javascript:;'>5</a></li>\n" +
                         "            <li><a href='javascript:;'>6</a></li>\n" +
                         "        </ul>\n" +
-                        "        <a href='javascript:;' class='next'><img src='${ctx}/html/img/next.png'></a>\n" +
+                        "        <a href='javascript:;' class='next'><img src='${ctx}/static/img/next.png'></a>\n" +
                         "        <div class='jump'>跳转到：<input type='text' size='2'>\n" +
                         "            <a href='javascript:;'>GO</a>\n" +
                         "        </div>\n" +
                         "    </footer>")
                 .append("</body>\n" +
-                        "</html>");
+                        "</static>");
         return sbu.toString();
     }
 }

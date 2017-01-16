@@ -1,7 +1,7 @@
 allprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
-    group 'com.bjike'
+    group 'com.dounine.japi'
     version '1.0'
 
     compileJava {
@@ -24,7 +24,7 @@ allprojects {
 
     configure(install.repositories.mavenInstaller) {
         pom.project {
-            groupId 'com.dounine'
+            groupId 'com.dounine.japi'
             artifactId project.name
             packaging 'jar'
         }

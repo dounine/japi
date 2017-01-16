@@ -1,9 +1,7 @@
 package com.dounine.japi;
 
-import com.dounine.japi.handler.MappingHandler;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -12,11 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @Component
 public class ApplicationConfig extends WebMvcConfigurerAdapter {
 
-    @Autowired
-    private MappingHandler mappingHandler;
-
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(mappingHandler);
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/webapp/static/**").addResourceLocations("/webapp/static/");
     }
 }

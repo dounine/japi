@@ -34,14 +34,14 @@ public class ClientDocCheckTask {
         File file = new File(htmlPath);
         list = GetAllFIle.getAllFile(file, list);
         try {
-            for (String str : list) {//GUIDE.JSP
+            for (String str : list) {//GUIDE.html
                 String [] guideFlag = str.split(htmlPath);
                 String[] guide = guideFlag[1].split("/");
-                if (guide.length > 2 && str.endsWith(".html")) { //说明不是guide.jsp
+                if (guide.length > 2 && str.endsWith(".html")) { //说明不是guide.html
                     String filePackagetoPath = filePackage.replace(".", "/");
                     filePackagetoPath = str.substring(str.indexOf(filePackagetoPath), str.lastIndexOf(".")).trim();
                     FileMD5Util fileMD5 = new FileMD5Util();
-                    String htmlPathtxt = htmlPath + "/"+projectName+"/" + filePackagetoPath + ".txt";
+                    String htmlPathtxt = htmlPath+"/" + filePackagetoPath + ".txt";
                     String txtContent = readDoc(htmlPathtxt);
                     String javaFileChange = fileMD5.getFileMD5(new File(str));
                     if (!javaFileChange.equals(txtContent)) {
@@ -50,7 +50,7 @@ public class ClientDocCheckTask {
                         writeDoc(htmlPathtxt, javaFileChange);
                     }
 
-                    //修改guide.jsp的ｍｄ5
+                    //修改guide.html的ｍｄ5
                     AddGuideMd5.guideJspAddMd5 (  str ,  htmlPath+"/"+projectName+"guide.html" ,  javaFileChange);
 
                 }

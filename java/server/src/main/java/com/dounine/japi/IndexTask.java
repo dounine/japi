@@ -27,14 +27,7 @@ public class IndexTask {
             e.printStackTrace();
         }
     }
-//
-//    public void mkdirServer( String path){
-//        ///home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc/index.html
-//        File f = new File(path.trim());
-//        if (!f.isDirectory()) {
-//            f.mkdir();
-//        }
-//    }
+
     public String createIndexhtml( String[] indexNames ,String guidePath ) {
         StringBuffer sbu = new StringBuffer("");
         sbu.append("<!DOCTYPE html>     " +
@@ -42,14 +35,14 @@ public class IndexTask {
                 "<head>     " +
                 "    <meta charset='UTF-8'>     " +
                 "    <title>文档</title>     " +
-                "    <link rel='stylesheet' href='${ctx}/html/css/index_red.css'>     " +
-                "    <script src='${ctx}/html/js/jquery.min.js'></script>     " +
-                "    <script src='${ctx}/html/js/index.js'></script>     " +
+                "    <link rel='stylesheet' href='/static/css/index_red.css'>     " +
+                "    <script src='/static/js/jquery.min.js'></script>     " +
+                "    <script src='/static/js/index.js'></script>     " +
                 "</head>")
                 .append("<body>")
                 .append("<header>     " +
                         "        <div class='logo'><a href='javascript:void(0) '>     " +
-                        "            <img src='${ctx}/html/img/logo.png' ></a></div>     " +
+                        "            <img src='/static/img/logo.png' ></a></div>     " +
                         "        <div class='changeColor'>     " +
                         "            <a href='javascript:;' class='blue' style='background:#238DFA'></a>     " +
                         "            <a href='javascript:;' class='yellow' style='background:#FBE786'></a>     " +
@@ -66,7 +59,7 @@ public class IndexTask {
         if( indexNames != null && indexNames.length>0){
             String date = LocalDate.parse(String.valueOf(LocalDate.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
             for (String indexName : indexNames) {
-                if( !"index.html".equals(indexName) && indexName.contains(".jsp")){
+                if( !"index.html".equals(indexName) && indexName.contains(".html")){
                     sbu.append("<li>     " +
                             "                <i class='iconfont'>&#xe605;</i>     " +
                             "                <p>接口文档</p>     " +
@@ -80,7 +73,7 @@ public class IndexTask {
                             "                        <span id='"+indexName+"_date'>"+date+"</span>     " +
                             "                    </span>     " +
                             "                </div>     " +
-                            "                <div class='btn' id='mydoc' doc-Attr='"+indexName.substring(0,indexName.lastIndexOf("guide.jsp"))+"'><a href='/views/interfaceapidoc/"+indexName+"'>" + indexName.substring(0,indexName.lastIndexOf("guide.jsp")) + "文档</a></div>     ");
+                            "                <div class='btn' id='mydoc' doc-Attr='"+indexName.substring(0,indexName.lastIndexOf("guide.html"))+"'><a href='/interfaceapidoc/"+indexName+"'>" + indexName.substring(0,indexName.lastIndexOf("guide.html")) + "文档</a></div>     ");
                     String needUpdateDoc = "/"+indexName.trim();
                     if(StringUtils.isNotEmpty(guidePath) && StringUtils.isNotBlank(guidePath)){
                         if( needUpdateDoc.equals(guidePath.trim())){
@@ -97,7 +90,7 @@ public class IndexTask {
         sbu.append(" </ul>     " )
                 .append("    </div>")
                 .append("<!-- <footer>     " +
-                        "        <a href='javascript:;' class='previous '><img src='${ctx}/html/img/previous.png'></a>     " +
+                        "        <a href='javascript:;' class='previous '><img src='/static/img/previous.png'></a>     " +
                         "        <ul class='page'>     " +
                         "            <li ><a href='javascript:;' class='active'>1</a></li>     " +
                         "            <li><a href='javascript:;'>2</a></li>     " +
@@ -106,7 +99,7 @@ public class IndexTask {
                         "            <li><a href='javascript:;'>5</a></li>     " +
                         "            <li><a href='javascript:;'>6</a></li>     " +
                         "        </ul>     " +
-                        "        <a href='javascript:;' class='next'><img src='${ctx}/html/img/next.png'></a>     " +
+                        "        <a href='javascript:;' class='next'><img src='/static/img/next.png'></a>     " +
                         "        <div class='jump'>跳转到：<input type='text' size='2'>     " +
                         "            <a href='javascript:;'>GO</a>     " +
                         "        </div>     " +

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,9 +25,21 @@ public class IndexAct {
     @Autowired
     private Render render;
 
-    @RequestMapping("/index")
+    @GetMapping({"/",""})
     public void index(HttpServletResponse response){
         render.show("index");
+    }
+
+    @GetMapping("interfaceapidoc/{module}")
+    public void index(@PathVariable String module, HttpServletResponse response){
+        render.show(module.substring(0,module.length()-5)+"/"+module);
+    }
+
+    @GetMapping("interfaceapidoc/tpls/tpl_guide/{a}/{b}/{c}.html")
+    public void tpl(@PathVariable String a,@PathVariable String b,@PathVariable String c,HttpServletResponse response){
+        String filePath = a+"/"+b.replace("-","/")+"/"+c;
+        System.out.println(filePath);
+        render.show(filePath);
     }
 
 }

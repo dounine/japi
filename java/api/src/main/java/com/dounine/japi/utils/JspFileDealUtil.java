@@ -17,11 +17,12 @@ public class JspFileDealUtil {
         String[] pckPaths = pckPath.split("/");
         String contextPath = "";
         File filePathFile = new File(filePath);
-        if (!filePathFile.isDirectory()) {
-            filePathFile.mkdir();
+        if (!filePathFile.exists()) {
+            filePathFile.mkdirs();
         }
+        ///home/ike/java/github/japi/java/server/src/main
         if( StringUtils.isNotBlank(webProjectName )){//把项目名加上去
-            filePath = filePath+"/"+webProjectName;
+            //filePath = filePath;
             filePathFile = new File(filePath);
             if (!filePathFile.isDirectory()) {
                 filePathFile.mkdir();
@@ -50,7 +51,7 @@ public class JspFileDealUtil {
             FileOutputStream fileoutputstream = null;// 建立文件输出流
             try {
                 fileoutputstream = new FileOutputStream(fileame);
-                String content = FileMD5Util.getFileMD5(new File(jspPaths + ".html"));
+                String content = FileMD5Util.getFileMD5(new File(jspPaths + ".static"));
                 content =" " +content+"-date:"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
                 byte tag_bytes[] = content.getBytes();
                 fileoutputstream.write(tag_bytes);

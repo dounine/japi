@@ -8,21 +8,15 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
     }
 }
-group 'com.bjike'
-version '1.0'
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
 jar {
-    baseName = 'japi'
+    baseName = 'server'
     version =  '1.0'
 }
-//war {
-//    baseName = 'japi'
-//    version =  '1.0'
-//}
 
 repositories {
     mavenCentral()
