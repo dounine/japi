@@ -1,2 +1,10 @@
 rootProject.name = 'japi'
 
+
+//#common
+include ':api'
+include ':client'
+include ':server'
+
+
+

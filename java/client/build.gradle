@@ -1,0 +1,8 @@
+apply from: '../config.gradle'
+
+dependencies {
+    compile project(":api")
+
+}
+
+

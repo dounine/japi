@@ -1,6 +1,5 @@
 package csio.client;
 
-import com.dounine.japi.ApplicationClient;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
