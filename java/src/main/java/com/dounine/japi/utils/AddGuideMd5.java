@@ -21,11 +21,11 @@ public class AddGuideMd5 {
         for (String str : list) {//GUIDE.JSP
             String[] guideFlag = str.split(htmlPath);
             String[] guide = guideFlag[1].split("/");
-            if (guide.length > 2 && str.endsWith(".jsp")) { //说明不是guide.jsp
+            if (guide.length > 2 && str.endsWith(".html")) { //说明不是guide.jsp
                 FileMD5Util fileMD5 = new FileMD5Util();
                 String jspFilemd5 = fileMD5.getFileMD5(new File(str));
                 //修改guide.jsp的ｍｄ5
-                guideJspAddMd5(str, htmlPath + "/" + projectName + "guide.jsp", jspFilemd5);
+                guideJspAddMd5(str, htmlPath + "/" + projectName + "guide.html", jspFilemd5);
 
             }
         }
@@ -33,7 +33,7 @@ public class AddGuideMd5 {
 
     public static void guideJspAddMd5 ( String str , String guidepath , String javaFileChange){
         try {
-            String idStr = str.substring(str.lastIndexOf("/") + 1, str.lastIndexOf(".jsp"));
+            String idStr = str.substring(str.lastIndexOf("/") + 1, str.lastIndexOf(".html"));
             String matchId = "id='" + idStr + "'";
             String guideStr = FileUtils.readFileToString(new File(guidepath));
             String guideHtmlStr = guideStr.substring(0, guideStr.indexOf(matchId))

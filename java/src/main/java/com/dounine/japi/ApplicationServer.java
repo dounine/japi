@@ -1,6 +1,5 @@
 package com.dounine.japi;
 
-import com.dounine.japi.utils.FilePath;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,24 +19,22 @@ public class ApplicationServer {
         serverStart(filePath.getServerIndexHtmlPath());
     }*/
 
-    public static void main(String[] args) throws IOException{
-        FilePath filePath = new FilePath();
-//        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
-        filePath.setServerIndexHtmlPath("/Users/huanghuanlai/dounine/github/testdir/interfaceapidoc");
-        serverStart(8989,filePath.getServerIndexHtmlPath());
-    }
+//    public static void main(String[] args) throws IOException{
+//        FilePath filePath = new FilePath();
+////        filePath.setServerIndexHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
+//        filePath.setServerIndexHtmlPath("/Users/huanghuanlai/dounine/github/testdir/interfaceapidoc");
+//        serverStart(8989,filePath.getServerIndexHtmlPath());
+//    }
 
     public static void serverStart(int listenerPort, String serverJspSavePath )throws IOException {
 
         final ServerSocket server = new ServerSocket(listenerPort);
-        System.out.println("等待与客户端建立连接...");
 
         File f = new File(serverJspSavePath);
         String[] flist = f.list();
         IndexTask indexTask = new IndexTask();
         indexTask.createindex(serverJspSavePath, flist, null);
 
-        CountDownLatch countDownLatch = new CountDownLatch(1);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -55,11 +52,6 @@ public class ApplicationServer {
             }
         }).start();
 
-        try {
-            countDownLatch.await();
-        } catch (InterruptedException e) {
-
-        }
     }
 
 

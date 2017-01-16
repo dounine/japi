@@ -16,10 +16,6 @@ import java.util.List;
  * Created by ike on 16-10-19.
  */
 public class ClientDocCheckTask {
-//    filePath.setFileList("/home/ike/java/java/feedback/java/src/main/java/dnn/web1");
-//        filePath.setEntityList("dnn.web1");
-//        filePath.setClientHtmlPath("/home/ike/java/java/feedback/java/src/main/webapp/WEB-INF/views/interfaceapidoc");
-    //ServerIndexHtmlPath(           "/home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc");
 
     public boolean checkDoc( Socket clients , FilePath filePaths ) {
         String projectName = filePaths.getWeProjectbName();
@@ -27,12 +23,10 @@ public class ClientDocCheckTask {
         String filePackage = filePaths.getEntityList();
         String htmlPath = filePaths.getClientHtmlPath();
 
-        System.out.println("不定时更新减肥品");
         InterfaceDoc interfaceDoc = new InterfaceDoc();
         interfaceDoc.FirstMethod(projectName,webFilePath ,filePackage ,htmlPath , null );
-        System.out.println("减肥品2");
 
-//        byte[] jspDoc =new byte[1024];
+
         String guidepath ="";
         boolean flag = false;
         List<String> list = new ArrayList<>();
@@ -43,10 +37,7 @@ public class ClientDocCheckTask {
             for (String str : list) {//GUIDE.JSP
                 String [] guideFlag = str.split(htmlPath);
                 String[] guide = guideFlag[1].split("/");
-//                if( guide.length <= 2 && str.endsWith(".jsp")){//是guide.jsp
-//                    guidepath = str;
-//                }
-                if (guide.length > 2 && str.endsWith(".jsp")) { //说明不是guide.jsp
+                if (guide.length > 2 && str.endsWith(".html")) { //说明不是guide.jsp
                     String filePackagetoPath = filePackage.replace(".", "/");
                     filePackagetoPath = str.substring(str.indexOf(filePackagetoPath), str.lastIndexOf(".")).trim();
                     FileMD5Util fileMD5 = new FileMD5Util();
@@ -60,7 +51,7 @@ public class ClientDocCheckTask {
                     }
 
                     //修改guide.jsp的ｍｄ5
-                    AddGuideMd5.guideJspAddMd5 (  str ,  htmlPath+"/"+projectName+"guide.jsp" ,  javaFileChange);
+                    AddGuideMd5.guideJspAddMd5 (  str ,  htmlPath+"/"+projectName+"guide.html" ,  javaFileChange);
 
                 }
             }
@@ -68,7 +59,6 @@ public class ClientDocCheckTask {
                  JspdocContentSend.sendJspContent(interfaceDoc, filePaths, listnewDocName);
                 flag =true;
             }else{
-//                jspDoc = "".getBytes();
                 flag = false;
             }
         } catch (IOException e) {

@@ -72,7 +72,7 @@ public class JspdocContentSend {
         File[] files = file.listFiles();
         for (File f : files) {
             if (!f.isDirectory()) {
-                if (f.toString().endsWith(".jsp")) {
+                if (f.toString().endsWith(".html")) {
                     list.add(f.getPath());
                 }
             } else {

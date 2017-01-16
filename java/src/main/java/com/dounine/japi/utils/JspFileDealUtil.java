@@ -50,7 +50,7 @@ public class JspFileDealUtil {
             FileOutputStream fileoutputstream = null;// 建立文件输出流
             try {
                 fileoutputstream = new FileOutputStream(fileame);
-                String content = FileMD5Util.getFileMD5(new File(jspPaths + ".jsp"));
+                String content = FileMD5Util.getFileMD5(new File(jspPaths + ".html"));
                 content =" " +content+"-date:"+ LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"));
                 byte tag_bytes[] = content.getBytes();
                 fileoutputstream.write(tag_bytes);
@@ -67,7 +67,7 @@ public class JspFileDealUtil {
 
 
     public static void htmls(String paths, String fileContents) {
-        String fileame = ".jsp";
+        String fileame = ".html";
         fileame = paths + fileame;//生成的html文件保存路径。
         FileOutputStream fileoutputstream = null;// 建立文件输出流
         try {

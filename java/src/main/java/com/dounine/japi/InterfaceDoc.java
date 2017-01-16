@@ -25,8 +25,6 @@ import java.util.regex.Pattern;
  */
 
 
-@RestController
-@RequestMapping("interfaceApiDoc")
 public class InterfaceDoc {
     private ClassLoader classLoader;
     private List<Map<String, Object>> halist = null;
@@ -37,19 +35,6 @@ public class InterfaceDoc {
     private int pckIndex1 = -1;
     private String contentNewFlag ="";
     private String guideNewFlag ="";
-
-    @GetMapping("tpl/{act}")
-    public ModelAndView index1(@PathVariable String act) {
-        System.out.println(act.replace("-", "/"));
-        return new ModelAndView(".././views/interfaceapidoc/" + act.replace("-", "/"));
-    }
-
-    @GetMapping("findInterface")
-    public ModelAndView findInterfaceApiDoc() {
-//        FirstMethod( filePath , entityPrePath , htmlFilePath);
-//        return new ModelAndView("interfaceapidoc/dnn/guide");
-        return new ModelAndView("/interfaceapidoc/index");
-    }
 
 
     public String FirstMethod(String webProjectName ,String webFilePaths , String webPackageName , String htmlFilePaths , List<String> newFile ) {
@@ -728,11 +713,11 @@ public class InterfaceDoc {
         Map<Object, Object> pckNameIndexMap1 = new HashMap<>();
         Map<String, Object> pckDescIndexMap = new HashMap<>();
         Map<String, Object> pckNameDescMap = new HashMap<>();
-        String contentsIndex = " <%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\" pageEncoding=\"UTF-8\"%><!DOCTYPE html><html lang='en'><head>";
+        String contentsIndex = " <!DOCTYPE html><html lang='en'><head>";
         StringBuffer sbIndex = new StringBuffer(contentsIndex)
                 .append("<meta charset='UTF-8'> <title>使用指南</title> <link rel='stylesheet' href='${ctx}/html/css/guide_red.css' my-color='#E54A5C' title='theme_red'> <link rel='stylesheet' href='${ctx}/html/css/guide_blue.css' my-color='#238DFA' title='theme_blue' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_green.css' my-color='#0BC8E1' title='theme_green' disabled='disabled'> <link rel='stylesheet' href='${ctx}/html/css/guide_yellow.css' my-color='#FFCC5E' title='theme_yellow' disabled='disabled'><script src='${ctx}/html/js/jquery.min.js'></script><script src='${ctx}/html/js/jquery.cookie.js'></script><script src='${ctx}/html/js/guide.js'></script><script src='/html/js/router.js'></script></head>")
                 .append("<body>")
-                .append("<header><div class='logo'><a href='${ctx}/views/interfaceapidoc/index.jsp'><img src='${ctx}/html/img/logo.png' ></a></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
+                .append("<header><div class='logo'><a href='${ctx}/views/interfaceapidoc/index.html'><img src='${ctx}/html/img/logo.png' ></a></div><div class='changeColor'><a href='javascript:void(0)' id='theme_blue' style='background:#238DFA' ></a><a href='javascript:void(0)' id='theme_yellow' style='background:#FBE786'></a><a href='javascript:void(0)' id='theme_green' style='background:#22CB56'></a><a href='javascript:void(0)' id='theme_red' style='background:#F65866;display:none' ></a></div>")
                 .append("<div class='search'><input type='text' id='search'><button class='searchBtn'>搜索</button><div class='searchtxt'></div></div>")
                 .append("</header>")
                 .append("<div class=\"conTitle\"></div>")
@@ -776,7 +761,7 @@ public class InterfaceDoc {
             }
 
             contentNewFlag ="";
-            String jspPath  = htmlFilePaths+"/"+webProjectName+"/"+classList.get(0).get("packageName").toString().replaceAll("\\.", "/")+"/"+fileName+".jsp";
+            String jspPath  = htmlFilePaths+"/"+webProjectName+"/"+classList.get(0).get("packageName").toString().replaceAll("\\.", "/")+"/"+fileName+".html";
             if( newfile != null && newfile.size()>0 ){
                 for(String item :newfile){
                     if( item.trim().equals(jspPath.trim())){
@@ -793,7 +778,6 @@ public class InterfaceDoc {
             int pckValueInt = pckValue + 1;
             String fileContents = "";
             StringBuffer sb = new StringBuffer(fileContents)
-                    .append("<%@ page language=\"java\" contentType=\"text/html; charset=UTF-8\" pageEncoding=\"UTF-8\"%>")
                     .append("<div id='" + pckIndexInt + "'> <div id='" + pckIndexInt + "-" + pckValueInt + "'>");
             for (int j = 0; j < classList.size(); j++) {
                 Map<String, Object> map = new HashMap<>();
@@ -915,7 +899,7 @@ public class InterfaceDoc {
 
             String paths = JspFileDealUtil.mkHtmlDir(webProjectName ,htmlFilePaths, pckPath, fileName);
             JspFileDealUtil.htmls(paths, fileContents);//生成子内容xx.html
-            htmlsFile.add(paths+".jsp");
+            htmlsFile.add(paths+".html");
             JspFileDealUtil.htmlTxtFile( paths);
         }
 
@@ -946,7 +930,7 @@ public class InterfaceDoc {
         String[] pckPaths = pckPath.split("/");
 
         JspFileDealUtil.htmls(htmlFilePaths + "/" + webProjectName + "guide", sbIndex.toString());
-        htmlsFile.add(htmlFilePaths + "/" + "/"+pckPaths[1]+ "guide.jsp");
+        htmlsFile.add(htmlFilePaths + "/" + "/"+pckPaths[1]+ "guide.html");
         return htmlsFile;
     }
 

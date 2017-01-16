@@ -17,7 +17,7 @@ public class IndexTask {
         String content = createIndexhtml(  indexNames ,guidePath );
         FileOutputStream fileoutputstream = null;// 建立文件输出流
         try {
-            fileoutputstream = new FileOutputStream(path+"/index.jsp");
+            fileoutputstream = new FileOutputStream(path+"/index.html");
             byte tag_bytes[] = content.getBytes();
             fileoutputstream.write(tag_bytes);
             fileoutputstream.close();//关闭输出流
@@ -29,7 +29,7 @@ public class IndexTask {
     }
 //
 //    public void mkdirServer( String path){
-//        ///home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc/index.jsp
+//        ///home/ike/java/java/feedback/java/src/main/webapp/views/interfaceapidoc/index.html
 //        File f = new File(path.trim());
 //        if (!f.isDirectory()) {
 //            f.mkdir();
@@ -37,7 +37,7 @@ public class IndexTask {
 //    }
     public String createIndexhtml( String[] indexNames ,String guidePath ) {
         StringBuffer sbu = new StringBuffer("");
-        sbu.append("  <%@ page language='java' contentType='text/html; charset=UTF-8'  pageEncoding='UTF-8'%><!DOCTYPE html>     " +
+        sbu.append("<!DOCTYPE html>     " +
                 "<html lang='en'>     " +
                 "<head>     " +
                 "    <meta charset='UTF-8'>     " +
@@ -66,7 +66,7 @@ public class IndexTask {
         if( indexNames != null && indexNames.length>0){
             String date = LocalDate.parse(String.valueOf(LocalDate.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
             for (String indexName : indexNames) {
-                if( !"index.jsp".equals(indexName) && indexName.contains(".jsp")){
+                if( !"index.html".equals(indexName) && indexName.contains(".jsp")){
                     sbu.append("<li>     " +
                             "                <i class='iconfont'>&#xe605;</i>     " +
                             "                <p>接口文档</p>     " +

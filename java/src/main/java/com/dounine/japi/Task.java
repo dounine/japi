@@ -86,11 +86,11 @@ public class Task implements Runnable {
                         dos.writeUTF("file-finish");
                     }
 
-                    String indexJspContent = FileUtils.readFileToString(new File(serverIndexHtmlPath + "/index.jsp"));
+                    String indexJspContent = FileUtils.readFileToString(new File(serverIndexHtmlPath + "/index.html"));
                     String Jspcontents = indexJspDeal(indexJspContent,guideName);//"feedbackguide.jsp"
                     FileOutputStream fileoutputstream = null;// 建立文件输出流
                     try {
-                        fileoutputstream = new FileOutputStream(serverIndexHtmlPath + "/index.jsp");
+                        fileoutputstream = new FileOutputStream(serverIndexHtmlPath + "/index.html");
                         byte tag_bytes[] = Jspcontents.getBytes();
                         fileoutputstream.write(tag_bytes);
                         fileoutputstream.close();//关闭输出流
