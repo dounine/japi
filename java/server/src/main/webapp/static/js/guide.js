@@ -99,22 +99,37 @@ $(function(){
         var lastIndex = $('nav .active').parent('li').index();
         var secondIndex = $('nav .active').parents('.menu').index();
         var rootIndex = $('nav .active').parents('.mainbav').index();
-        rl=rootIndex+1;sl=secondIndex+1;ll=lastIndex+1
-        var navLen = $('nav .active').parents('.change').children('li').length;
-        for(var i=0;i<navLen; i++){
-            ll = i+1
-            var scrId = '#'+rl+'-'+sl+'-'+ll
-
-            if($(scrId).offset().top<=wst+80){
-                $('.change a').removeClass('active');
-                $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change li').eq(i).children('a').addClass('active');
+        // rl=rootIndex;sl=secondIndex+1;ll=lastIndex+1
+        // var navLen = $('nav .active').parents('.change').children('li').length;
+        var ahash = window.location.hash.slice(1,7);
+        var ahashLen = $('#nav'+ahash).parents('.change').children().length;
+        var sobj = [];
+        for(var i=0;i<ahashLen; i++){
+            // var fid = $('.active').parents('.change').children('li').eq(i).children('a').attr('id').slice(3,8);
+            // ll = i+1
+            // var scrId = '#'+rl+'-'+sl+'-'+ll
+            var navId = $('#nav'+ahash).parents('.change').children().eq(i).find('.submenu').attr('id');
+            var conId = $('#'+navId.slice(3,8));
+            if(conId.offset().top<=wst+80){
+                var idValue = conId.attr('id');
+                sobj.push(conId.attr('id'));
+                // $('.change a').removeClass('active');
+                // $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change li').eq(i).children('a').addClass('active');
+                // $('#nav'+fid).addClass('active');
             }
         }
-        var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
-            window.location.hash = newhash;
-            var rhtml = $('nav .mainbav').eq(rootIndex).children('a').children('span').html();
-            var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').children('span').html();
-            var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
+        for (var n=0;n<sobj.length;n++){
+            if (n==(sobj.length-1)){
+                $('nav .submenu').removeClass('active');
+                $('#nav'+sobj[n]).addClass('active');
+                window.location.hash='#'+sobj[n];
+            }
+        }
+        // var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
+            // window.location.hash = newhash;
+            var rhtml = $('nav .mainbav').eq(rootIndex-1).children('a').children('span').html();
+            var shtml = $('nav .mainbav').eq(rootIndex-1).find('.menu').eq(secondIndex).children('a').children('span').html();
+            var lhtml = $('nav .mainbav').eq(rootIndex-1).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
             var contitle = rhtml + '>' + shtml + '>' + lhtml
             $('.conTitle').html(contitle);
 

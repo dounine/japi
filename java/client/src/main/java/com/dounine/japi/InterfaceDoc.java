@@ -875,9 +875,9 @@ public class InterfaceDoc {
                         }
                         strClassName = strClassName + "<ul class=' change'>";
                         if (map.get("nameDes") != null && map.get("nameDes") != "") {
-                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu' id='nav" + (int) (pckIndexInt - 1) + "-" + (pckValueInt - 1) + "-" + (thirdIndex - 1) + "'>" + map.get("nameDes") + "</a></li>");
+                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu' id='nav" + (int) (pckIndexInt) + "-" + (pckValueInt ) + "-" + (thirdIndex ) + "'>" + map.get("nameDes") + "</a></li>");
                         } else {
-                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu' id='nav" + (int) (pckIndexInt - 1) + "-" + (pckValueInt - 1) + "-" + (thirdIndex - 1) + "'>" + map.get("methodName") + "</a></li>");
+                            liIndex.append("<li><a href='javascript:void(0)'  class='submenu' id='nav" + (int) (pckIndexInt ) + "-" + (pckValueInt ) + "-" + (thirdIndex) + "'>" + map.get("methodName") + "</a></li>");
                         }
                         strClassNameLast = "</ul></div>";
                     }
