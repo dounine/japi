@@ -27,19 +27,17 @@ public class IndexAct {
 
     @GetMapping({"/",""})
     public void index(HttpServletResponse response){
+        try {
+            response.sendRedirect("/index.html");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @GetMapping("index.html")
+    public void home(HttpServletResponse response){
         render.show("index");
     }
 
-    @GetMapping("interfaceapidoc/{module}")
-    public void index(@PathVariable String module, HttpServletResponse response){
-        render.show(module.substring(0,module.length()-5)+"/"+module);
-    }
-
-    @GetMapping("interfaceapidoc/tpls/tpl_guide/{a}/{b}/{c}.html")
-    public void tpl(@PathVariable String a,@PathVariable String b,@PathVariable String c,HttpServletResponse response){
-        String filePath = a+"/"+b.replace("-","/")+"/"+c;
-        System.out.println(filePath);
-        render.show(filePath);
-    }
 
 }

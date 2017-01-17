@@ -3,6 +3,8 @@ package com.dounine.japi;
 
 import com.dounine.japi.utils.AddGuideMd5;
 import com.dounine.japi.utils.FilePath;
+import com.dounine.japi.utils.FileUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -30,41 +32,29 @@ public class JspdocContentSend {
 //
     }
 
-    public static void AllFileAndContent(Socket clients, String filepathstr,String savePath, String webProjectName) throws IOException {
+    public static void AllFileAndContent(String filepathstr,String savePath, String webProjectName) throws IOException {
         List<String> list = new ArrayList<>();
         File filepath = new File(filepathstr);
         List<String> listFiles = getAllFile(filepath, list);
-        InputStream is = clients.getInputStream();
-        OutputStream os = clients.getOutputStream();
-        DataOutputStream dos = new DataOutputStream(os);
-        DataInputStream dis = new DataInputStream(is);
         if(listFiles.size()>0){
             for (String fileString : listFiles) {
-                String relative = relativePath(fileString,savePath); //  dnn/web/admin/admin.html
-                dos.writeUTF(webProjectName+"/"+relative);    //传给服务器文件相对路径
-                dos.flush();
-                File file = new File(fileString);
-                //获取内容
-                InputStream content = readJspDocIs(file );
-                System.out.println("客户端:" + fileString);
-                dos.writeLong(file.length());
-                byte[] temp = new byte[1024];
-                int len = -1;
-                while ((len = content.read(temp)) != -1) {      //  传给服务器文件内容
-                    dos.write(temp, 0, len);
+                if(!fileString.endsWith(webProjectName+"guide.html")){
+                    String relative = relativePath(fileString.substring(0,fileString.lastIndexOf("/")),savePath); //  dnn/web/admin/admin.html
+                    FileUtil.upload(webProjectName,relative+"/",new File(fileString));
+                }else{
+                    FileUtil.upload(webProjectName,"",new File(fileString));
                 }
-                dos.flush();
-                content.close();
-                dis.readUTF();
+
             }
-            dos.writeUTF("finish");
-            dos.flush();
         }
     }
     ///home/ike/java/github/japi/java/server/src/main/webapp/
     // WEB-INF/views/interfaceapidoc/demo-card-consumer/com/bjike/goddess/card/action/Card1Action.html
     public static String relativePath(String absolutePath,String savePath) {
-        return absolutePath.substring(savePath.length()+1);
+        if(StringUtils.isNotBlank(absolutePath)){
+            return absolutePath.substring(savePath.length()+1);
+        }
+        return null;
     }
 
     public static List<String> getAllFile(File file, List<String> list) {

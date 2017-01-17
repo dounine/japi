@@ -11,103 +11,18 @@ import java.time.format.DateTimeFormatter;
 /**
  * Created by ike on 16-10-15.
  */
-public class Task implements Runnable {
+public class Task{
 
-    private Socket socket;
     private String serverIndexHtmlPath;
 
     /**
      * 构造函数
      */
     public Task(Socket socket ,String serverIndexHtmlPath) {
-        this.socket = socket;
         this.serverIndexHtmlPath =serverIndexHtmlPath;
     }
 
-    @Override
-    public void run() {
-        try {
-            handlerSocket();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * 跟客户端Socket进行通信
-     *
-     *
-     */
-    private void handlerSocket() throws Exception {
-        OutputStream os = socket.getOutputStream();
-        InputStream is = socket.getInputStream();
-        DataInputStream dis = new DataInputStream(is);
-        DataOutputStream dos = new DataOutputStream(os);
-        for(;;) {
-            String status = dis.readUTF();
-            System.out.println("状态:" + status);
-            switch (status) {
-                case "live":
-                    //TODO send live-confirm
-                    System.out.println("task0:" + status);
-                    dos.writeUTF("live-confirm");
-                    dos.flush();
-                    break;
-                case "update-doc":
-                    //TODO 1.
-                    System.out.println("task1:" + status);
-                    dos.writeUTF("update-receive");
-                    dos.flush();
-                    break;
-                case "send-ready":
-                    dos.writeUTF("file-receive");
-                    dos.flush();
-                    String fileName = "";
-                    String dirCreates = "";
-                    String guidepath ="";
-                    String guideName ="";
-                    while (!(fileName = dis.readUTF()).equals("finish")) {
-                        dirCreates = dirCreate(serverIndexHtmlPath, fileName);
-                        guidepath = dirCreates.substring( dirCreates.lastIndexOf("/")+1, dirCreates.length());
-                        if(guidepath.split("guide.html").length==1){
-                            guideName = guidepath;
-                        }
-                        FileOutputStream fos = new FileOutputStream(new File(dirCreates));
-
-                        long fileLength = dis.readLong();  //多文件长度必须写
-                        byte[] receive = new byte[1024];
-                        int len = -1;
-                        long readSum = 0;
-                        while (readSum < fileLength) {
-                            len = dis.read(receive);
-                            readSum += len;
-                            fos.write(receive, 0, len);
-                        }
-                        fos.flush();
-                        fos.close();
-                        dos.writeUTF("file-finish");
-                        fos.flush();
-                    }
-
-                    String indexJspContent = FileUtils.readFileToString(new File(serverIndexHtmlPath + "/index.html"));
-                    String Jspcontents = indexJspDeal(indexJspContent,guideName);//"feedbackguide.html"
-                    FileOutputStream fileoutputstream = null;// 建立文件输出流
-                    try {
-                        fileoutputstream = new FileOutputStream(serverIndexHtmlPath + "/index.html");
-                        byte tag_bytes[] = Jspcontents.getBytes();
-                        fileoutputstream.write(tag_bytes);
-                        fileoutputstream.close();//关闭输出流
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    break;
-            }
-        }
-    }
-
-    public String updateVersionAndDate( String content ,String guideJsp, String dateOrVersionStr  , String date){
+    public static String updateVersionAndDate( String content ,String guideJsp, String dateOrVersionStr  , String date){
         int lens = content.indexOf( dateOrVersionStr);
         String rightStr = content.substring(lens+dateOrVersionStr.length() , content.length());
         StringBuffer findTimeStr = new StringBuffer();
@@ -133,10 +48,10 @@ public class Task implements Runnable {
 
         return content;
     }
-    public String indexJspDeal(String content ,String guideJsp){
+    public static String indexJspDeal(String content ,String guideJsp){
         String updateVersion = "<span my-attr-version='jsp-version' id='"+guideJsp+"_version'>";
         String updateTimeStr = "<span id='"+guideJsp+"_date'>";
-        String guide = "<div class='btn' id='mydoc' doc-Attr='feedback'><a href='/interfaceapidoc/"+guideJsp.trim()+"'>"+guideJsp.substring(0,guideJsp.lastIndexOf("guide.html"))+"文档</a></div>";
+        String guide = "<div class='btn' id='mydoc' doc-Attr='feedback'><a href='/interfaceapidoc/index/"+guideJsp.trim()+"'>"+guideJsp.substring(0,guideJsp.lastIndexOf("guide.html"))+"文档</a></div>";
         String guideJspDealNew = "<div class='new' id='"+guideJsp.trim()+"'>新</div>";
         String guideJspDealOld = "<div class='old' id='" + guideJsp.trim() + "'></div>";
         String date = LocalDate.parse(String.valueOf(LocalDate.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
@@ -174,7 +89,7 @@ public class Task implements Runnable {
                     "                    </span>" +
                     "                </div> " +
                     "                <div class='btn' id='mydoc' doc-Attr='"+guideJsp.substring(0, guideJsp.lastIndexOf("guide.html"))+"'> " +
-                    "                    <a href='/interfaceapidoc/" + guideJsp + "'>" + guideJsp.substring(0, guideJsp.lastIndexOf("guide.html")) + "文档</a> " +
+                    "                    <a href='/interfaceapidoc/index/" + guideJsp + "'>" + guideJsp.substring(0, guideJsp.lastIndexOf("guide.html")) + "文档</a> " +
                     "                </div>" +
                     "                <div class='new' id='" + guideJsp + "'>新</div> " +
                     "           </li> ");

@@ -13,20 +13,7 @@ import java.util.TimerTask;
  */
 public class ApplicationClient {
 
-    public static void startClient(String serverAddress,String projectName, String actionRootPath, String packages, Class<?> clazz){
-        Socket client = null;
-        for(int i =0;i<3;i++){
-            try {
-                client = new Socket(serverAddress.split(":")[0], Integer.parseInt(serverAddress.split(":")[1]));
-                break;
-            } catch (IOException e) {
-                continue;
-            }
-        }
-        if(null==client){
-            System.out.println("无法建立连接.");
-            return;
-        }
+    public static void startClient(String projectName, String actionRootPath, String packages, Class<?> clazz){
         String htmlSavePath = clazz.getResource("/").getPath()+"html";
         File file1 = new File(htmlSavePath);
         if (!file1.exists()) {
@@ -47,11 +34,11 @@ public class ApplicationClient {
         }
 
         Timer timer = new Timer();
-        final Socket ss = client;
+        //final Socket ss = client;
         timer.schedule(new TimerTask() {  //定时发送心跳
             @Override
             public void run() {
-                new Thread(new ClientHeartTask(ss, filePath,htmlSavePath)).start();
+                new ClientHeartTask(filePath,htmlSavePath).exec();
             }
         }, 0, 1000*3);
     }

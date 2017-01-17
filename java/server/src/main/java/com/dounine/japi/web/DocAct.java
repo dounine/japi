@@ -1,5 +1,6 @@
 package com.dounine.japi.web;
 
+import com.dounine.japi.Task;
 import com.dounine.japi.annotation.MethodVersion;
 import com.dounine.japi.format.JSPFormat;
 import com.dounine.japi.utils.JspFileDealUtil;
@@ -7,11 +8,17 @@ import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.StrTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -27,22 +34,101 @@ import java.util.regex.Pattern;
 
 
 @RestController
-@RequestMapping("interfaceApiDoc")
+@RequestMapping("interfaceapidoc")
 public class DocAct {
 
     @Autowired
     private Render render;
+    @Value("${htmlRootPath}")
+    private String htmlRootPath;
 
 
-    @GetMapping("tpl/{act}")
-    public void index1(@PathVariable String act) {
-        render.show(act.replace("-", "/"));
+    @GetMapping("index/{module}")
+    public void index(@PathVariable String module, HttpServletResponse response){
+        render.show(module.substring(0,module.length()-5)+"/"+module);
     }
 
-    @GetMapping("findInterface")
-    public void findInterfaceApiDoc() {
-        render.show("index");
+    @GetMapping("tpls/tpl_guide/{a}/{b}/{c}.html")
+    public void tpl(@PathVariable String a,@PathVariable String b,@PathVariable String c,HttpServletResponse response){
+        String filePath = a+"/"+b.replace("-","/")+"/"+c;
+        System.out.println(filePath);
+        render.show(filePath);
     }
 
+    @PostMapping("upload")
+    public String receiveFile(@RequestParam String projectName,@RequestParam(name = "filePathParameter",defaultValue = "") String filePath,@RequestParam("file") MultipartFile file){
+        if (!file.isEmpty()) {
+            String projectDir = htmlRootPath+"/"+projectName;//*/WEB-INF/views/interfaceapidoc/demo-card-consumer
+            File projectFold = new File(projectDir);
+            if(!projectFold.exists()){
+                projectFold.mkdir();
+            }
+            File childFold = new File(projectDir+"/"+filePath);
+            if(!childFold.exists()){
+                childFold.mkdirs();
+            }
+            String fileAbsolutePath = projectDir+"/"+filePath+file.getOriginalFilename();
+
+            try {
+                byte[] bytes = file.getBytes();
+                BufferedOutputStream stream =
+                        new BufferedOutputStream(new FileOutputStream(new File(fileAbsolutePath)));
+                stream.write(bytes);
+                stream.flush();
+                stream.close();
+                replaceIndex(file.getOriginalFilename());
+                return "传输完成";
+            } catch (Exception e) {
+                return "传输错误 " + e.getMessage();
+            }
+
+        } else {
+            return "上传文件不能为空";
+        }
+    }
+
+    public void replaceIndex(String guideName) throws IOException {
+        String indexJspContent = FileUtils.readFileToString(new File(htmlRootPath + "/index.html"));
+        String Jspcontents = Task.indexJspDeal(indexJspContent,guideName);//"feedbackguide.html"
+        FileOutputStream fileoutputstream = null;// 建立文件输出流
+        try {
+            fileoutputstream = new FileOutputStream(htmlRootPath + "/index.html");
+            byte tag_bytes[] = Jspcontents.getBytes();
+            fileoutputstream.write(tag_bytes);
+            fileoutputstream.close();//关闭输出流
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @PostMapping("uploads")
+    public String receiveFile(String projectName,@RequestParam("files") MultipartFile[] files){
+        if (null!=files&&files.length>0) {
+            String projectDir = htmlRootPath+"/"+projectName;//*/WEB-INF/views/interfaceapidoc/demo-card-consumer
+            File projectFold = new File(projectDir);
+            if(!projectFold.exists()){
+                projectFold.mkdir();
+            }
+
+            for(MultipartFile multipartFile : files){
+
+                try {
+                    byte[] bytes = multipartFile.getBytes();
+                    BufferedOutputStream stream =
+                            new BufferedOutputStream(new FileOutputStream(new File(multipartFile.getName())));
+                    stream.write(bytes);
+                    stream.close();
+
+                } catch (Exception e) {
+                    return "传输错误 " + e.getMessage();
+                }
+            }
+            return "传输完成";
+        } else {
+            return "上传文件不能为空";
+        }
+    }
 }
 

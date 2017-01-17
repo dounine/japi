@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ClientDocCheckTask {
 
-    public boolean checkDoc( Socket clients , FilePath filePaths ) {
+    public boolean checkDoc(FilePath filePaths ) {
         String projectName = filePaths.getWeProjectbName();
         String webFilePath = filePaths.getFileList();
         String filePackage = filePaths.getEntityList();
