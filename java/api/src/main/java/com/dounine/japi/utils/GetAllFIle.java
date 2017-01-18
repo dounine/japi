@@ -7,16 +7,15 @@ import java.util.List;
  * Created by ike on 16-11-1.
  */
 public class GetAllFIle {
-    public static List<String> getAllFile(File file , List<String> list ){
+    public static void getAllFile(File file , List<String> listFiles ){
         File [] files = file.listFiles();
         for(File f : files){
             if(!f.isDirectory()){
-                list.add(f.getPath());
+                listFiles.add(f.getPath());
             }else{
-                getAllFile(f,list);
+                getAllFile(f,listFiles);
             }
 
         }
-        return list;
     }
 }

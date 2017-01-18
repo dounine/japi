@@ -4,6 +4,7 @@ import com.dounine.japi.utils.FilePath;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Created by ike on 16-10-19.
@@ -20,9 +21,10 @@ public class ClientHeartTask{
 
     public void exec() {
         try {
-            boolean flag = clientDocCheckTask.checkDoc(filePath);
-            if ( true) {
-                JspdocContentSend.AllFileAndContent(filePath.getClientHtmlPath(),savePath ,filePath.getWeProjectbName());
+            List<String> addFilePaths =  InterfaceDoc.initDocs(filePath.getWeProjectbName(),filePath.getFileList(),filePath.getEntityList() ,filePath.getClientHtmlPath(),null);
+            List<String> editFilePaths = clientDocCheckTask.checkDoc(filePath,addFilePaths);
+            if ( editFilePaths.size()>0 || addFilePaths.size()>0) {
+                JspdocContentSend.allFileAndContent(filePath.getClientHtmlPath(),savePath ,filePath.getWeProjectbName());
             }
         } catch (IOException e) {
             e.printStackTrace();

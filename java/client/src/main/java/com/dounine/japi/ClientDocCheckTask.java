@@ -4,6 +4,7 @@ import com.dounine.japi.utils.AddGuideMd5;
 import com.dounine.japi.utils.FileMD5Util;
 import com.dounine.japi.utils.FilePath;
 import com.dounine.japi.utils.GetAllFIle;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -17,54 +18,63 @@ import java.util.List;
  */
 public class ClientDocCheckTask {
 
-    public boolean checkDoc(FilePath filePaths ) {
-        String projectName = filePaths.getWeProjectbName();
-        String webFilePath = filePaths.getFileList();
-        String filePackage = filePaths.getEntityList();
-        String htmlPath = filePaths.getClientHtmlPath();
+    public List<String> checkDoc(FilePath filePath,List<String> addFilePaths) {
+        String projectName = filePath.getWeProjectbName();
+        String webFilePath = filePath.getFileList();
+        String filePackage = filePath.getEntityList();
+        String htmlPath = filePath.getClientHtmlPath();
 
-        InterfaceDoc interfaceDoc = new InterfaceDoc();
-        interfaceDoc.FirstMethod(projectName,webFilePath ,filePackage ,htmlPath , null );
+        List<String> editFilePaths = new ArrayList<>();
 
 
         String guidepath ="";
         boolean flag = false;
-        List<String> list = new ArrayList<>();
+        String firstFlag = "";
         List<String> listnewDocName = new ArrayList<>();
         File file = new File(htmlPath);
-        list = GetAllFIle.getAllFile(file, list);
+        List<String> listFiles = new ArrayList<>();
+        GetAllFIle.getAllFile(file, listFiles);//all files
         try {
-            for (String str : list) {//GUIDE.html
-                String [] guideFlag = str.split(htmlPath);
+            for (String path : listFiles) {//GUIDE.html
+                String[] guideFlag = path.split(htmlPath);//com/xx/xx.html  guide.html
                 String[] guide = guideFlag[1].split("/");
-                if (guide.length > 2 && str.endsWith(".html")) { //说明不是guide.html
+                if (guide.length > 2 && path.endsWith(".html")) { //说明不是guide.html
                     String filePackagetoPath = filePackage.replace(".", "/");
-                    filePackagetoPath = str.substring(str.indexOf(filePackagetoPath), str.lastIndexOf(".")).trim();
+                    filePackagetoPath = path.substring(path.indexOf(filePackagetoPath), path.lastIndexOf(".")).trim();
                     FileMD5Util fileMD5 = new FileMD5Util();
                     String htmlPathtxt = htmlPath+"/" + filePackagetoPath + ".txt";
                     String txtContent = readDoc(htmlPathtxt);
-                    String javaFileChange = fileMD5.getFileMD5(new File(str));
-                    if (!javaFileChange.equals(txtContent)) {
-                        listnewDocName.add(str);
+                    String[] strmd5 = txtContent.split("-date:");//读取txt文档获取之前的md5值
+                    String javaFileChange = fileMD5.getFileMD5(new File(path));//get file md5
+                    if (!javaFileChange.equals(strmd5[0])) {//two file not equals(update)
+                        editFilePaths.add(path);
+                        //listnewDocName.add(filePath);
                         //重新写入修改后的md5
                         writeDoc(htmlPathtxt, javaFileChange);
                     }
 
+//                    if( strmd5[1].endsWith("first")){//说明前面是第一次创建
+//                        firstFlag = "first";
+//                    }
                     //修改guide.html的ｍｄ5
-                    AddGuideMd5.guideJspAddMd5 (  str ,  htmlPath+"/"+projectName+"guide.html" ,  javaFileChange);
+                    AddGuideMd5.guideJspAddMd5 (  path ,  htmlPath+"/__index.html" ,  javaFileChange);
 
                 }
             }
-            if(listnewDocName !=null && listnewDocName.size()>0 ){ //表示有新的改变
-                 JspdocContentSend.sendJspContent(interfaceDoc, filePaths, listnewDocName);
-                flag =true;
-            }else{
-                flag = false;
-            }
+            InterfaceDoc.initDocs(filePath.getWeProjectbName(),filePath.getFileList(),filePath.getEntityList() ,filePath.getClientHtmlPath(),addFilePaths);
+//            if( "first".equals(firstFlag)){
+//                flag =true;
+//            }
+//            if((listnewDocName !=null && listnewDocName.size()>0)  ){ //表示有新的改变
+//                 JspdocContentSend.sendJspContent(interfaceDoc, filePaths, listnewDocName);
+//                flag =true;
+//            }else{
+//                flag = false;
+//            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return flag;
+        return editFilePaths;
     }
 
 
@@ -78,17 +88,7 @@ public class ClientDocCheckTask {
     }
 
     public String readDoc(String path) throws IOException{
-        BufferedReader bis = new BufferedReader(new FileReader( path ));
-        StringBuilder sb = new StringBuilder();
-        List<String> lines = new ArrayList<String>();
-        while (bis.read() != -1) {
-            lines.add(bis.readLine());
-        }
-        for (String s : lines) {
-            sb.append(s);
-        }
-        String[] strmd5 = sb.toString().split("-date:");
-        return strmd5[0];
+        return FileUtils.readFileToString(new File(path),"utf-8");
     }
 
 

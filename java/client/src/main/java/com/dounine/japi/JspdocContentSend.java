@@ -20,25 +20,23 @@ public class JspdocContentSend {
     private static String filePackage;
     private static String htmlPath;
 
-    public static void sendJspContent(InterfaceDoc interfaceDoc, FilePath filePaths, List<String> listnewDocName) throws IOException {
-//        StringBuffer sb = new StringBuffer("");
+    public static void sendJspContent(InterfaceDoc interfaceDoc, FilePath filePaths) throws IOException {
         webProjectName = filePaths.getWeProjectbName();
         webFilePath = filePaths.getFileList();
         filePackage = filePaths.getEntityList();
         htmlPath = filePaths.getClientHtmlPath();
-        String jspDoc = interfaceDoc.FirstMethod(webProjectName, webFilePath, filePackage, htmlPath, listnewDocName);
         AddGuideMd5.createMd5ForGuideJsp(htmlPath , webProjectName);
         //传给服务器的jsp路径以及jsp内容
 //
     }
 
-    public static void AllFileAndContent(String filepathstr,String savePath, String webProjectName) throws IOException {
+    public static void allFileAndContent(String filepathstr,String savePath, String webProjectName) throws IOException {
         List<String> list = new ArrayList<>();
         File filepath = new File(filepathstr);
         List<String> listFiles = getAllFile(filepath, list);
         if(listFiles.size()>0){
             for (String fileString : listFiles) {
-                if(!fileString.endsWith(webProjectName+"guide.html")){
+                if(!fileString.endsWith("__index.html")){
                     String relative = relativePath(fileString.substring(0,fileString.lastIndexOf("/")),savePath); //  dnn/web/admin/admin.html
                     FileUtil.upload(webProjectName,relative+"/",new File(fileString));
                 }else{
@@ -56,6 +54,7 @@ public class JspdocContentSend {
         }
         return null;
     }
+
 
     public static List<String> getAllFile(File file, List<String> list) {
         File[] files = file.listFiles();

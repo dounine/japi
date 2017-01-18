@@ -45,13 +45,12 @@ public class DocAct {
 
     @GetMapping("index/{module}")
     public void index(@PathVariable String module, HttpServletResponse response){
-        render.show(module.substring(0,module.length()-5)+"/"+module);
+        render.show(module+"/__index");
     }
 
     @GetMapping("tpls/tpl_guide/{a}/{b}/{c}.html")
     public void tpl(@PathVariable String a,@PathVariable String b,@PathVariable String c,HttpServletResponse response){
         String filePath = a+"/"+b.replace("-","/")+"/"+c;
-        System.out.println(filePath);
         render.show(filePath);
     }
 
@@ -68,7 +67,6 @@ public class DocAct {
                 childFold.mkdirs();
             }
             String fileAbsolutePath = projectDir+"/"+filePath+file.getOriginalFilename();
-
             try {
                 byte[] bytes = file.getBytes();
                 BufferedOutputStream stream =
@@ -76,7 +74,7 @@ public class DocAct {
                 stream.write(bytes);
                 stream.flush();
                 stream.close();
-                replaceIndex(file.getOriginalFilename());
+                replaceIndex(file.getOriginalFilename(),projectName);
                 return "传输完成";
             } catch (Exception e) {
                 return "传输错误 " + e.getMessage();
@@ -87,17 +85,11 @@ public class DocAct {
         }
     }
 
-    public void replaceIndex(String guideName) throws IOException {
+    public void replaceIndex(String guideName,String projectName) throws IOException {
         String indexJspContent = FileUtils.readFileToString(new File(htmlRootPath + "/index.html"));
-        String Jspcontents = Task.indexJspDeal(indexJspContent,guideName);//"feedbackguide.html"
-        FileOutputStream fileoutputstream = null;// 建立文件输出流
+        String Jspcontents = Task.indexJspDeal(indexJspContent,guideName,projectName);//"__index.html"
         try {
-            fileoutputstream = new FileOutputStream(htmlRootPath + "/index.html");
-            byte tag_bytes[] = Jspcontents.getBytes();
-            fileoutputstream.write(tag_bytes);
-            fileoutputstream.close();//关闭输出流
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            FileUtils.writeStringToFile(new File(htmlRootPath + "/index.html"),Jspcontents,"utf-8");
         } catch (IOException e) {
             e.printStackTrace();
         }

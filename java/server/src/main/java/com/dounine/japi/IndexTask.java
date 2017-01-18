@@ -2,6 +2,7 @@ package com.dounine.japi;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +13,9 @@ import java.time.format.DateTimeFormatter;
  * Created by ike on 16-10-17.
  */
 public class IndexTask {
-    public void createindex(String path ,String [] indexNames ,String guidePath ){
+    public void createindex(String path , File rootFile, String guidePath ){
 //        mkdirServer(path);
-        String content = createIndexhtml(  indexNames ,guidePath );
+        String content = createIndexhtml(  rootFile ,guidePath );
         FileOutputStream fileoutputstream = null;// 建立文件输出流
         try {
             fileoutputstream = new FileOutputStream(path+"/index.html");
@@ -28,7 +29,8 @@ public class IndexTask {
         }
     }
 
-    public String createIndexhtml( String[] indexNames ,String guidePath ) {
+    public String createIndexhtml( File rootFile ,String guidePath ) {
+        File[] files = rootFile.listFiles();
         StringBuffer sbu = new StringBuffer("");
         sbu.append("<!DOCTYPE html>     " +
                 "<html lang='en'>     " +
@@ -56,10 +58,12 @@ public class IndexTask {
                         "    </div>")
                 .append("<div class='mainbody'>")
                 .append("<ul>");
-        if( indexNames != null && indexNames.length>0){
+        if( files != null && files.length>0){
             String date = LocalDate.parse(String.valueOf(LocalDate.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
-            for (String indexName : indexNames) {
-                if( !"index.html".equals(indexName) && indexName.contains(".html")){
+            for (File file : files) {
+                String indexName = file.getName();
+                if( file.isDirectory()){
+                    String projectName = file.getName();
                     sbu.append("<li>     " +
                             "                <i class='iconfont'>&#xe605;</i>     " +
                             "                <p>接口文档</p>     " +
@@ -73,7 +77,7 @@ public class IndexTask {
                             "                        <span id='"+indexName+"_date'>"+date+"</span>     " +
                             "                    </span>     " +
                             "                </div>     " +
-                            "                <div class='btn' id='mydoc' doc-Attr='"+indexName.substring(0,indexName.lastIndexOf("guide.html"))+"'><a href='/interfaceapidoc/"+indexName+"'>" + indexName.substring(0,indexName.lastIndexOf("guide.html")) + "文档</a></div>     ");
+                            "                <div class='btn' id='mydoc' doc-Attr='"+projectName+"'><a href='/interfaceapidoc/index/"+projectName+"'>" + projectName + "</a></div>");
                     String needUpdateDoc = "/"+indexName.trim();
                     if(StringUtils.isNotEmpty(guidePath) && StringUtils.isNotBlank(guidePath)){
                         if( needUpdateDoc.equals(guidePath.trim())){

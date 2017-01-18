@@ -7,6 +7,7 @@ import javassist.*;
 import javassist.bytecode.CodeAttribute;
 import javassist.bytecode.LocalVariableAttribute;
 import javassist.bytecode.MethodInfo;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -38,7 +39,7 @@ import java.util.regex.Pattern;
 
 public class InterfaceDoc {
     private ClassLoader classLoader;
-    private List<Map<String, Object>> halist = null;
+//    private List<Map<String, Object>> halist = null;
     private String classAn = null;//类描述
     private String packageInfo = null;
     private String packageNameInfo = null;
@@ -48,15 +49,16 @@ public class InterfaceDoc {
     private String guideNewFlag ="";
 
 
-    public String FirstMethod(String webProjectName ,String webFilePaths , String webPackageName , String htmlFilePaths , List<String> newFile ) {
+    public static List<String> initDocs(String webProjectName ,String webFilePaths , String webPackageName , String htmlFilePaths ,List<String> addFiles) {
+
         File file = new File(webFilePaths);
         String[] names = file.list();
 
         List<Object> listActName = new ArrayList<Object>();
 
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
-        halist = new ArrayList<>();
-        halist = dirToName(webFilePaths, webPackageName.trim(), names, null);
+        List<Map<String, Object>> halist = new ArrayList<>();
+        dirToName(webFilePaths, webPackageName.trim(), names, null,halist);
         for (Map<String, Object> maps : halist) {
             String filePaths = maps.get("filePath").toString();
             String entityPrePaths = maps.get("entityPrePath").toString();
@@ -68,17 +70,13 @@ public class InterfaceDoc {
             classList = webActName(filePaths, entityPrePaths, classname, dir);
             listActName.add(classList);
         }
-        List<String> htls = htmlCreate(webProjectName ,webFilePaths ,webPackageName ,listActName ,htmlFilePaths ,newFile);
-        StringBuffer sb= new StringBuffer("");
-        for(String str :htls){
-            sb.append(str);
-            sb.append(",");
-        }
-        return sb.toString();
+        List<String> addHtmlFiles = htmlCreate(webProjectName ,webFilePaths ,webPackageName ,listActName ,htmlFilePaths ,addFiles);
+
+        return addHtmlFiles;
     }
 
-    public List<Map<String, Object>> dirToName(String filePath, String entityPrePath, String[] names, String dir) {
-        String excludeSelf = this.getClass().getName();
+    public static void dirToName(String filePath, String entityPrePath, String[] names, String dir,List<Map<String, Object>> halist) {
+        String excludeSelf = InterfaceDoc.class.getName();
         excludeSelf = excludeSelf.substring(excludeSelf.lastIndexOf(".")+1,excludeSelf.length());
         String filePathName = "";
         for (String s : names) {
@@ -101,7 +99,7 @@ public class InterfaceDoc {
                 if (fileDir.isDirectory()) {
                     String[] fileDirNames = fileDir.list();
                     for (int i = 0; i < fileDirNames.length; i++) {
-                        dirToName(filePathName, entityPrePath, fileDirNames, s);
+                        dirToName(filePathName, entityPrePath, fileDirNames, s,halist);
                         break;
                     }
                     continue;
@@ -114,11 +112,10 @@ public class InterfaceDoc {
             map.put("dir", dir);
             halist.add(map);
         }
-        return halist;
     }
 
-    public List<Map<String, Object>> anno(String filePath, String classname, Class<?> demo1) {
-        classAn =null;
+    public static List<Map<String, Object>> anno(String filePath, String classname, Class<?> demo1) {
+        String classAn =null;
         List<Map<String, Object>> listMap = new ArrayList<Map<String, Object>>();
         try {
             List<String> readDocList = readDocByStream(filePath, classname);
@@ -199,13 +196,14 @@ public class InterfaceDoc {
         return listMap;
     }
 
-    public List<Map<String, Object>> webActName(String filePath, String entityPrePath, String s, String dir) {
+    public static List<Map<String, Object>> webActName(String filePath, String entityPrePath, String s, String dir) {
         //直接是文件.java
         String[] strings = s.split(".java");
         Class<?> demo1 = null;
         List<Map<String, Object>> classList = new ArrayList<Map<String, Object>>();
 
         String packageName = "";
+        String classAn = null;//类描述
         try {
             if (StringUtils.isNotBlank(dir)) {
                 demo1 = Class.forName(entityPrePath + "." + dir + "." + strings[0]);
@@ -216,11 +214,11 @@ public class InterfaceDoc {
             }
 
             List<String> readPackageInfoList = readPackageInfo(filePath, "package-info");
-            packageInfo = packageSplitInfo(readPackageInfoList, "\\#packageInfo");
+            String packageInfo = packageSplitInfo(readPackageInfoList, "\\#packageInfo");
             if (packageInfo == null) {
                 packageInfo = packageName + "包";
             }
-            packageNameInfo = packageSplitInfo(readPackageInfoList, "\\#packageName");
+            String packageNameInfo = packageSplitInfo(readPackageInfoList, "\\#packageName");
             if (packageNameInfo == null) {
                 packageNameInfo = packageName;
             }
@@ -300,7 +298,7 @@ public class InterfaceDoc {
         return classList;
     }
 
-    public void MethodRequsetDeal(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) {
+    public static void MethodRequsetDeal(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) {
         Annotation[] actAnnos = demo1.getDeclaredAnnotations();
         String[] rmVlues = null;
         for (Annotation annotation : actAnnos) {
@@ -316,7 +314,7 @@ public class InterfaceDoc {
         }
     }
 
-    public void demoUrl(Method method, String reqMethod, String[] rmVlues, Map<String, Object> mapMethodParams) {
+    public static void demoUrl(Method method, String reqMethod, String[] rmVlues, Map<String, Object> mapMethodParams) {
         try {
             String[] methodValues = null;
             RequestMethod[] reqMethods = null;
@@ -386,7 +384,7 @@ public class InterfaceDoc {
     }
 
 
-    public Map<String, Object> paramTypeAndName(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) throws Exception {
+    public static Map<String, Object> paramTypeAndName(Class<?> demo1, Method method, Map<String, Object> mapMethodParams) throws Exception {
         Class<?>[] parameterTypes = method.getParameterTypes();
         Type[] parameterType = method.getGenericParameterTypes();
         String[] paramTypeNames = new String[parameterTypes.length];
@@ -433,7 +431,7 @@ public class InterfaceDoc {
         return mapMethodParams;
     }
 
-    public Map<String, Object> paramEntityAttr( Type ty, Map<String, Object> mapMethodParams) throws Exception {
+    public static Map<String, Object> paramEntityAttr( Type ty, Map<String, Object> mapMethodParams) throws Exception {
         List<String> listAddParams = new ArrayList<String>();
         String[] parms = ty.toString().split("class ");//对象参数
         if (parms != null && parms.length > 1) {
@@ -466,7 +464,7 @@ public class InterfaceDoc {
         return mapMethodParams;
     }
 
-    public String objectFieldFromObject( Field field, String typeName){
+    public static String objectFieldFromObject( Field field, String typeName){
         StringBuffer recursionField = new StringBuffer("");
         Class clz =field.getType();
         String fieldSelf = clz.getTypeName();
@@ -507,7 +505,7 @@ public class InterfaceDoc {
         return recursionField.toString();
     }
 
-    public Map<String, Object> paramInclude(Map<String, Object> mapMethodParams, String paramsInclude) {
+    public static Map<String, Object> paramInclude(Map<String, Object> mapMethodParams, String paramsInclude) {
         String paramInclude = mapMethodParams.get(paramsInclude).toString().trim();
         String[] paramIncludeArrs = paramInclude.split(" ");
         String paramsValue = mapMethodParams.get("paramsValue").toString().trim();
@@ -565,7 +563,7 @@ public class InterfaceDoc {
         return mapMethodParams;
     }
 
-    public Map<String, Object> mapMethodParamsAdd(Method method, String mVersionFromAnnotation, List<Map<String, Object>> getAnnoInfo, Map<String, Object> mapMethodParams) {
+    public static Map<String, Object> mapMethodParamsAdd(Method method, String mVersionFromAnnotation, List<Map<String, Object>> getAnnoInfo, Map<String, Object> mapMethodParams) {
         for (int i = 0; i < getAnnoInfo.size(); i++) {
             if (mVersionFromAnnotation != null) {
                 if (method.getName().equals(getAnnoInfo.get(i).get("methodName")) && mVersionFromAnnotation.equals(getAnnoInfo.get(i).get("methodVersion"))) {
@@ -584,7 +582,7 @@ public class InterfaceDoc {
         return mapMethodParams;
     }
 
-    public Map<String, Object> annotationSplit(String explainSplit, Map<String, Object> map, String StrSplit, String mapStr) {
+    public static Map<String, Object> annotationSplit(String explainSplit, Map<String, Object> map, String StrSplit, String mapStr) {
         String ss[] = explainSplit.split(StrSplit);
         String descs = "";
         if (ss != null && ss.length >= 2) {
@@ -603,7 +601,7 @@ public class InterfaceDoc {
         return map;
     }
 
-    public List<String> readDocByStream(String filePath, String classname) throws FileNotFoundException, IOException {
+    public static List<String> readDocByStream(String filePath, String classname) throws FileNotFoundException, IOException {
         BufferedReader bis = new BufferedReader(new FileReader(filePath + "/" + classname + ".java"));
         StringBuilder sb = new StringBuilder();
         List<String> lines = new ArrayList<String>();
@@ -638,7 +636,7 @@ public class InterfaceDoc {
         return list;
     }
 
-    public String classAnnotations(String classSplitLeft, String splitStr) {
+    public static String classAnnotations(String classSplitLeft, String splitStr) {
         String[] classAnnos = null;
         String[] classDesc = null;
         String str = null;
@@ -653,7 +651,7 @@ public class InterfaceDoc {
 
     }
 
-    public List<String> readPackageInfo(String filePath, String classname) throws IOException {
+    public static List<String> readPackageInfo(String filePath, String classname) throws IOException {
         FileReader fileReader = null;
         List<String> list = new ArrayList<String>();
         try {
@@ -691,7 +689,7 @@ public class InterfaceDoc {
         return list;
     }
 
-    public String packageSplitInfo(List<String> list, String splitStr) {
+    public static String packageSplitInfo(List<String> list, String splitStr) {
         if (list != null && list.size() > 0) {
             String[] packages = list.get(0).split(splitStr);
             if (packages != null && packages.length > 1) {
@@ -706,11 +704,11 @@ public class InterfaceDoc {
 
     }
 
-    public List<String> htmlCreate(String webProjectName ,String webFilePaths ,String webPackageName , List<Object> listActName ,String htmlFilePaths ,List<String> newfile) {
-        List<String> htmlsFile = new ArrayList<>();
-        guideNewFlag ="";
-        pckIndex = -1;
-        pckIndex1 = -1;
+    public static List<String> htmlCreate(String webProjectName ,String webFilePaths ,String webPackageName , List<Object> listActName ,String htmlFilePaths ,List<String> newfile) {
+        List<String> addHtmlFiles = new ArrayList<>();
+        String guideNewFlag ="";
+        int pckIndex = -1;
+        int pckIndex1 = -1;
 
         String pckPath = "";
         List<String> list = new ArrayList<>();
@@ -771,7 +769,7 @@ public class InterfaceDoc {
                 fileName = maps.get("className").toString();
             }
 
-            contentNewFlag ="";
+            String contentNewFlag ="";
             String jspPath  = htmlFilePaths+"/"+webProjectName+"/"+classList.get(0).get("packageName").toString().replaceAll("\\.", "/")+"/"+fileName+".html";
             if( newfile != null && newfile.size()>0 ){
                 for(String item :newfile){
@@ -903,15 +901,17 @@ public class InterfaceDoc {
             pckNameDescMap.put(pckName, pckNameDescMapContent);
 
 
-            sb.append("</div>")
-                    .append("</div>");
+            sb.append("</div></div>");
             fileContents = sb.toString();
             pckPath = classList.get(0).get("packageName").toString().replaceAll("\\.", "/");
 
             String paths = JspFileDealUtil.mkHtmlDir(webProjectName ,htmlFilePaths, pckPath, fileName);
             JspFileDealUtil.htmls(paths, fileContents);//生成子内容xx.html
-            htmlsFile.add(paths+".html");
-            JspFileDealUtil.htmlTxtFile( paths);
+            //htmlsFile.add(paths+".html");
+            boolean isAdd = JspFileDealUtil.htmlTxtFile( paths);
+            if(isAdd){
+                addHtmlFiles.add(paths+".html");
+            }
         }
 
         for (int i = 0; i < pckNameIndexMap1.size(); i++) {//生成guide.html
@@ -935,19 +935,21 @@ public class InterfaceDoc {
             sbIndex.append(mainbavStrs);
         }
 
-        sbIndex.append("</nav>")
-                .append("<div class='container '></div>")
-                .append("</body></html>");
+        sbIndex.append("</nav><div class='container '></div></body></html>");
         String[] pckPaths = pckPath.split("/");
+        try {
+            FileUtils.writeStringToFile(new File(htmlFilePaths + "/__index.html"),sbIndex.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //JspFileDealUtil.htmls(htmlFilePaths + "/index", sbIndex.toString());
 
-        JspFileDealUtil.htmls(htmlFilePaths + "/" + webProjectName + "guide", sbIndex.toString());
-        htmlsFile.add(htmlFilePaths + "/" + "/"+pckPaths[1]+ "guide.html");
-        return htmlsFile;
+        return addHtmlFiles;
     }
 
 
 
-    public List<String> curlExampleData(String data){ //data : {username:'1243',password:'123'}
+    public static List<String> curlExampleData(String data){ //data : {username:'1243',password:'123'}
         List<String> arr = new ArrayList<>();
         int lastBraceIndex = data.lastIndexOf("}");
         data = data.replaceFirst("\\{", "").substring(0,lastBraceIndex-1);
@@ -966,7 +968,7 @@ public class InterfaceDoc {
         return arr;
     }
 
-    public String dealCurlExampleData(Map<String,Object> map){
+    public static String dealCurlExampleData(Map<String,Object> map){
         //获取example数据
         String dData ="";
         if(map.get("example") !=null  ){
@@ -995,7 +997,7 @@ public class InterfaceDoc {
         return dData;
     }
 
-    public String[] exampleValueHtml(Map<String,Object> map ,String dData){ //拼接页面中的curl
+    public static String[] exampleValueHtml(Map<String,Object> map ,String dData){ //拼接页面中的curl
         String[] strings = new String[3];
         String crulType = "";
         StringBuffer crulData = new StringBuffer("");

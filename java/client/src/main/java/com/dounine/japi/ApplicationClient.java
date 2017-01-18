@@ -26,21 +26,14 @@ public class ApplicationClient {
         filePath.setEntityList(packages);
         filePath.setClientHtmlPath(htmlSavePath);
 
-        InterfaceDoc interfaceDoc = new InterfaceDoc();
-        try {
-            JspdocContentSend.sendJspContent(interfaceDoc, filePath, null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        InterfaceDoc interfaceDoc = new InterfaceDoc();
+//        try {
+//            JspdocContentSend.sendJspContent(interfaceDoc, filePath, null);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-        Timer timer = new Timer();
-        //final Socket ss = client;
-        timer.schedule(new TimerTask() {  //定时发送心跳
-            @Override
-            public void run() {
-                new ClientHeartTask(filePath,htmlSavePath).exec();
-            }
-        }, 0, 1000*3);
+        new ClientHeartTask(filePath,htmlSavePath).exec();
     }
 
 }

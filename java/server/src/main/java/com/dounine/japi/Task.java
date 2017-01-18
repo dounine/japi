@@ -48,10 +48,10 @@ public class Task{
 
         return content;
     }
-    public static String indexJspDeal(String content ,String guideJsp){
+    public static String indexJspDeal(String content ,String guideJsp,String projectName){
         String updateVersion = "<span my-attr-version='jsp-version' id='"+guideJsp+"_version'>";
         String updateTimeStr = "<span id='"+guideJsp+"_date'>";
-        String guide = "<div class='btn' id='mydoc' doc-Attr='feedback'><a href='/interfaceapidoc/index/"+guideJsp.trim()+"'>"+guideJsp.substring(0,guideJsp.lastIndexOf("guide.html"))+"文档</a></div>";
+        String guide = "<div class='btn' id='mydoc' doc-Attr='"+projectName+"'><a href='/interfaceapidoc/index/"+projectName+"'>"+projectName+"</a></div>";
         String guideJspDealNew = "<div class='new' id='"+guideJsp.trim()+"'>新</div>";
         String guideJspDealOld = "<div class='old' id='" + guideJsp.trim() + "'></div>";
         String date = LocalDate.parse(String.valueOf(LocalDate.now()), DateTimeFormatter.ofPattern("yyyy-MM-dd")).toString();
@@ -88,8 +88,8 @@ public class Task{
                     "                        <span id='"+guideJsp+"_date'>"+date+"</span> " +
                     "                    </span>" +
                     "                </div> " +
-                    "                <div class='btn' id='mydoc' doc-Attr='"+guideJsp.substring(0, guideJsp.lastIndexOf("guide.html"))+"'> " +
-                    "                    <a href='/interfaceapidoc/index/" + guideJsp + "'>" + guideJsp.substring(0, guideJsp.lastIndexOf("guide.html")) + "文档</a> " +
+                    "                <div class='btn' id='mydoc' doc-Attr='"+projectName+"'> " +
+                    "                    <a href='/interfaceapidoc/index/" + projectName + "'>" + projectName + "文档</a> " +
                     "                </div>" +
                     "                <div class='new' id='" + guideJsp + "'>新</div> " +
                     "           </li> ");

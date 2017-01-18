@@ -17,7 +17,7 @@ public class AddGuideMd5 {
     public static  void createMd5ForGuideJsp( String htmlPath , String projectName) {
         List<String> list = new ArrayList<>();
         File file = new File(htmlPath);
-        list = GetAllFIle.getAllFile(file, list);
+        GetAllFIle.getAllFile(file, list);
         for (String str : list) {//GUIDE.JSP
             String[] guideFlag = str.split(htmlPath);
             String[] guide = guideFlag[1].split("/");

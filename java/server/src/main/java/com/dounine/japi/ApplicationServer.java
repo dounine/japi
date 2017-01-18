@@ -15,9 +15,8 @@ public class ApplicationServer {
     public static void serverStart(String serverJspSavePath )throws IOException {
 
         File f = new File(serverJspSavePath);
-        String[] flist = f.list();
         IndexTask indexTask = new IndexTask();
-        indexTask.createindex(serverJspSavePath, flist, null);
+        indexTask.createindex(serverJspSavePath, f, null);
 
     }
 
