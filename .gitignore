@@ -1,4 +1,5 @@
 **/bower_components
+**/views/interfaceapidoc/
 **/.gradle
 **/out
 bower_components
