@@ -25,8 +25,28 @@ $(function(){
         $('.page li').eq(i).find('a').addClass('active')
     })
 
+    $('.blue').click(function(){
+        $('link').attr('href','/html/css/index_blue.css');
+        $('.changeColor a').show();
+        $(this).hide();
+    })
+    $('.yellow').click(function(){
+        $('link').attr('href','/html/css/index_yellow.css');
+        $('.changeColor a').show();
+        $(this).hide();
+    })
+    $('.red').click(function(){
+        $('link').attr('href','/html/css/index_red.css');
+        $('.changeColor a').show();
+        $(this).hide();
+    })
+    $('.green').click(function(){
+        $('link').attr('href','/html/css/index_green.css');
+        $('.changeColor a').show();
+        $(this).hide();
+    });
 
-
+    //改变主题
     $('.changeColor a').click(function(){
         var style = $(this).attr("id");
         $("link[title='"+style+"']").removeAttr("disabled");
@@ -49,5 +69,4 @@ $(function(){
         $('.changeColor a').show();
         $('#'+cookie_style).hide();
     }
-
 })

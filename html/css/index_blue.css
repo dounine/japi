@@ -95,18 +95,17 @@ header {
       width: 75px;
       margin: 15px auto;
       height: 20px;
-      border-radius: 13px;
+      line-height: 20px;
+      border-radius: 10px;
       border: 1px solid #238DFA;
-      background: #EBF1FF;
-      padding: 3px 10px 0; }
+      background: #EBF1FF; }
       .mainbody ul li .btn a {
         color: #238DFA;
         display: inline-block;
         width: 75px;
         height: 20px; }
     .mainbody ul li:hover .btn {
-      background: #238DFA;
-      box-shadow: 10px 10px 8px #999; }
+      background: #238DFA; }
       .mainbody ul li:hover .btn a {
         color: #fff; }
     .mainbody ul li .new {
