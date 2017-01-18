@@ -1,0 +1,40 @@
+apply from: '../config.gradle'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
+    }
+}
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'org.springframework.boot'
+
+jar {
+    baseName = 'server'
+    version =  '1.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+
+
+dependencies {
+    compile project(":api")
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+}
+
+
