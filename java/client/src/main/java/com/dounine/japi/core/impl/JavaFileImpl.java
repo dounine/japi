@@ -6,6 +6,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,18 +27,19 @@ public class JavaFileImpl implements IJavaFile {
     private static final String CHECK_FILE_SUFFIX = ".java";
 
     private String javaFilePath;
-    private String[] projectsPath;
+    private List<String> includePaths = new ArrayList<>();
+    private String projectPath;
 
     @Override
     public File searchTxtJavaFileForProjectsPath(String javaTxt) {
-        if(StringUtils.isBlank(javaTxt)){
+        if (StringUtils.isBlank(javaTxt)) {
             throw new JapiException("javaTxt 关键字不能为空");
         }
-        if(StringUtils.isBlank(javaFilePath)){
+        if (StringUtils.isBlank(javaFilePath)) {
             throw new JapiException("javaFilePath 主文件路径不能为空");
         }
-        if(null==projectsPath||(null!=projectsPath&&projectsPath.length==0)){
-            throw new JapiException("projectsPath 至少包含一个主项目地扯");
+        if (null == includePaths || (null != includePaths && includePaths.size() == 0)) {
+            throw new JapiException("includePaths 至少包含一个主项目地扯");
         }
 
         List<String> javaFileLines = null;
@@ -57,7 +60,7 @@ public class JavaFileImpl implements IJavaFile {
             /**
              * 检测文件是否在几个项目当中
              */
-            File javaFile = checkFileExists(javaTxt, projectsPath, filterPackageInfo(searchPath), null);
+            File javaFile = checkFileExists(javaTxt, filterPackageInfo(searchPath), null);
             if (null != javaFile) {
                 return javaFile;
             }
@@ -72,13 +75,13 @@ public class JavaFileImpl implements IJavaFile {
             /**
              * 检测文件是否在几个项目当中
              */
-            File javaFile = checkFileExists(javaTxt, projectsPath, filterPackageInfo(searchPath), null);
+            File javaFile = checkFileExists(javaTxt, filterPackageInfo(searchPath), null);
             if (null != javaFile) {
                 return javaFile;
             }
         }
         //第三层查找，当前包
-        File javaFile = checkFileExists(javaTxt, projectsPath, null, javaFilePath);
+        File javaFile = checkFileExists(javaTxt, null, javaFilePath);
         if (null != javaFile) {
             return javaFile;
         }
@@ -92,7 +95,7 @@ public class JavaFileImpl implements IJavaFile {
      * @param javaFileFullLines
      * @return 导入包信息
      */
-    private static List<String> filterJavaFileImportPackageLines(final List<String> javaFileFullLines) {
+    private List<String> filterJavaFileImportPackageLines(final List<String> javaFileFullLines) {
         if (null == javaFileFullLines && javaFileFullLines.size() == 0) {
             throw new JapiException("javaFileFullLines 不能为空");
         }
@@ -130,16 +133,17 @@ public class JavaFileImpl implements IJavaFile {
      * 检测文件是否在几个项目当中
      *
      * @param javaName     java名称
-     * @param projectsPath
      * @param packageName  导包名称
      * @param srcFilePath  源文件路径
      * @return
      */
-    private static File checkFileExists(String javaName, String[] projectsPath, String packageName, String srcFilePath) {//检测文件是否在几个项目中
+    private File checkFileExists(String javaName, String packageName, String srcFilePath) {//检测文件是否在几个项目中
         File findFile = null;
         if (StringUtils.isNotBlank(packageName) && !packageName.endsWith("*")) {
             String packageToPath = packageName.replace(".", "/");
-            for (String projectPath : projectsPath) {
+            List<String> nList = new ArrayList<>(includePaths);
+            nList.add(projectPath);
+            for (String projectPath : nList) {
                 String splitChar = projectPath.endsWith("/") ? "" : "/";
                 String fileAppendPath = new StringBuilder(projectPath).append(splitChar).append(packageToPath).append(CHECK_FILE_SUFFIX).toString();
                 File file = new File(fileAppendPath);
@@ -151,7 +155,9 @@ public class JavaFileImpl implements IJavaFile {
         } else if (StringUtils.isNotBlank(packageName)) {
             String packageToPath = packageName.replace(".", "/");
             packageToPath = StringUtils.substring(packageToPath, 0, -1);//除去*号
-            for (String projectPath : projectsPath) {
+            List<String> nList = new ArrayList<>(includePaths);
+            nList.add(projectPath);
+            for (String projectPath : nList) {
                 String splitChar = projectPath.endsWith("/") ? "" : "/";
                 String packageFoldPath = new StringBuilder(projectPath).append(splitChar).append(packageToPath).toString();//项目路径+包路径
                 File packageFold = new File(packageFoldPath);
@@ -168,24 +174,22 @@ public class JavaFileImpl implements IJavaFile {
                 }
             }
         } else {//当前包路径
-            for (String projectPath : projectsPath) {
-                File srcFile = new File(srcFilePath);
-                if (!srcFile.exists()) {
-                    throw new JapiException("srcFilePath 源文件不存在");
-                }
-                File srcFold = srcFile.getParentFile();
-                IOFileFilter fileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return pathname.isFile() && pathname.getName().endsWith(javaName + CHECK_FILE_SUFFIX);
-                    }
-                });
-                Collection<File> packageFoldChildFiles = FileUtils.listFiles(srcFold, fileFilter, null);
-                if (packageFoldChildFiles.size() == 0) {
-                    throw new JapiException("找不到相关文件:" + javaName + CHECK_FILE_SUFFIX);
-                }
-                findFile = packageFoldChildFiles.iterator().next();
+            File srcFile = new File(srcFilePath);
+            if (!srcFile.exists()) {
+                throw new JapiException("srcFilePath 源文件不存在");
             }
+            File srcFold = srcFile.getParentFile();
+            IOFileFilter fileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isFile() && pathname.getName().endsWith(javaName + CHECK_FILE_SUFFIX);
+                }
+            });
+            Collection<File> packageFoldChildFiles = FileUtils.listFiles(srcFold, fileFilter, null);
+            if (packageFoldChildFiles.size() == 0) {
+                throw new JapiException("找不到相关文件:" + javaName + CHECK_FILE_SUFFIX);
+            }
+            findFile = packageFoldChildFiles.iterator().next();
         }
 
         return findFile;
@@ -199,15 +203,19 @@ public class JavaFileImpl implements IJavaFile {
         this.javaFilePath = javaFilePath;
     }
 
-    public String[] getProjectsPath() {
-        return projectsPath;
+    public List<String> getIncludePaths() {
+        return includePaths;
     }
 
-    /**
-     * 主项目路径一直要放在第一位
-     * @param projectsPath
-     */
-    public void setProjectsPath(String[] projectsPath) {
-        this.projectsPath = projectsPath;
+    public void setIncludePaths(List<String> includePaths) {
+        this.includePaths = includePaths;
+    }
+
+    public String getProjectPath() {
+        return projectPath;
+    }
+
+    public void setProjectPath(String projectPath) {
+        this.projectPath = projectPath;
     }
 }
