@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,6 +84,23 @@ public class ActionImpl implements IAction {
     @Override
     public String readPackageName() {
         return null;
+    }
+
+    @Override
+    public List<String> getExcludeTypes() {
+        URL url = this.getClass().getResource("/action-exclude-types.txt");
+        File file = new File(url.getFile());
+        if(!file.exists()){
+            throw new JapiException(url.getFile()+" 文件不存在");
+        }
+        try {
+            String str = FileUtils.readFileToString(file,Charset.forName("utf-8"));
+            str = str.replaceAll("\\s","");
+            return Arrays.asList(str.split(","));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
     }
 
     @Override
