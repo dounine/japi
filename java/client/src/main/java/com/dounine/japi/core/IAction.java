@@ -9,6 +9,6 @@ public interface IAction {
 
     String readPackageName();
 
-    IMethod[] readMethod();
+    IMethod[] getMethods();
 
 }

@@ -1,12 +1,11 @@
 apply from: '../config.gradle'
 
-
 dependencies {
 
-    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile "javassist:javassist:3.12.1.GA"
     compile "org.springframework:spring-webmvc:4.3.5.RELEASE"
-    compile group: 'commons-io', name: 'commons-io', version: '2.2'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
 
 }
 

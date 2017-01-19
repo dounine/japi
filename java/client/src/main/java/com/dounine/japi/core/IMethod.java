@@ -5,6 +5,6 @@ package com.dounine.japi.core;
  */
 public interface IMethod {
 
-    String readDoc();
+    IDoc[] getDocs();
 
 }
