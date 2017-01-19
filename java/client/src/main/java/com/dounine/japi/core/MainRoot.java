@@ -19,10 +19,12 @@ import java.util.Arrays;
 @RequestMapping("main")
 public class MainRoot {
 //@Validated(value = {IMethod.class, IField.class}) User user, String bb, Integer[] last
+
     /**
      * 测试例子
-     *
      * @param user 用户信息
+     * @param bb 测试参数
+     * @param last 测试参数1
      * @return {"success":"成功" | "error":"错误"}
      */
     @GetMapping("aa")
@@ -32,7 +34,7 @@ public class MainRoot {
     }
 
     public static String javaFilePath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";
-    public static String[] projectsPaths = {"/Users/huanghuanlai/dounine/github/japi/java/api/src/main/java"};
+    public static String[] includePaths = {"/Users/huanghuanlai/dounine/github/japi/java/api/src/main/java"};
     public static String projectPath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java";
     public static String buildInPath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/resources/built-in.txt";
 
@@ -40,11 +42,13 @@ public class MainRoot {
         JavaFileImpl javaFile = new JavaFileImpl();
         javaFile.setJavaFilePath(javaFilePath);
         javaFile.setProjectPath(projectPath);
-        javaFile.getIncludePaths().addAll(Arrays.asList(projectsPaths));
+        javaFile.getIncludePaths().addAll(Arrays.asList(includePaths));
         File file = javaFile.searchTxtJavaFileForProjectsPath("User");
 
         ActionImpl actionImpl = new ActionImpl();
         actionImpl.setJavaFilePath(javaFilePath);
+        actionImpl.setProjectPath(projectPath);
+        actionImpl.getIncludePaths().addAll(Arrays.asList(includePaths));
         IMethod[] methods = actionImpl.getMethods();
 
 //        BuiltInImpl builtIn = new BuiltInImpl();

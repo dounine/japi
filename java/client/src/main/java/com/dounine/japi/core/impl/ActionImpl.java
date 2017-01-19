@@ -29,6 +29,9 @@ import java.util.regex.Pattern;
  */
 public class ActionImpl implements IAction {
 
+    private String projectPath;
+    private List<String> includePaths = new ArrayList<>();
+
     private static final Logger CONSOLE = LoggerFactory.getLogger(ActionImpl.class);
 
     private static final String[] MATCH_CHARTS = {"public ", "class ", "interface ", "@interface ", "enum ", "abstract ", "@interface "};
@@ -363,8 +366,14 @@ public class ActionImpl implements IAction {
             methodImpls[i] = methodImpl;
         }
         System.out.println("========");
+        JavaFileImpl javaFile = new JavaFileImpl();
+        javaFile.setJavaFilePath(javaFilePath);
+        javaFile.setProjectPath(projectPath);
+        javaFile.getIncludePaths().addAll(includePaths);
         for (MethodImpl method : methodImpls) {
             System.out.println("返回类型：" + method.getReturnType());
+            File file = javaFile.searchTxtJavaFileForProjectsPath(method.getReturnType());
+            System.out.println("类型文件："+file.getAbsolutePath());
             System.out.println("参数类型：" + JSON.toJSONString(method.getParameters()));
             System.out.println("----------");
             for (IDoc doc : method.getDocs()) {
@@ -387,5 +396,21 @@ public class ActionImpl implements IAction {
 
     public void setJavaFilePath(String javaFilePath) {
         this.javaFilePath = javaFilePath;
+    }
+
+    public String getProjectPath() {
+        return projectPath;
+    }
+
+    public void setProjectPath(String projectPath) {
+        this.projectPath = projectPath;
+    }
+
+    public List<String> getIncludePaths() {
+        return includePaths;
+    }
+
+    public void setIncludePaths(List<String> includePaths) {
+        this.includePaths = includePaths;
     }
 }
