@@ -1,5 +1,7 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.core.type.DocType;
+
 import java.util.List;
 
 /**
@@ -7,8 +9,12 @@ import java.util.List;
  */
 public interface IDoc {
 
+    DocType getDocType();
+
     String getName();
 
     String getValue();
+
+    String getDes();
 
 }

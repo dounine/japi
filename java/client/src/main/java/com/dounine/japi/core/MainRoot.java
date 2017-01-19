@@ -29,13 +29,6 @@ public class MainRoot {
         return "success";
     }
 
-
-    @GetMapping("aa")
-    public String dd(User user){
-        return "success";
-    }
-
-
     public static String javaFilePath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";
     public static String[] projectsPaths = {"/Users/huanghuanlai/dounine/github/japi/java/api/src/main/java"};
     public static String projectPath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java";
