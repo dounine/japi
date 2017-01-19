@@ -1,5 +1,6 @@
 package com.dounine.japi.core.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.dounine.japi.core.IAction;
 import com.dounine.japi.core.IDoc;
 import com.dounine.japi.core.IMethod;
@@ -14,7 +15,6 @@ import org.springframework.validation.annotation.Validated;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -74,6 +74,14 @@ public class ActionImpl implements IAction {
      * 方法头返回值部分+( public void user(
      */
     private static final Pattern[] METHOD_RETURN_TYPES = {Pattern.compile("^(\\s*)(public)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(private)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(void)\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(protected)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]")};
+    /**
+     * 参数行：(@Validated(value = {IMethod.class, IField.class}) User user, String bb, Integer[] last){
+     */
+    private static final Pattern PARAMETER_BODYS = Pattern.compile("[(][\\S\\s]*[)]\\s*[{]$");
+    /**
+     * 单个参数：user,
+     */
+    private static final Pattern PARAMETER_SINGLE_NAME = Pattern.compile("[\\s][a-zA-Z0-9]*[,]");
 
     @Override
     public String readClassInfo() {
@@ -139,23 +147,12 @@ public class ActionImpl implements IAction {
     }
 
     /**
-     * @param a
-     * @param b
-     * @param c
-     * @param pp
-     * @return
-     */
-    public String mm(@Validated StringUtils a, String b, int c, double pp) {
-        return "";
-    }
-
-    /**
      * 提供类的方法信息
      *
      * @param noPackageLines 不包含package头部与类尾部行信息
      * @return 方法信息列表
      */
-    private List<List<String>> methodBodyAndDoc(List<String> noPackageLines) {
+    private List<List<String>> methodBodyAndDoc(final List<String> noPackageLines) {
         List<List<String>> methodBodyAndDocs = new ArrayList<>();
         boolean isFindDocBegin = false;
         List<String> methodLines = null;
@@ -198,7 +195,7 @@ public class ActionImpl implements IAction {
      * @param methodLines
      * @return
      */
-    private List<IDoc> extractDoc(List<String> methodLines) {
+    private List<IDoc> extractDoc(final List<String> methodLines) {
         boolean methodBegin = false;
         List<IDoc> methodDocs = new ArrayList<>();
         for (String methodLine : methodLines) {
@@ -238,9 +235,9 @@ public class ActionImpl implements IAction {
                                 docImpl.setDes(methodLine.substring(methodLine.indexOf(docName) + SINGLE_DOC_VALUE[singleDocIndex].length()).trim());
                             } else if (methodNameValueMatcher.find()) {
                                 String docValue = methodNameValueMatcher.group().substring(methodNameValue.length());
-                                if(methodLine.endsWith(docValue)){
-                                    CONSOLE.warn(methodLine+" 没有注释");
-                                }else{
+                                if (methodLine.endsWith(docValue)) {
+                                    CONSOLE.warn(methodLine + " 没有注释");
+                                } else {
                                     String docDes = methodLine.substring(methodLine.indexOf(docValue)).trim().substring(docValue.length());
                                     docImpl.setDes(docDes.trim());
                                 }
@@ -258,8 +255,64 @@ public class ActionImpl implements IAction {
         return methodDocs;
     }
 
+    /**
+     * 获取方法返回值
+     *
+     * @param methodLineStr 方法行
+     * @return 类型：String
+     */
+    private String getMethodReturnType(final String methodLineStr) {
+        String returnTypeStr = null;
+        for (Pattern typePattern : METHOD_RETURN_TYPES) {
+            Matcher returnTypeMatch = typePattern.matcher(methodLineStr);
+            if (returnTypeMatch.find()) {
+                returnTypeStr = StringUtils.substring(returnTypeMatch.group(), 0, -1).trim();//public String testUser
+                break;
+            }
+        }
+        String returnType = null;
+        if (StringUtils.isNotBlank(returnTypeStr)) {
+            returnType = returnTypeStr.substring(returnTypeStr.indexOf(StringUtils.SPACE), returnTypeStr.lastIndexOf(StringUtils.SPACE));
+            returnType = returnType.trim();
+        }
+        return returnType;
+    }
+
+    /**
+     * 获取方法参数信息
+     *
+     * @param methodLineStr 方法行
+     * @return 参数列表
+     */
+    private List<String> getMethodParameters(String methodLineStr) {
+        List<String> parameters = new ArrayList<>();
+        Matcher matcher = PARAMETER_BODYS.matcher(methodLineStr);
+        if (matcher.find()) {
+            String parStrs = StringUtils.substring(matcher.group(), 1, -1).trim();
+            parStrs = StringUtils.substring(parStrs.trim(), 0, -1);
+            Matcher parMatcher = PARAMETER_SINGLE_NAME.matcher(parStrs);
+            int initSearchIndex = 0;
+            int lastSearchIndex = 0;
+            while (parMatcher.find()) {
+                lastSearchIndex = parMatcher.end();
+                parameters.add(parStrs.substring(initSearchIndex, lastSearchIndex - 1).trim());
+                initSearchIndex = lastSearchIndex;
+            }
+            if (lastSearchIndex < parStrs.length()) {
+                parameters.add(parStrs.substring(lastSearchIndex));
+            }
+        }
+        return parameters;
+    }
+
+    /**
+     * 提取方法信息
+     *
+     * @param methodLines 方法doc及注解及行信息
+     * @return 方法信息
+     */
     private MethodImpl extractMethod(List<String> methodLines) {
-        List<Annotation> annotations = new ArrayList<>();
+        MethodImpl methodImpl = new MethodImpl();
         List<String> annotationStrs = new ArrayList<>();
         String methodLineStr = null;
         boolean docBegin = false;
@@ -272,27 +325,20 @@ public class ActionImpl implements IAction {
             if (docBegin) {
                 Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(methodLine);
                 if (annotationMatcher.find()) {//注解
-                    annotationStrs.add(methodLine);
+                    annotationStrs.add(methodLine.trim().substring(1));
                 } else {//方法
-                    methodLineStr = methodLine;
+                    methodLineStr = methodLine.trim();
                 }
             }
         }
-        String returnTypeStr = null;
-        for (Pattern typePattern : METHOD_RETURN_TYPES) {
-            Matcher returnTypeMatch = typePattern.matcher(methodLineStr);
-            if (returnTypeMatch.find()) {
-                returnTypeStr = StringUtils.substring(returnTypeMatch.group(),0,-1).trim();//public String testUser
-                break;
-            }
-        }
-        String returnType = null;
-        if (StringUtils.isNotBlank(returnTypeStr)) {
-            returnType = returnTypeStr.substring(returnTypeStr.indexOf(StringUtils.SPACE),returnTypeStr.lastIndexOf(StringUtils.SPACE));
-            returnType = returnType.trim();
-        }
-        System.out.println(returnType);
-        return null;
+        String returnType = getMethodReturnType(methodLineStr);
+        List<String> methodParameters = getMethodParameters(methodLineStr);
+
+        methodImpl.setReturnType(returnType);
+        methodImpl.setAnnotations(annotationStrs.toArray(new String[]{}));
+        methodImpl.setParameters(methodParameters.toArray(new String[]{}));
+
+        return methodImpl;
     }
 
     /**
@@ -300,7 +346,7 @@ public class ActionImpl implements IAction {
      *
      * @return 方法列表
      */
-    private IMethod[] extractDocAndMethodInfo(List<List<String>> methodBodyAndDocs) {
+    private IMethod[] extractDocAndMethodInfo(final List<List<String>> methodBodyAndDocs) {
         MethodImpl[] methodImpls = new MethodImpl[methodBodyAndDocs.size()];
         for (int i = 0, len = methodBodyAndDocs.size(); i < len; i++) {
             List<String> methodLines = methodBodyAndDocs.get(i);
@@ -310,10 +356,17 @@ public class ActionImpl implements IAction {
             MethodImpl extractMethod = extractMethod(methodLines);//提取方法信息
 
             methodImpl.setDocs(methodDocs.toArray(new IDoc[]{}));
+            methodImpl.setAnnotations(extractMethod.getAnnotations());
+            methodImpl.setReturnType(extractMethod.getReturnType());
+            methodImpl.setParameters(extractMethod.getParameters());
+
             methodImpls[i] = methodImpl;
         }
         System.out.println("========");
         for (MethodImpl method : methodImpls) {
+            System.out.println("返回类型：" + method.getReturnType());
+            System.out.println("参数类型：" + JSON.toJSONString(method.getParameters()));
+            System.out.println("----------");
             for (IDoc doc : method.getDocs()) {
                 if (doc.getDocType().equals(DocType.FUNDES)) {
                     System.out.println("方法：" + doc.getName());
@@ -323,6 +376,7 @@ public class ActionImpl implements IAction {
                     System.out.println("参数：" + doc.getValue() + " : " + doc.getDes());
                 }
             }
+            System.out.println("----------");
         }
         return methodImpls;
     }

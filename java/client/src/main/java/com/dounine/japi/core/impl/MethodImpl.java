@@ -10,7 +10,7 @@ import java.lang.annotation.Annotation;
  */
 public class MethodImpl implements IMethod{
 
-    private Annotation[] annotations;
+    private String[] annotations;
     private String[] parameters;
     private String returnType;
 
@@ -25,11 +25,11 @@ public class MethodImpl implements IMethod{
     }
 
     @Override
-    public Annotation[] getAnnotations() {
+    public String[] getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(Annotation[] annotations) {
+    public void setAnnotations(String[] annotations) {
         this.annotations = annotations;
     }
 

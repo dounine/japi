@@ -9,7 +9,7 @@ public interface IMethod {
 
     IDoc[] getDocs();
 
-    Annotation[] getAnnotations();
+    String[] getAnnotations();
 
     String getReturnType();
 

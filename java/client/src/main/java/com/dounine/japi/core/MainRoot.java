@@ -3,13 +3,14 @@ package com.dounine.japi.core;
 import com.dounine.japi.core.impl.ActionImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.entity.User;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Created by huanghuanlai on 2017/1/18.
@@ -17,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("main")
 public class MainRoot {
-
+//@Validated(value = {IMethod.class, IField.class}) User user, String bb, Integer[] last
     /**
      * 测试例子
      *
@@ -25,7 +26,8 @@ public class MainRoot {
      * @return {"success":"成功" | "error":"错误"}
      */
     @GetMapping("aa")
-    public Map<String, Object> testUser(User user) {
+    @ResponseBody
+    public User testUser(@Validated(value = {IMethod.class, IField.class}) User user, String bb, Integer[] last) {
         return null;
     }
 
