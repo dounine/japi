@@ -3,6 +3,7 @@ apply from: '../config.gradle'
 dependencies {
     compile project(":api")
 
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.22'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.2'
 

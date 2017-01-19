@@ -8,8 +8,9 @@ import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,6 +28,8 @@ import java.util.regex.Pattern;
  * Created by huanghuanlai on 2017/1/18.
  */
 public class ActionImpl implements IAction {
+
+    private static final Logger CONSOLE = LoggerFactory.getLogger(ActionImpl.class);
 
     private static final String[] MATCH_CHARTS = {"public ", "class ", "interface ", "@interface ", "enum ", "abstract ", "@interface "};
 
@@ -66,11 +69,11 @@ public class ActionImpl implements IAction {
     /**
      * 方法头
      */
-    private static final Pattern[] METHOD_KEYWORD = {Pattern.compile("^(\\s*)(public)(\\s*)(\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$"), Pattern.compile("^(\\s*)(private)(\\s*)(\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$"), Pattern.compile("^(\\s*)(void)(\\s*)(\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$"), Pattern.compile("^(\\s*)(protected)(\\s*)(\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$")};
+    private static final Pattern[] METHOD_KEYWORD = {Pattern.compile("^(\\s*)(public)(\\s*)(\\S*|\\S*\\s\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$"), Pattern.compile("^(\\s*)(private)(\\s*)(\\S*|\\S*\\s\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$"), Pattern.compile("^(\\s*)(void)(\\s*)(\\S*|\\S*\\s\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$"), Pattern.compile("^(\\s*)(protected)(\\s*)(\\S*|\\S*\\s\\S*)(\\s*)([a-zA-Z0-9]*)(\\s*)[(].*[{]$")};
     /**
-     * 方法头返回值部分
+     * 方法头返回值部分+( public void user(
      */
-    private static final Pattern[] METHOD_RETURN_TYPES = {Pattern.compile("^(\\s*)(public)\\s*\\S*\\s*[a-zA-z0-9]*"), Pattern.compile("^(\\s*)(private)\\s*\\S*\\s*[a-zA-z0-9]*"), Pattern.compile("^(\\s*)(void)\\s*\\S*\\s*[a-zA-z0-9]*"), Pattern.compile("^(\\s*)(protected)\\s*\\S*\\s*[a-zA-z0-9]*")};
+    private static final Pattern[] METHOD_RETURN_TYPES = {Pattern.compile("^(\\s*)(public)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(private)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(void)\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(protected)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]")};
 
     @Override
     public String readClassInfo() {
@@ -90,12 +93,12 @@ public class ActionImpl implements IAction {
     public List<String> getExcludeTypes() {
         URL url = this.getClass().getResource("/action-exclude-types.txt");
         File file = new File(url.getFile());
-        if(!file.exists()){
-            throw new JapiException(url.getFile()+" 文件不存在");
+        if (!file.exists()) {
+            throw new JapiException(url.getFile() + " 文件不存在");
         }
         try {
-            String str = FileUtils.readFileToString(file,Charset.forName("utf-8"));
-            str = str.replaceAll("\\s","");
+            String str = FileUtils.readFileToString(file, Charset.forName("utf-8"));
+            str = str.replaceAll("\\s", StringUtils.EMPTY);
             return Arrays.asList(str.split(","));
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,6 +132,7 @@ public class ActionImpl implements IAction {
             methods = extractDocAndMethodInfo(methodBodyAndDocs);//提取方法注释及方法信息
 
         } catch (IOException e) {
+            CONSOLE.error(e.getMessage());
             throw new JapiException(e.getMessage());
         }
         return methods;
@@ -234,12 +238,19 @@ public class ActionImpl implements IAction {
                                 docImpl.setDes(methodLine.substring(methodLine.indexOf(docName) + SINGLE_DOC_VALUE[singleDocIndex].length()).trim());
                             } else if (methodNameValueMatcher.find()) {
                                 String docValue = methodNameValueMatcher.group().substring(methodNameValue.length());
-                                String docDes = methodLine.substring(methodLine.indexOf(docValue)).trim().substring(docValue.length());
+                                if(methodLine.endsWith(docValue)){
+                                    CONSOLE.warn(methodLine+" 没有注释");
+                                }else{
+                                    String docDes = methodLine.substring(methodLine.indexOf(docValue)).trim().substring(docValue.length());
+                                    docImpl.setDes(docDes.trim());
+                                }
                                 docImpl.setValue(docValue);
-                                docImpl.setDes(docDes.trim());
                             }
                         }
                     }
+                }
+                if (StringUtils.isBlank(docImpl.getName()) && StringUtils.isBlank(docImpl.getValue()) && StringUtils.isBlank(docImpl.getDes())) {
+                    continue;//去掉无效的换行注释
                 }
                 methodDocs.add(docImpl);
             }
@@ -260,29 +271,25 @@ public class ActionImpl implements IAction {
             }
             if (docBegin) {
                 Matcher annotationMatcher = ANNOTATION_PATTERN.matcher(methodLine);
-                if(annotationMatcher.find()){//注解
+                if (annotationMatcher.find()) {//注解
                     annotationStrs.add(methodLine);
-                }else{//方法
+                } else {//方法
                     methodLineStr = methodLine;
                 }
             }
         }
         String returnTypeStr = null;
-        for(Pattern typePattern : METHOD_RETURN_TYPES){
+        for (Pattern typePattern : METHOD_RETURN_TYPES) {
             Matcher returnTypeMatch = typePattern.matcher(methodLineStr);
-            if(returnTypeMatch.find()){
-                returnTypeStr = returnTypeMatch.group();//public String testUser
+            if (returnTypeMatch.find()) {
+                returnTypeStr = StringUtils.substring(returnTypeMatch.group(),0,-1).trim();//public String testUser
                 break;
             }
         }
         String returnType = null;
-        if(StringUtils.isNotBlank(returnTypeStr)){
-            String[] mabyTypes = returnTypeStr.trim().split("\\s");
-            if(mabyTypes.length==2){//没有权限修饰符,索引0是返回值类型
-                returnType = mabyTypes[0];
-            }else if(mabyTypes.length==3){//有权限修饰符,索引1是返回值类型
-                returnType = mabyTypes[1];
-            }
+        if (StringUtils.isNotBlank(returnTypeStr)) {
+            returnType = returnTypeStr.substring(returnTypeStr.indexOf(StringUtils.SPACE),returnTypeStr.lastIndexOf(StringUtils.SPACE));
+            returnType = returnType.trim();
         }
         System.out.println(returnType);
         return null;

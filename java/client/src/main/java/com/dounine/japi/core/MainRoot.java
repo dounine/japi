@@ -1,20 +1,15 @@
 package com.dounine.japi.core;
 
 import com.dounine.japi.core.impl.ActionImpl;
-import com.dounine.japi.core.impl.BuiltInImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
-import com.dounine.japi.entity.*;
-import org.apache.commons.io.FileUtils;
+import com.dounine.japi.entity.User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by huanghuanlai on 2017/1/18.
@@ -25,12 +20,13 @@ public class MainRoot {
 
     /**
      * 测试例子
+     *
      * @param user 用户信息
      * @return {"success":"成功" | "error":"错误"}
      */
     @GetMapping("aa")
-    public String testUser(User user){
-        return "success";
+    public Map<String, Object> testUser(User user) {
+        return null;
     }
 
     public static String javaFilePath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";
@@ -47,7 +43,7 @@ public class MainRoot {
 
         ActionImpl actionImpl = new ActionImpl();
         actionImpl.setJavaFilePath(javaFilePath);
-//        IMethod[] methods = actionImpl.getMethods();
+        IMethod[] methods = actionImpl.getMethods();
 
 //        BuiltInImpl builtIn = new BuiltInImpl();
 
