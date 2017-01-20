@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by huanghuanlai on 2017/1/18.
@@ -18,7 +19,7 @@ import java.util.Arrays;
 @RestController
 @RequestMapping("main")
 public class MainRoot {
-//@Validated(value = {IMethod.class, IField.class}) User user, String bb, Integer[] last
+//@Validated(value = {IMethod.class, IParameterField.class}) User user, String bb, Integer[] last
 
     /**
      * 测试例子
@@ -29,27 +30,27 @@ public class MainRoot {
      */
     @GetMapping("aa")
     @ResponseBody
-    public User testUser(@Validated(value = {IMethod.class, IField.class}) User user, String bb, Integer[] last) {
+    public User testUser(@Validated(value = {IMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
         return null;
     }
 
     public static String javaFilePath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";
     public static String[] includePaths = {"/Users/huanghuanlai/dounine/github/japi/java/api/src/main/java"};
     public static String projectPath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java";
-    public static String buildInPath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/resources/built-in.txt";
+    public static String buildInPath = "/Users/huanghuanlai/dounine/github/japi/java/client/src/main/resources/class-builtIn-types.txt";
 
     public static void main(String[] args) {
         JavaFileImpl javaFile = new JavaFileImpl();
         javaFile.setJavaFilePath(javaFilePath);
         javaFile.setProjectPath(projectPath);
         javaFile.getIncludePaths().addAll(Arrays.asList(includePaths));
-        File file = javaFile.searchTxtJavaFileForProjectsPath("User");
+//        File file = javaFile.searchTxtJavaFileForProjectsPath("com.dounine.japi.entity.User");
 
         ActionImpl actionImpl = new ActionImpl();
         actionImpl.setJavaFilePath(javaFilePath);
         actionImpl.setProjectPath(projectPath);
         actionImpl.getIncludePaths().addAll(Arrays.asList(includePaths));
-        IMethod[] methods = actionImpl.getMethods();
+        List<IMethod> methods = actionImpl.getMethods();
 
 //        BuiltInImpl builtIn = new BuiltInImpl();
 

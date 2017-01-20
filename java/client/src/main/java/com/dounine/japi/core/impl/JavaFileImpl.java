@@ -178,15 +178,16 @@ public class JavaFileImpl implements IJavaFile {
                 throw new JapiException("srcFilePath 源文件不存在");
             }
             File srcFold = srcFile.getParentFile();
+            String newJavaName = javaName.indexOf(".")>0?javaName.substring(javaName.lastIndexOf(".")+1):javaName;
             IOFileFilter fileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File pathname) {
-                    return pathname.isFile() && pathname.getName().endsWith(javaName + CHECK_FILE_SUFFIX);
+                    return pathname.isFile() && pathname.getName().endsWith(newJavaName + CHECK_FILE_SUFFIX);
                 }
             });
             Collection<File> packageFoldChildFiles = FileUtils.listFiles(srcFold, fileFilter, null);
             if (packageFoldChildFiles.size() == 0) {
-                throw new JapiException("找不到相关文件:" + javaName + CHECK_FILE_SUFFIX);
+                throw new JapiException("找不到相关文件:" + newJavaName + CHECK_FILE_SUFFIX);
             }
             findFile = packageFoldChildFiles.iterator().next();
         }

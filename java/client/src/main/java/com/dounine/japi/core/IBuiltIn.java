@@ -9,4 +9,6 @@ public interface IBuiltIn {
 
     List<String> getBuiltInTypes();
 
+    boolean isBuiltInType(String keyType);
+
 }

@@ -1,17 +1,15 @@
 package com.dounine.japi.core.impl;
 
-import com.dounine.japi.core.IDoc;
-import com.dounine.japi.core.type.DocType;
+import com.dounine.japi.core.IReturnFieldDoc;
 
 /**
- * Created by huanghuanlai on 2017/1/19.
+ * Created by huanghuanlai on 2017/1/20.
  */
-public class DocImpl implements IDoc {
+public class ReturnFieldDocImpl implements IReturnFieldDoc {
 
-    private String name = "";
-    private DocType docType = DocType.COMMON;
-    private String value = "";
-    private String des = "";
+    private String name;
+    private String value;
+    private String des;
 
     @Override
     public String getName() {
@@ -38,13 +36,5 @@ public class DocImpl implements IDoc {
 
     public void setDes(String des) {
         this.des = des;
-    }
-
-    public DocType getDocType() {
-        return docType;
-    }
-
-    public void setDocType(DocType docType) {
-        this.docType = docType;
     }
 }

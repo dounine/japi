@@ -1,44 +1,44 @@
 package com.dounine.japi.core.impl;
 
-import com.dounine.japi.core.IDoc;
+import com.dounine.japi.core.IActionMethodDoc;
 import com.dounine.japi.core.IMethod;
 
-import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
 public class MethodImpl implements IMethod{
 
-    private String[] annotations;
-    private String[] parameters;
+    private List<String> annotations;
+    private List<String> parameters;
     private String returnType;
 
-    private IDoc[] docs;
+    private List<IActionMethodDoc> docs;
 
-    public IDoc[] getDocs() {
+    public List<IActionMethodDoc> getDocs() {
         return docs;
     }
 
-    public void setDocs(IDoc[] docs) {
+    public void setDocs(List<IActionMethodDoc> docs) {
         this.docs = docs;
     }
 
     @Override
-    public String[] getAnnotations() {
+    public List<String> getAnnotations() {
         return annotations;
     }
 
-    public void setAnnotations(String[] annotations) {
+    public void setAnnotations(List<String> annotations) {
         this.annotations = annotations;
     }
 
     @Override
-    public String[] getParameters() {
+    public List<String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(String[] parameters) {
+    public void setParameters(List<String> parameters) {
         this.parameters = parameters;
     }
 

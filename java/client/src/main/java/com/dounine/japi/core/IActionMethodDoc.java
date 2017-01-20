@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Created by huanghuanlai on 2017/1/19.
  */
-public interface IDoc {
+public interface IActionMethodDoc {
 
     DocType getDocType();
 
