@@ -2,7 +2,7 @@ package com.dounine.japi.core;
 
 import com.dounine.japi.core.impl.ActionImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
-import com.dounine.japi.entity.User;
+import com.dounine.japi.entity.*;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -292,7 +292,8 @@ public class ActionImpl implements IAction {
         }
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
         IReturnType returnType = getMethodReturnType(returnTypeStr);
-        System.out.println(JSON.toJSONString(returnType.getFields()));
+        returnType.getFields();
+//        System.out.println(JSON.toJSONString(returnType.getFields()));
 
         List<String> methodParameters = getMethodParameters(methodLineStr);
 

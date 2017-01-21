@@ -1,13 +1,15 @@
 package com.dounine.japi.core.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.dounine.japi.core.IJavaFile;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -16,6 +18,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -23,11 +26,25 @@ import java.util.stream.Collectors;
  */
 public class JavaFileImpl implements IJavaFile {
 
-    private static final String CHECK_FILE_SUFFIX = ".java";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JavaFileImpl.class);
 
+    private static final String CHECK_FILE_SUFFIX = ".java";
+    private static final String PACKAGE_PREFIX = "import ";
     private String javaFilePath;
     private List<String> includePaths = new ArrayList<>();
     private String projectPath;
+    private static final String RELATIVE_PATH = "src/main/java/";
+
+    private List<String> includePathsBbsoluteToRelative() {
+        List<String> relativePaths = new ArrayList<>();
+        for (String abPath : includePaths) {
+            int index = abPath.indexOf(RELATIVE_PATH);
+            if (index > -1) {
+                System.out.println(abPath.substring(index));
+            }
+        }
+        return relativePaths;
+    }
 
     @Override
     public File searchTxtJavaFileForProjectsPath(String javaTxt) {
@@ -39,6 +56,90 @@ public class JavaFileImpl implements IJavaFile {
         }
         if (null == includePaths || (null != includePaths && includePaths.size() == 0)) {
             throw new JapiException("includePaths 至少包含一个主项目地扯");
+        }
+        if (javaTxt.contains(".")) {//查找关键字包含点的
+            File javaTxtFile = new File(getEndSplitPath(projectPath) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
+            List<File> findChildFiles = new ArrayList<>();
+            if (!javaTxtFile.exists()) {//主项目不存在,查找其它项目
+                for (String childProjectPath : includePaths) {
+                    javaTxtFile = new File(getEndSplitPath(childProjectPath) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
+                    if (javaTxtFile.exists()) {
+                        findChildFiles.add(javaTxtFile);
+                    }
+                }
+            } else {
+                findChildFiles.add(javaTxtFile);
+            }
+            System.out.println("point:" + findChildFiles.get(0).getAbsolutePath());
+            if (findChildFiles.size() > 1) {
+                findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
+                LOGGER.warn("找到多个文件" + JSON.toJSONString(findChildFiles));
+            }
+        } else {
+            List<File> findChildFiles = new ArrayList<>();
+            List<String> javaFileLines = null;
+            try {
+                javaFileLines = FileUtils.readLines(new File(javaFilePath), Charset.forName("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            List<String> javaFileImportPackageLines = filterJavaFileImportPackageLines(javaFileLines);
+            Optional<String> optionalLine = javaFileImportPackageLines.stream().filter(line -> line.endsWith("." + javaTxt + ";")).findFirst();
+            if (optionalLine.isPresent()) {
+                String packageStr = StringUtils.substring(optionalLine.get(), PACKAGE_PREFIX.length(), -1).replace(".", "/");
+                File javaTxtFile = new File(getEndSplitPath(projectPath) + CHECK_FILE_SUFFIX);
+                if (!javaTxtFile.exists()) {//主项目不存在,查找其它项目
+                    for (String childProjectPath : includePaths) {
+                        javaTxtFile = new File(getEndSplitPath(childProjectPath) + packageStr.replace(".", "/") + CHECK_FILE_SUFFIX);
+                        if (javaTxtFile.exists()) {
+                            findChildFiles.add(javaTxtFile);
+                        }
+                    }
+                } else {
+                    findChildFiles.add(javaTxtFile);
+                }
+                System.out.println("noPoint:" + javaTxtFile.getAbsolutePath());
+            }
+            if (findChildFiles.size() > 1) {
+                findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
+                LOGGER.warn("找到多个文件" + JSON.toJSONString(findChildFiles));
+            }
+
+            if (findChildFiles.size() == 0) {
+                List<String> containEndStrs = javaFileImportPackageLines.stream().filter(line -> line.endsWith(".*;")).collect(Collectors.toList());
+                final IOFileFilter javaFileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
+                    @Override
+                    public boolean accept(File pathname) {
+                        return pathname.isFile() && pathname.getName().equals(javaTxt + CHECK_FILE_SUFFIX);
+                    }
+                });
+                List<File> containFiles = new ArrayList<>();
+                for (String containStr : containEndStrs) {
+                    String packagePath = StringUtils.substring(containStr, PACKAGE_PREFIX.length(), -3).replace(".", "/");
+                    File packageFold = new File(getEndSplitPath(projectPath) + packagePath);
+                    if (packageFold.exists()) {//主项目包目录是否存在，存在则进去检测有符合的文件
+                        Collection<File> packageChildFiles = FileUtils.listFiles(packageFold, javaFileFilter, TrueFileFilter.INSTANCE);//查找所有文件
+                        if (packageChildFiles.size() > 0) {
+                            containFiles.addAll(packageChildFiles);
+                        }
+                    } else {//检测其它项目
+                        for (String childProjectPath : includePaths) {
+                            packageFold = new File(getEndSplitPath(childProjectPath) + packagePath);
+                            if (packageFold.exists()) {//其它项目包目录是否存在，存在则进去检测有符合的文件
+                                Collection<File> packageChildFiles = FileUtils.listFiles(packageFold, javaFileFilter, TrueFileFilter.INSTANCE);//查找所有文件
+                                if (packageChildFiles.size() > 0) {
+                                    containFiles.addAll(packageChildFiles);
+                                }
+                            }
+                        }
+                    }
+                }
+                if(containFiles.size()>1){
+                    containFiles = containFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
+                }
+                System.out.println(JSON.toJSON(containFiles));
+//                Collection<File> packageChildFiles = FileUtils.listFiles(packageFold, fileFilter, TrueFileFilter.INSTANCE);//查找所有文件
+            }
         }
 
         List<String> javaFileLines = null;
@@ -128,12 +229,17 @@ public class JavaFileImpl implements IJavaFile {
         return StringUtils.substring(importAndPack[1], 0, -1);//去掉分号
     }
 
+    private String getEndSplitPath(String path) {
+        String splitChar = path.endsWith("/") ? "" : "/";
+        return path + splitChar;
+    }
+
     /**
      * 检测文件是否在几个项目当中
      *
-     * @param javaName     java名称
-     * @param packageName  导包名称
-     * @param srcFilePath  源文件路径
+     * @param javaName    java名称
+     * @param packageName 导包名称
+     * @param srcFilePath 源文件路径
      * @return
      */
     private File checkFileExists(String javaName, String packageName, String srcFilePath) {//检测文件是否在几个项目中
@@ -178,7 +284,7 @@ public class JavaFileImpl implements IJavaFile {
                 throw new JapiException("srcFilePath 源文件不存在");
             }
             File srcFold = srcFile.getParentFile();
-            String newJavaName = javaName.indexOf(".")>0?javaName.substring(javaName.lastIndexOf(".")+1):javaName;
+            String newJavaName = javaName.indexOf(".") > 0 ? javaName.substring(javaName.lastIndexOf(".") + 1) : javaName;
             IOFileFilter fileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
                 @Override
                 public boolean accept(File pathname) {
