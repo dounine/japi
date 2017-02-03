@@ -45,36 +45,7 @@ public class ReturnTypeImpl implements IReturnType {
             return null;
         }
         if (null == returnFields) {
-            JavaFileImpl javaFile = new JavaFileImpl();
-            javaFile.setJavaFilePath(javaFilePath);
-            javaFile.setProjectPath(projectPath);
-            javaFile.getIncludePaths().addAll(includePaths);
-            File returnTypeFile = javaFile.searchTxtJavaFileForProjectsPath(javaKeyTxt);
-
-            List<String> javaFileLines = null;
-            try {
-                javaFileLines = FileUtils.readLines(returnTypeFile, Charset.forName("utf-8"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            List<String> noPackageLines = new ArrayList<>();
-            boolean match = false;//true 找到类的开始，开始查找方法
-            for (String line : javaFileLines) {
-                if (!match) {
-                    for (String chart : Const.MATCH_CHARTS) {
-                        if (line.startsWith(chart)) {
-                            match = true;
-                            break;
-                        }
-                    }
-                }
-                if (match) {
-                    noPackageLines.add(line);
-                }
-            }
-            noPackageLines = noPackageLines.subList(1, noPackageLines.size() - 1);//去掉类头与尾巴
-            List<List<String>> fieldBodyAndDocs = fieldBodyAndDoc(noPackageLines);
-            returnFields = extractDocAndFieldInfo(fieldBodyAndDocs);//提取属性注释及属性信息
+            returnFields = extractDocAndFieldInfo();//提取属性注释及属性信息
         }
         return returnFields;
     }
@@ -121,7 +92,45 @@ public class ReturnTypeImpl implements IReturnType {
         return fieldBodyAndDocs;
     }
 
-    private List<IReturnField> extractDocAndFieldInfo(final List<List<String>> fieldBodyAndDocs) {
+    private List<IReturnField> extractDocAndFieldInfo() {
+        JavaFileImpl javaFile = new JavaFileImpl();
+        javaFile.setJavaFilePath(javaFilePath);
+        javaFile.setProjectPath(projectPath);
+        javaFile.getIncludePaths().addAll(includePaths);
+
+        if(javaKeyTxt.equals("void")){
+            return null;
+        }
+
+        File returnTypeFile = javaFile.searchTxtJavaFileForProjectsPath(javaKeyTxt);
+
+        if(null==returnTypeFile){
+            throw new JapiException("找不到相关文件："+javaKeyTxt+".java");
+        }
+        List<String> javaFileLines = null;
+        try {
+            javaFileLines = FileUtils.readLines(returnTypeFile, Charset.forName("utf-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        List<String> noPackageLines = new ArrayList<>();
+        boolean match = false;//true 找到类的开始，开始查找方法
+        for (String line : javaFileLines) {
+            if (!match) {
+                for (String chart : Const.MATCH_CHARTS) {
+                    if (line.startsWith(chart)) {
+                        match = true;
+                        break;
+                    }
+                }
+            }
+            if (match) {
+                noPackageLines.add(line);
+            }
+        }
+        noPackageLines = noPackageLines.subList(1, noPackageLines.size() - 1);//去掉类头与尾巴
+        final List<List<String>> fieldBodyAndDocs = fieldBodyAndDoc(noPackageLines);
+
         List<IReturnField> fieldImpls = new ArrayList<>(fieldBodyAndDocs.size());
         for (List<String> fieldLines : fieldBodyAndDocs) {
             ReturnFieldImpl fieldImpl = new ReturnFieldImpl();
@@ -132,6 +141,22 @@ public class ReturnTypeImpl implements IReturnType {
             fieldImpl.setDocs(fieldDocs);
             fieldImpl.setAnnotations(extractField.getAnnotations());
             fieldImpl.setType(extractField.getType());
+            if(!builtIn.isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
+                File childTypeFile = javaFile.searchTxtJavaFileForProjectsPath(extractField.getType());
+                if(childTypeFile.getAbsoluteFile().equals(returnTypeFile.getAbsoluteFile())){//自身象
+                    fieldImpl.setName("$this");
+                }else{
+                    ReturnTypeImpl returnTypeImpl =  new ReturnTypeImpl();
+                    returnTypeImpl.setJavaFilePath(returnTypeFile.getAbsolutePath());
+                    returnTypeImpl.setProjectPath(projectPath);
+                    returnTypeImpl.getIncludePaths().addAll(includePaths);
+                    returnTypeImpl.setJavaKeyTxt(extractField.getType());
+                    fieldImpl.setReturnFields(returnTypeImpl.getFields());
+                }
+            }else{
+                fieldImpl.setName(extractField.getName());
+            }
+
 
             fieldImpls.add(fieldImpl);
         }
@@ -214,9 +239,11 @@ public class ReturnTypeImpl implements IReturnType {
             }
         }
         String returnTypeStr = getFieldTypeStr(fieldLineStr);
-        IReturnType returnType = getFieldType(returnTypeStr);
+//        IReturnType returnType = getFieldType(returnTypeStr);
         fieldImpl.setType(returnTypeStr);
         fieldImpl.setAnnotations(annotationStrs);
+        //fieldImpl.setReturnFields(returnType.getFields());
+        fieldImpl.setName(fieldLineStr.split(StringUtils.SPACE)[1]);
         return fieldImpl;
     }
 

@@ -12,8 +12,19 @@ import java.util.List;
  */
 public class ReturnFieldImpl implements IReturnField {
     private List<String> annotations = new ArrayList<>();
+    private List<IReturnField> returnFields;
+    private String name;
     private String type;
     private List<IReturnFieldDoc> docs = new ArrayList<>();
+
+    @Override
+    public List<IReturnField> getReturnFields() {
+        return returnFields;
+    }
+
+    public void setReturnFields(List<IReturnField> returnFields) {
+        this.returnFields = returnFields;
+    }
 
     @Override
     public List<String> getAnnotations() {
@@ -40,5 +51,14 @@ public class ReturnFieldImpl implements IReturnField {
 
     public void setDocs(List<IReturnFieldDoc> docs) {
         this.docs = docs;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

@@ -5,13 +5,13 @@ import java.util.List;
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public interface IMethod {
+public interface IActionMethod {
 
     List<IActionMethodDoc> getDocs();
 
     List<String> getAnnotations();
 
-    String getReturnType();
+    IReturnType getReturnType();
 
     List<String> getParameters();
 

@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public class User {
+public class UserChild {
 
     /**
      * 用户名

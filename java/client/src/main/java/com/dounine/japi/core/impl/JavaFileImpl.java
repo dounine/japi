@@ -71,7 +71,6 @@ public class JavaFileImpl implements IJavaFile {
             } else {
                 findChildFiles.add(javaTxtFile);
             }
-            System.out.println("point:" + findChildFiles.get(0).getAbsolutePath());
             if (findChildFiles.size() > 1) {
                 findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                 javaFile = findChildFiles.get(0);
@@ -141,6 +140,8 @@ public class JavaFileImpl implements IJavaFile {
                     containFiles = containFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                     javaFile = containFiles.get(0);
                     LOGGER.warn("找到多个文件,默认取路径最短一个 " + JSON.toJSONString(containFiles));
+                }else if(containFiles.size()==1){
+                    javaFile = containFiles.get(0);
                 }
             }
         }

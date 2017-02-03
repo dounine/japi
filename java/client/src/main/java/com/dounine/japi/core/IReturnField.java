@@ -9,6 +9,10 @@ public interface IReturnField {
 
     List<String> getAnnotations();
 
+    List<IReturnField> getReturnFields();
+
+    String getName();
+
     String getType();
 
     List<IReturnFieldDoc> getDocs();

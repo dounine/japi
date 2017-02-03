@@ -66,8 +66,8 @@ public class ActionImpl implements IAction {
     }
 
     @Override
-    public List<IMethod> getMethods() {
-        List<IMethod> methods = null;
+    public List<IActionMethod> getMethods() {
+        List<IActionMethod> methods = null;
         try {
             List<String> javaFileLines = FileUtils.readLines(new File(javaFilePath), Charset.forName("utf-8"));
             List<String> noPackageLines = new ArrayList<>();
@@ -292,12 +292,10 @@ public class ActionImpl implements IAction {
         }
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
         IReturnType returnType = getMethodReturnType(returnTypeStr);
-        returnType.getFields();
-//        System.out.println(JSON.toJSONString(returnType.getFields()));
 
         List<String> methodParameters = getMethodParameters(methodLineStr);
 
-        methodImpl.setReturnType(returnTypeStr);
+        methodImpl.setReturnType(returnType);
         methodImpl.setAnnotations(annotationStrs);
         methodImpl.setParameters(methodParameters);
 
@@ -309,8 +307,8 @@ public class ActionImpl implements IAction {
      *
      * @return 方法列表
      */
-    private List<IMethod> extractDocAndMethodInfo(final List<List<String>> methodBodyAndDocs) {
-        List<IMethod> methodImpls = new ArrayList<>(methodBodyAndDocs.size());
+    private List<IActionMethod> extractDocAndMethodInfo(final List<List<String>> methodBodyAndDocs) {
+        List<IActionMethod> methodImpls = new ArrayList<>(methodBodyAndDocs.size());
         for (List<String> methodLines : methodBodyAndDocs) {
             MethodImpl methodImpl = new MethodImpl();
 
@@ -329,13 +327,12 @@ public class ActionImpl implements IAction {
         javaFile.setJavaFilePath(javaFilePath);
         javaFile.setProjectPath(projectPath);
         javaFile.getIncludePaths().addAll(includePaths);
-        for (IMethod iMethod : methodImpls) {
-            System.out.println("返回类型：" + iMethod.getReturnType());
-            File file = javaFile.searchTxtJavaFileForProjectsPath(iMethod.getReturnType());
-            System.out.println("类型文件：" + file.getAbsolutePath());
-            System.out.println("参数类型：" + JSON.toJSONString(iMethod.getParameters()));
+        for (IActionMethod actionMethod : methodImpls) {
+            System.out.println("返回类型：" + actionMethod.getReturnType());
+            System.out.println("详细信息: "+JSON.toJSONString(actionMethod.getReturnType(),true));
+            System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
             System.out.println("----------");
-            for (IActionMethodDoc doc : iMethod.getDocs()) {
+            for (IActionMethodDoc doc : actionMethod.getDocs()) {
                 if (doc.getDocType().equals(DocType.FUNDES)) {
                     System.out.println("方法：" + doc.getName());
                 } else if (doc.getDocType().equals(DocType.DSINGLE)) {

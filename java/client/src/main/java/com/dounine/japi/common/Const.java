@@ -54,7 +54,7 @@ public final class Const {
      */
     public static final Pattern[] METHOD_RETURN_TYPES = {Pattern.compile("^(\\s*)(public)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(private)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(void)\\s*[a-zA-z0-9]*[(]"), Pattern.compile("^(\\s*)(protected)\\s*(\\S*|\\S*\\s\\S*).\\s*[a-zA-z0-9]*[(]")};
     /**
-     * 参数行：(@Validated(value = {IMethod.class, IParameterField.class}) User user, String bb, Integer[] last){
+     * 参数行：(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last){
      */
     public static final Pattern PARAMETER_BODYS = Pattern.compile("[(][\\S\\s]*[)]\\s*[{]$");
     /**

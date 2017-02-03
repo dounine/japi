@@ -13,6 +13,6 @@ public interface IAction {
 
     List<String> getExcludeTypes();
 
-    List<IMethod> getMethods();
+    List<IActionMethod> getMethods();
 
 }

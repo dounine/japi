@@ -30,13 +30,13 @@ public class MainTest {
         console(url);
 //        URL url = new URL("jar:file:")
 //        try {
-//           InputStream is = MainTest.class.getClassLoader().getResourceAsStream("/src/test/com/dounine/japi/test/entity/User.java");
+//           InputStream is = MainTest.class.getClassLoader().getResourceAsStream("/src/test/com/dounine/japi/test/entity/UserChild.java");
 //        try {
 //            console(is.available());
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-//            Class.forName("com.dounine.japi.test.entity.User");
+//            Class.forName("com.dounine.japi.test.entity.UserChild");
 //        } catch (ClassNotFoundException e) {
 //            e.printStackTrace();
 //        }

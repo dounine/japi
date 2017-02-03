@@ -1,18 +1,19 @@
 package com.dounine.japi.core.impl;
 
+import com.dounine.japi.core.IActionMethod;
 import com.dounine.japi.core.IActionMethodDoc;
-import com.dounine.japi.core.IMethod;
+import com.dounine.japi.core.IReturnType;
 
 import java.util.List;
 
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public class MethodImpl implements IMethod{
+public class MethodImpl implements IActionMethod {
 
     private List<String> annotations;
     private List<String> parameters;
-    private String returnType;
+    private IReturnType returnType;
 
     private List<IActionMethodDoc> docs;
 
@@ -43,11 +44,11 @@ public class MethodImpl implements IMethod{
     }
 
     @Override
-    public String getReturnType() {
+    public IReturnType getReturnType() {
         return returnType;
     }
 
-    public void setReturnType(String returnType) {
+    public void setReturnType(IReturnType returnType) {
         this.returnType = returnType;
     }
 }

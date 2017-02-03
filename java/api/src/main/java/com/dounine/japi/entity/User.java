@@ -1,5 +1,6 @@
 package com.dounine.japi.entity;
 
+import com.dounine.japi.entity.u.UserChild;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 
@@ -19,6 +20,14 @@ public class User {
      * 用户密码
      */
     private String password;
+    /**
+     * 测试子类
+     */
+    private UserChild userChild;
+    /**
+     * 我是我
+     */
+    private User user;
 
     public String getUsername() {
         return username;
@@ -34,5 +43,21 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UserChild getUserChild() {
+        return userChild;
+    }
+
+    public void setUserChild(UserChild userChild) {
+        this.userChild = userChild;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
