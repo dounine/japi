@@ -31,8 +31,9 @@ public class ActionImpl implements IAction {
     private String projectPath;
     private String javaFilePath;
     private List<String> includePaths = new ArrayList<>();
+    private static final DocTagImpl docTag = new DocTagImpl();
 
-    private static final Logger CONSOLE = LoggerFactory.getLogger(ActionImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionImpl.class);
 
     @Override
     public String readClassInfo() {
@@ -90,7 +91,7 @@ public class ActionImpl implements IAction {
             methods = extractDocAndMethodInfo(methodBodyAndDocs);//提取方法注释及方法信息
 
         } catch (IOException e) {
-            CONSOLE.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new JapiException(e.getMessage());
         }
         return methods;
@@ -148,6 +149,7 @@ public class ActionImpl implements IAction {
     private List<IActionMethodDoc> extractDoc(final List<String> methodLines) {
         boolean methodBegin = false;
         List<IActionMethodDoc> methodDocs = new ArrayList<>();
+
         for (String methodLine : methodLines) {
             Matcher matcherDocBegin = Const.DOC_PATTERN_BEGIN.matcher(methodLine);
             if (!methodBegin && matcherDocBegin.find()) {
@@ -167,7 +169,7 @@ public class ActionImpl implements IAction {
                     Matcher methodMoreMatcher = Const.DOC_MORE.matcher(methodLine);
                     if (methodMoreMatcher.find()) {
                         docImpl.setName(methodFunDesMatcher.group().substring(methodMoreMatcher.group().length()));
-                        docImpl.setDocType(DocType.FUNDES);
+                        docImpl.setDocType(DocType.FUNDES.name());
                     }
                 } else {
                     Matcher methodMoreMatcher = Const.DOC_MORE.matcher(methodLine);//注释左   *
@@ -179,19 +181,36 @@ public class ActionImpl implements IAction {
                             String docName = methodNameValue.substring(3);
                             docImpl.setName(docName);
                             Matcher methodNameValueMatcher = Const.DOC_NAME_VALUE.matcher(methodLine);//注释名称 * \@param user
-                            int singleDocIndex = Arrays.binarySearch(Const.SINGLE_DOC_VALUE, docName);
-                            if (singleDocIndex >= 0) {//是否匹配单个注释：return
-                                docImpl.setDocType(DocType.DSINGLE);
-                                docImpl.setDes(methodLine.substring(methodLine.indexOf(docName) + Const.SINGLE_DOC_VALUE[singleDocIndex].length()).trim());
+                            String docTagDes = docTag.getDocTags().get(docName);
+                            String _docTagDes = StringUtils.isBlank(docTagDes) ? docTag.getDocTags().get(docName + ".") : docTagDes;
+                            boolean isSingleTag = StringUtils.isBlank(docTagDes) && !(StringUtils.isNotBlank(_docTagDes) && _docTagDes.equals(docTagDes));
+                            if (StringUtils.isNotBlank(_docTagDes)) {//是否匹配注释tag：return.
+                                docImpl.setDocType(_docTagDes);
+                                String valueAndDes = methodLine.substring(methodLine.indexOf(docName) + docName.length()).trim();
+                                if (!isSingleTag) {
+                                    String[] vad = valueAndDes.split(StringUtils.SPACE);
+                                    docImpl.setValue(vad[0]);
+                                    if(vad.length==1){
+                                        LOGGER.warn(methodLine.trim().substring(2)+" 没有注释信息.");
+                                    }else{
+                                        docImpl.setDes(vad[1]);
+                                    }
+                                } else {
+                                    docImpl.setValue(valueAndDes);
+                                }
+
                             } else if (methodNameValueMatcher.find()) {
-                                String docValue = methodNameValueMatcher.group().substring(methodNameValue.length());
+                                String docValueAndDes = methodNameValueMatcher.group();
+                                String docValue = docValueAndDes.substring(methodNameValue.length());
                                 if (methodLine.endsWith(docValue)) {
-                                    CONSOLE.warn(methodLine + " 没有注释");
+                                    String[] docTypeAndValue = docValueAndDes.substring(3).split(StringUtils.SPACE);
+                                    docImpl.setDocType(docTypeAndValue[0]);
+                                    docImpl.setValue(docTypeAndValue[1]);
                                 } else {
                                     String docDes = methodLine.substring(methodLine.indexOf(docValue)).trim().substring(docValue.length());
                                     docImpl.setDes(docDes.trim());
+                                    docImpl.setValue(docValue);
                                 }
-                                docImpl.setValue(docValue);
                             }
                         }
                     }
@@ -207,7 +226,7 @@ public class ActionImpl implements IAction {
 
 
     private IReturnType getMethodReturnType(final String returnTypeStr) {
-        ReturnTypeImpl returnTypeImpl =  new ReturnTypeImpl();
+        ReturnTypeImpl returnTypeImpl = new ReturnTypeImpl();
         returnTypeImpl.setJavaFilePath(javaFilePath);
         returnTypeImpl.setProjectPath(projectPath);
         returnTypeImpl.getIncludePaths().addAll(includePaths);
@@ -217,6 +236,7 @@ public class ActionImpl implements IAction {
 
     /**
      * 获取方法返回值
+     *
      * @param methodLineStr 方法行
      * @return 类型：String
      */
@@ -328,17 +348,16 @@ public class ActionImpl implements IAction {
         javaFile.setProjectPath(projectPath);
         javaFile.getIncludePaths().addAll(includePaths);
         for (IActionMethod actionMethod : methodImpls) {
-            System.out.println("返回类型：" + actionMethod.getReturnType());
-            System.out.println("详细信息: "+JSON.toJSONString(actionMethod.getReturnType(),true));
+            System.out.println("返回类型：" + actionMethod.getReturnType().getClass().getName());
+            System.out.println("详细信息: " + JSON.toJSONString(actionMethod.getReturnType(), true));
             System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
+            System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
             System.out.println("----------");
             for (IActionMethodDoc doc : actionMethod.getDocs()) {
-                if (doc.getDocType().equals(DocType.FUNDES)) {
+                if (DocType.FUNDES.name().equals(doc.getDocType())) {
                     System.out.println("方法：" + doc.getName());
-                } else if (doc.getDocType().equals(DocType.DSINGLE)) {
-                    System.out.println("返回值：" + doc.getName() + " : " + doc.getDes());
                 } else {
-                    System.out.println("参数：" + doc.getValue() + " : " + doc.getDes());
+                    System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
                 }
             }
             System.out.println("----------");

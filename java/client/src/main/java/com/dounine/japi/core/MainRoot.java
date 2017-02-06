@@ -38,6 +38,9 @@ public class MainRoot {
      * @param user 没用户
      * @param bb testParameter
      * @param last aaa
+     * @deprecated yes
+     * @deprecated1 yes
+     * @return 信息
      */
     @GetMapping("bb")
     @ResponseBody

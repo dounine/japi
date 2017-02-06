@@ -9,7 +9,7 @@ import com.dounine.japi.core.type.DocType;
 public class ActionMethodDocImpl implements IActionMethodDoc {
 
     private String name = "";
-    private DocType docType = DocType.COMMON;
+    private String docType;
     private String value = "";
     private String des = "";
 
@@ -40,11 +40,11 @@ public class ActionMethodDocImpl implements IActionMethodDoc {
         this.des = des;
     }
 
-    public DocType getDocType() {
+    public String getDocType() {
         return docType;
     }
 
-    public void setDocType(DocType docType) {
+    public void setDocType(String docType) {
         this.docType = docType;
     }
 }

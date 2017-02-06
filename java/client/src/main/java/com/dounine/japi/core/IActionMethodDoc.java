@@ -9,7 +9,7 @@ import java.util.List;
  */
 public interface IActionMethodDoc {
 
-    DocType getDocType();
+    String getDocType();
 
     String getName();
 
