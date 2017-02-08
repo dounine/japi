@@ -429,11 +429,17 @@ public class ActionImpl implements IAction {
             for (IActionMethod actionMethod : methodImpls) {
                 System.out.println("方法描述：" + actionMethod.getMethodDescription());
                 System.out.println("请求地扯：" + JSON.toJSON(actionMethod.getRequests()));
-                System.out.println("返回值信息 : " + JSON.toJSONString(actionMethod.getReturnType(), true));
                 System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
                 System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
+                boolean hasReturnDoc = false;
                 for (IActionMethodDoc doc : actionMethod.getDocs()) {
+                    if(doc.getName().equals("return")){
+                        hasReturnDoc = true;
+                    }
                     System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
+                }
+                if(!hasReturnDoc){
+                    System.out.println("返回值信息 : " + JSON.toJSONString(actionMethod.getReturnType(), true));
                 }
                 System.out.println("----------");
             }

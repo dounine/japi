@@ -142,10 +142,11 @@ public class ReturnTypeImpl implements IReturnType {
             fieldImpl.setType(extractField.getType());
             if(!BuiltInImpl.getInstance().isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
                 File childTypeFile = javaFile.searchTxtJavaFileForProjectsPath(extractField.getType());
-                if(childTypeFile.getAbsoluteFile().equals(returnTypeFile.getAbsoluteFile())){//自身象
-                    fieldImpl.setName("$this");
+                if(childTypeFile.getAbsoluteFile().equals(returnTypeFile.getAbsoluteFile())){//自身对象
+                    fieldImpl.setName(extractField.getName());
+                    fieldImpl.setType("$this");
                 }else{
-                    ReturnTypeImpl returnTypeImpl =  new ReturnTypeImpl();
+                    ReturnTypeImpl returnTypeImpl = new ReturnTypeImpl();
                     returnTypeImpl.setJavaFilePath(returnTypeFile.getAbsolutePath());
                     returnTypeImpl.setProjectPath(projectPath);
                     returnTypeImpl.setIncludePaths(includePaths);
@@ -241,7 +242,9 @@ public class ReturnTypeImpl implements IReturnType {
         fieldImpl.setType(returnTypeStr);
         fieldImpl.setAnnotations(annotationStrs);
         //fieldImpl.setReturnFields(returnType.getFields());
-        fieldImpl.setName(fieldLineStr.split(StringUtils.SPACE)[1]);
+        fieldLineStr = fieldLineStr.endsWith(";")?StringUtils.substring(fieldLineStr,0,-1):fieldLineStr;
+        String[] typeOrName = fieldLineStr.split(StringUtils.SPACE);
+        fieldImpl.setName(typeOrName[typeOrName.length-1]);
         return fieldImpl;
     }
 

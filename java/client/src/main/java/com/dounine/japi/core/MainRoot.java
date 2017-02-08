@@ -19,11 +19,9 @@ public class MainRoot {
 
     /**
      * 测试例子
-     *
      * @param user 用户信息
      * @param bb   测试参数
      * @param last 测试参数1
-     * @return {"success":"成功" | "error":"错误"}
      */
     @org.springframework.web.bind.annotation.GetMapping("aa")
     @ResponseBody
@@ -37,7 +35,7 @@ public class MainRoot {
      * @param user 没用户
      * @param bb   testParameter
      * @param last aaa
-     * @return 信息
+     * @return {success:"成功",error:"失败"}
      * @deprecated1 yes
      * @deprecated yes
      */
