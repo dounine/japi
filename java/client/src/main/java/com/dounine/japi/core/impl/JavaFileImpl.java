@@ -75,6 +75,8 @@ public class JavaFileImpl implements IJavaFile {
                 findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                 javaFile = findChildFiles.get(0);
                 LOGGER.warn("找到多个文件" + JSON.toJSONString(findChildFiles));
+            }else if(findChildFiles.size()==1){
+                javaFile = findChildFiles.get(0);
             }
         } else {
             List<File> findChildFiles = new ArrayList<>();
@@ -105,6 +107,8 @@ public class JavaFileImpl implements IJavaFile {
                 findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                 javaFile = findChildFiles.get(0);
                 LOGGER.warn("找到多个文件" + JSON.toJSONString(findChildFiles));
+            }else if(findChildFiles.size()==1){
+                javaFile = findChildFiles.get(0);
             }
 
             if (findChildFiles.size() == 0) {
