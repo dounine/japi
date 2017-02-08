@@ -23,8 +23,9 @@ public class BuiltInImpl implements IBuiltIn {
     private static String[] builtInPaths;
     private static List<String> types;
     private static File builtInFile;
+    private static final BuiltInImpl builtIn = new BuiltInImpl();
 
-    public BuiltInImpl() {
+    private BuiltInImpl() {
         if (null == builtInFile) {
             URL url = this.getClass().getResource("/class-builtIn-types.txt");
             builtInFile = new File(url.getFile());
@@ -35,6 +36,10 @@ public class BuiltInImpl implements IBuiltIn {
             }
             builtInPaths = new String[]{url.getFile()};
         }
+    }
+
+    public static BuiltInImpl getInstance(){
+        return builtIn;
     }
 
     @Override

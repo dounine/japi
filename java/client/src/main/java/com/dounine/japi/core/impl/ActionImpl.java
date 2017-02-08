@@ -3,6 +3,8 @@ package com.dounine.japi.core.impl;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.Const;
 import com.dounine.japi.core.*;
+import com.dounine.japi.core.annotation.IActionRequest;
+import com.dounine.japi.core.annotation.impl.ActionRequest;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
@@ -11,9 +13,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -190,9 +195,9 @@ public class ActionImpl implements IAction {
                                 if (!isSingleTag) {
                                     String[] vad = valueAndDes.split(StringUtils.SPACE);
                                     docImpl.setValue(vad[0]);
-                                    if(vad.length==1){
-                                        LOGGER.warn(methodLine.trim().substring(2)+" 没有注释信息.");
-                                    }else{
+                                    if (vad.length == 1) {
+                                        LOGGER.warn(methodLine.trim().substring(2) + " 没有注释信息.");
+                                    } else {
                                         docImpl.setDes(vad[1]);
                                     }
                                 } else {
@@ -229,7 +234,7 @@ public class ActionImpl implements IAction {
         ReturnTypeImpl returnTypeImpl = new ReturnTypeImpl();
         returnTypeImpl.setJavaFilePath(javaFilePath);
         returnTypeImpl.setProjectPath(projectPath);
-        returnTypeImpl.getIncludePaths().addAll(includePaths);
+        returnTypeImpl.setIncludePaths(includePaths);
         returnTypeImpl.setJavaKeyTxt(returnTypeStr);
         return returnTypeImpl;
     }
@@ -312,14 +317,83 @@ public class ActionImpl implements IAction {
         }
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
         IReturnType returnType = getMethodReturnType(returnTypeStr);
+        String[] requests = getRequestsByAnnotations(annotationStrs);
 
         List<String> methodParameters = getMethodParameters(methodLineStr);
 
         methodImpl.setReturnType(returnType);
         methodImpl.setAnnotations(annotationStrs);
+        methodImpl.setRequests(requests);
         methodImpl.setParameters(methodParameters);
 
         return methodImpl;
+    }
+
+    /**
+     * 从注解中获取请求url地扯
+     *
+     * @param annotationStrs
+     * @return
+     */
+    @GetMapping
+    private String[] getRequestsByAnnotations(List<String> annotationStrs) {
+        List<IActionRequest> actionRequests = new ArrayList<>();
+        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.GetMapping", true, "value"));
+        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.PostMapping", true, "value"));
+        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.PutMapping", true, "value"));
+        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.DeleteMapping", true, "value"));
+        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.PatchMapping", true, "value"));
+
+        LOGGER.info("====");
+        String requestAnno = null, requestAnnoOrign = null;
+        Pattern REQUEST_ANNO_PATTERN = Pattern.compile("^\\S+[(]");
+        for (String annotationLine : annotationStrs) {
+            Matcher requestAnnoMatcher = REQUEST_ANNO_PATTERN.matcher(annotationLine);
+            if (requestAnnoMatcher.find()) {
+                requestAnnoOrign = annotationLine;
+                requestAnno = StringUtils.substring(requestAnnoMatcher.group(), 0, -1);
+                break;
+            }
+        }
+
+        IActionRequest actionRequest = null;
+        if (StringUtils.isNotBlank(requestAnno)) {
+            for (IActionRequest ar : actionRequests) {
+                if (ar.annotation().equals(requestAnno)) {
+                    actionRequest = ar;
+                    break;
+                } else if (ar.annotation().indexOf(".") >= -1) {
+                    if (ar.annotation().endsWith(requestAnno)) {
+                        actionRequest = ar;
+                        break;
+                    }
+                }
+            }
+        }
+        String[] requestUrls = null;
+        if (null != actionRequest) {
+            Pattern pattern = Pattern.compile(actionRequest.valueField() + "(\\s){0,}[=](\\s){0,}");
+            Matcher matcher = pattern.matcher(requestAnnoOrign);
+            if (matcher.find()) {
+                String arryOrSingle = matcher.group();
+                String beginStr = StringUtils.substring(requestAnnoOrign, matcher.start());
+                if (beginStr.startsWith(arryOrSingle + "\"")) {//单个值
+                    String valueAndEndSym = beginStr.substring(arryOrSingle.length());
+                    requestUrls = new String[]{StringUtils.substring(valueAndEndSym, 0, valueAndEndSym.lastIndexOf(")"))};
+                } else if (beginStr.startsWith(arryOrSingle + "{")) {//多个值
+                    Matcher symBeginMatcher = Const.PATTERN_SYM_BEGIN.matcher(beginStr);
+                    Matcher symEndMatcher = Const.PATTERN_SYM_END.matcher(beginStr);
+                    if (symBeginMatcher.find() && symEndMatcher.find()) {
+                        String arrStr = StringUtils.substring(beginStr, symBeginMatcher.start() + 1, symEndMatcher.end() - 1).trim();
+                        requestUrls = arrStr.split(",");
+                    }
+                }
+            } else {
+                String symAndValue = StringUtils.substring(requestAnnoOrign, requestAnno.length());
+                requestUrls = new String[]{StringUtils.substring(symAndValue.trim(), 1, -1)};
+            }
+        }
+        return requestUrls;
     }
 
     /**
@@ -334,34 +408,37 @@ public class ActionImpl implements IAction {
 
             List<IActionMethodDoc> methodDocs = extractDoc(methodLines);//提取类注释信息
             MethodImpl extractMethod = extractMethod(methodLines);//提取方法信息
-
+            Iterator<IActionMethodDoc> methodDocIterator = methodDocs.iterator();
+            while (methodDocIterator.hasNext()) {//提取方法描述信息
+                IActionMethodDoc actionMethodDoc = methodDocIterator.next();
+                if (DocType.FUNDES.name().equals(actionMethodDoc.getDocType())) {
+                    methodImpl.setMethodDescription(actionMethodDoc.getName());
+                    methodDocIterator.remove();
+                    break;
+                }
+            }
             methodImpl.setDocs(methodDocs);
             methodImpl.setAnnotations(extractMethod.getAnnotations());
             methodImpl.setReturnType(extractMethod.getReturnType());
+            methodImpl.setRequests(extractMethod.getRequests());
             methodImpl.setParameters(extractMethod.getParameters());
 
             methodImpls.add(methodImpl);
         }
-        System.out.println("========");
-        JavaFileImpl javaFile = new JavaFileImpl();
-        javaFile.setJavaFilePath(javaFilePath);
-        javaFile.setProjectPath(projectPath);
-        javaFile.getIncludePaths().addAll(includePaths);
-        for (IActionMethod actionMethod : methodImpls) {
-            System.out.println("返回类型：" + actionMethod.getReturnType().getClass().getName());
-            System.out.println("详细信息: " + JSON.toJSONString(actionMethod.getReturnType(), true));
-            System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
-            System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
-            System.out.println("----------");
-            for (IActionMethodDoc doc : actionMethod.getDocs()) {
-                if (DocType.FUNDES.name().equals(doc.getDocType())) {
-                    System.out.println("方法：" + doc.getName());
-                } else {
+        if (true) {
+            for (IActionMethod actionMethod : methodImpls) {
+                System.out.println("方法描述：" + actionMethod.getMethodDescription());
+                System.out.println("请求地扯：" + JSON.toJSON(actionMethod.getRequests()));
+                System.out.println("返回值信息 : " + JSON.toJSONString(actionMethod.getReturnType(), true));
+                System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
+                System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
+                for (IActionMethodDoc doc : actionMethod.getDocs()) {
                     System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
                 }
+                System.out.println("----------");
             }
-            System.out.println("----------");
         }
+
         return methodImpls;
     }
 

@@ -11,7 +11,11 @@ public interface IActionMethod {
 
     List<String> getAnnotations();
 
+    String getMethodDescription();
+
     IReturnType getReturnType();
+
+    String[] getRequests();
 
     List<String> getParameters();
 

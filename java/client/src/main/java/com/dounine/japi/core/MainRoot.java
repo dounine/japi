@@ -4,10 +4,7 @@ import com.dounine.japi.core.impl.ActionImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.entity.*;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,12 +19,13 @@ public class MainRoot {
 
     /**
      * 测试例子
+     *
      * @param user 用户信息
-     * @param bb 测试参数
+     * @param bb   测试参数
      * @param last 测试参数1
      * @return {"success":"成功" | "error":"错误"}
      */
-    @GetMapping("aa")
+    @org.springframework.web.bind.annotation.GetMapping("aa")
     @ResponseBody
     public User testUser(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
         return null;
@@ -35,16 +33,21 @@ public class MainRoot {
 
     /**
      * 哈哈
+     *
      * @param user 没用户
-     * @param bb testParameter
+     * @param bb   testParameter
      * @param last aaa
-     * @deprecated yes
-     * @deprecated1 yes
      * @return 信息
+     * @deprecated1 yes
+     * @deprecated yes
      */
-    @GetMapping("bb")
+    @GetMapping(value = {   "login", "cc"})
+    @PostMapping(value = "login")
+    @DeleteMapping({"login", "mlogin/{id}"})
+    @PutMapping(value = {"login", "mlogin/{id}"})
+    @RequestMapping(value = "llogin")
     @ResponseBody
-    public void testVoid(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
+    public void login(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
     }
 
     public static String javaFilePath = "/home/lake/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";

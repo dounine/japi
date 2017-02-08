@@ -32,7 +32,6 @@ public class ReturnTypeImpl implements IReturnType {
     private List<String> includePaths = new ArrayList<>();
     private String javaKeyTxt;
     private List<IReturnField> returnFields;
-    private IBuiltIn builtIn = new BuiltInImpl();
 
     @Override
     public List<IReturnField> getFields() {
@@ -41,7 +40,7 @@ public class ReturnTypeImpl implements IReturnType {
             throw new JapiException("javaKeyTxt 不能为空");
         }
 
-        if(builtIn.isBuiltInType(javaKeyTxt)){
+        if(BuiltInImpl.getInstance().isBuiltInType(javaKeyTxt)){
             return null;
         }
         if (null == returnFields) {
@@ -52,7 +51,7 @@ public class ReturnTypeImpl implements IReturnType {
 
     @Override
     public boolean isBuiltInType() {
-        return builtIn.isBuiltInType(javaKeyTxt);
+        return BuiltInImpl.getInstance().isBuiltInType(javaKeyTxt);
     }
 
     private List<List<String>> fieldBodyAndDoc(final List<String> noPackageLines) {
@@ -141,7 +140,7 @@ public class ReturnTypeImpl implements IReturnType {
             fieldImpl.setDocs(fieldDocs);
             fieldImpl.setAnnotations(extractField.getAnnotations());
             fieldImpl.setType(extractField.getType());
-            if(!builtIn.isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
+            if(!BuiltInImpl.getInstance().isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
                 File childTypeFile = javaFile.searchTxtJavaFileForProjectsPath(extractField.getType());
                 if(childTypeFile.getAbsoluteFile().equals(returnTypeFile.getAbsoluteFile())){//自身象
                     fieldImpl.setName("$this");
@@ -149,7 +148,7 @@ public class ReturnTypeImpl implements IReturnType {
                     ReturnTypeImpl returnTypeImpl =  new ReturnTypeImpl();
                     returnTypeImpl.setJavaFilePath(returnTypeFile.getAbsolutePath());
                     returnTypeImpl.setProjectPath(projectPath);
-                    returnTypeImpl.getIncludePaths().addAll(includePaths);
+                    returnTypeImpl.setIncludePaths(includePaths);
                     returnTypeImpl.setJavaKeyTxt(extractField.getType());
                     fieldImpl.setReturnFields(returnTypeImpl.getFields());
                 }
@@ -199,7 +198,6 @@ public class ReturnTypeImpl implements IReturnType {
                             if (methodNameValueMatcher.find()) {
                                 String docValue = methodNameValueMatcher.group().substring(methodNameValue.length());
                                 if (fieldLine.endsWith(docValue)) {
-//                                    CONSOLE.warn(fieldLine + " 没有注释");
                                     docImpl.setValue(docValue.trim());
                                 } else {
                                     String val = fieldLine.substring(fieldLine.indexOf(docValue)).trim().substring(docValue.length());
@@ -272,37 +270,21 @@ public class ReturnTypeImpl implements IReturnType {
         ReturnTypeImpl returnTypeImpl =  new ReturnTypeImpl();
         returnTypeImpl.setJavaFilePath(javaFilePath);
         returnTypeImpl.setProjectPath(projectPath);
-        returnTypeImpl.getIncludePaths().addAll(includePaths);
+        returnTypeImpl.setIncludePaths(includePaths);
         returnTypeImpl.setJavaKeyTxt(returnTypeStr);
         return returnTypeImpl;
-    }
-
-    public String getJavaFilePath() {
-        return javaFilePath;
     }
 
     public void setJavaFilePath(String javaFilePath) {
         this.javaFilePath = javaFilePath;
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
     public void setProjectPath(String projectPath) {
         this.projectPath = projectPath;
     }
 
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
     public void setIncludePaths(List<String> includePaths) {
         this.includePaths = includePaths;
-    }
-
-    public String getJavaKeyTxt() {
-        return javaKeyTxt;
     }
 
     public void setJavaKeyTxt(String javaKeyTxt) {
