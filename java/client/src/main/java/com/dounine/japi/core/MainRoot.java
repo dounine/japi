@@ -20,7 +20,7 @@ public class MainRoot {
     /**
      * 测试例子
      * @param user 用户信息
-     * @param bb   测试参数
+     * @param bb  测试参数
      * @param last 测试参数1
      */
     @org.springframework.web.bind.annotation.GetMapping("aa")
@@ -33,13 +33,13 @@ public class MainRoot {
      * 哈哈
      *
      * @param user 没用户
-     * @param bb   testParameter
-     * @param last aaa
-     * @return {success:"成功",error:"失败"}
+     * @param bb 测试参数
+     * @param last
+     * @return class User
      * @deprecated1 yes
      * @deprecated yes
      */
-    @GetMapping(value = {   "login", "cc"})
+    @GetMapping(value = {"login", "cc"})
     @PostMapping(value = "login")
     @DeleteMapping({"login", "mlogin/{id}"})
     @PutMapping(value = {"login", "mlogin/{id}"})

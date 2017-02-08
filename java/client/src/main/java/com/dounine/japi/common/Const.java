@@ -62,6 +62,6 @@ public final class Const {
      */
     public static final Pattern PARAMETER_SINGLE_NAME = Pattern.compile("[\\s][a-zA-Z0-9]*[,]");
 
-    public static final Pattern PATTERN_SYM_BEGIN = Pattern.compile("[{]\\s{0,}[\"]");
-    public static final Pattern PATTERN_SYM_END = Pattern.compile("[\"]\\s{0,}[}]");
+    public static final Pattern PATTERN_SYM_BEGIN = Pattern.compile("[{]\\s*[\"]");
+    public static final Pattern PATTERN_SYM_END = Pattern.compile("[\"]\\s*[}]");
 }

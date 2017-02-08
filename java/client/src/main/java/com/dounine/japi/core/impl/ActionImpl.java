@@ -36,7 +36,6 @@ public class ActionImpl implements IAction {
     private String projectPath;
     private String javaFilePath;
     private List<String> includePaths = new ArrayList<>();
-    private static final DocTagImpl docTag = new DocTagImpl();
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionImpl.class);
 
@@ -186,19 +185,20 @@ public class ActionImpl implements IAction {
                             String docName = methodNameValue.substring(3);
                             docImpl.setName(docName);
                             Matcher methodNameValueMatcher = Const.DOC_NAME_VALUE.matcher(methodLine);//注释名称 * \@param user
-                            String docTagDes = docTag.getDocTags().get(docName);
-                            String _docTagDes = StringUtils.isBlank(docTagDes) ? docTag.getDocTags().get(docName + ".") : docTagDes;
+                            String docTagDes = DocTagImpl.getInstance().getTagDesByName(docName);
+                            String _docTagDes = StringUtils.isBlank(docTagDes) ? DocTagImpl.getInstance().getTagDesByName(docName + ".") : docTagDes;
                             boolean isSingleTag = StringUtils.isBlank(docTagDes) && !(StringUtils.isNotBlank(_docTagDes) && _docTagDes.equals(docTagDes));
                             if (StringUtils.isNotBlank(_docTagDes)) {//是否匹配注释tag：return.
                                 docImpl.setDocType(_docTagDes);
                                 String valueAndDes = methodLine.substring(methodLine.indexOf(docName) + docName.length()).trim();
                                 if (!isSingleTag) {
-                                    String[] vad = valueAndDes.split(StringUtils.SPACE);
-                                    docImpl.setValue(vad[0]);
-                                    if (vad.length == 1) {
+                                    int emptySpaceIndex = valueAndDes.indexOf(StringUtils.SPACE);
+                                    if (emptySpaceIndex == -1) {
+                                        docImpl.setValue(valueAndDes);
                                         LOGGER.warn(methodLine.trim().substring(2) + " 没有注释信息.");
                                     } else {
-                                        docImpl.setDes(vad[1]);
+                                        docImpl.setValue(StringUtils.substring(valueAndDes,0,emptySpaceIndex));
+                                        docImpl.setDes(StringUtils.substring(valueAndDes,docImpl.getValue().length()).trim());
                                     }
                                 } else {
                                     docImpl.setValue(valueAndDes);
@@ -406,7 +406,7 @@ public class ActionImpl implements IAction {
         for (List<String> methodLines : methodBodyAndDocs) {
             MethodImpl methodImpl = new MethodImpl();
 
-            List<IActionMethodDoc> methodDocs = extractDoc(methodLines);//提取类注释信息
+            List<IActionMethodDoc> methodDocs = extractDoc(methodLines);//提取方法注释信息
             MethodImpl extractMethod = extractMethod(methodLines);//提取方法信息
             Iterator<IActionMethodDoc> methodDocIterator = methodDocs.iterator();
             while (methodDocIterator.hasNext()) {//提取方法描述信息
@@ -436,10 +436,15 @@ public class ActionImpl implements IAction {
                     if(doc.getName().equals("return")){
                         hasReturnDoc = true;
                     }
-                    System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
+                    if(hasReturnDoc&&doc.getValue().split(" ")[0].equals("class")){
+                        IReturnType returnType  = getMethodReturnType(doc.getValue().split(" ")[1]);
+                        System.out.println(doc.getDocType()+"："+JSON.toJSONString(returnType));
+                    }else{
+                        System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
+                    }
                 }
                 if(!hasReturnDoc){
-                    System.out.println("返回值信息 : " + JSON.toJSONString(actionMethod.getReturnType(), true));
+                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.")+"：" + JSON.toJSONString(actionMethod.getReturnType()));
                 }
                 System.out.println("----------");
             }

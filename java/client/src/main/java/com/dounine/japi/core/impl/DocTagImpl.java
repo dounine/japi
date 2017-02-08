@@ -24,8 +24,13 @@ public class DocTagImpl implements IDocTag {
     private static String[] builtInPaths;
     private static Map<String,String> types;
     private static File docTagFile;
+    private static final DocTagImpl DOC_TAG = new DocTagImpl();
 
-    public DocTagImpl() {
+    public static DocTagImpl getInstance(){
+        return DOC_TAG;
+    }
+
+    private DocTagImpl() {
         if (null == docTagFile) {
             URL url = this.getClass().getResource("/doc-tags.txt");
             docTagFile = new File(url.getFile());
@@ -38,7 +43,7 @@ public class DocTagImpl implements IDocTag {
         }
     }
 
-    public Map<String,String> getDocTags() {
+    private Map<String,String> getDocTags() {
         if (null != types) {
             return types;
         }
@@ -61,6 +66,6 @@ public class DocTagImpl implements IDocTag {
 
     @Override
     public String getTagDesByName(String tagName) {
-        return null;
+        return getDocTags().get(tagName);
     }
 }
