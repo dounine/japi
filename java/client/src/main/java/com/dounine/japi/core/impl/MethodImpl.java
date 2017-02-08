@@ -3,7 +3,9 @@ package com.dounine.japi.core.impl;
 import com.dounine.japi.core.IActionMethod;
 import com.dounine.japi.core.IActionMethodDoc;
 import com.dounine.japi.core.IReturnType;
+import com.dounine.japi.core.annotation.impl.ActionRequest;
 
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ public class MethodImpl implements IActionMethod {
     private List<String> parameters;
     private IReturnType returnType;
     private String methodDescription;
-    private String[] requests;
+    private ActionRequest request;
 
     private List<IActionMethodDoc> docs;
 
@@ -55,12 +57,12 @@ public class MethodImpl implements IActionMethod {
         return returnType;
     }
 
-    public String[] getRequests() {
-        return requests;
+    public ActionRequest getRequest() {
+        return request;
     }
 
-    public void setRequests(String[] requests) {
-        this.requests = requests;
+    public void setRequest(ActionRequest request) {
+        this.request = request;
     }
 
     public void setReturnType(IReturnType returnType) {

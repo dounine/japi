@@ -5,7 +5,9 @@ import com.dounine.japi.common.Const;
 import com.dounine.japi.core.*;
 import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
+import com.dounine.japi.core.annotation.impl.ActionRequestImpl;
 import com.dounine.japi.core.type.DocType;
+import com.dounine.japi.core.type.RequestMethod;
 import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
@@ -14,11 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -317,13 +317,13 @@ public class ActionImpl implements IAction {
         }
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
         IReturnType returnType = getMethodReturnType(returnTypeStr);
-        String[] requests = getRequestsByAnnotations(annotationStrs);
+        ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs);
 
         List<String> methodParameters = getMethodParameters(methodLineStr);
 
         methodImpl.setReturnType(returnType);
         methodImpl.setAnnotations(annotationStrs);
-        methodImpl.setRequests(requests);
+        methodImpl.setRequest(actionRequest);
         methodImpl.setParameters(methodParameters);
 
         return methodImpl;
@@ -335,14 +335,13 @@ public class ActionImpl implements IAction {
      * @param annotationStrs
      * @return
      */
-    @GetMapping
-    private String[] getRequestsByAnnotations(List<String> annotationStrs) {
+    private ActionRequest getRequestsByAnnotations(List<String> annotationStrs) {
         List<IActionRequest> actionRequests = new ArrayList<>();
-        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.GetMapping", true, "value"));
-        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.PostMapping", true, "value"));
-        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.PutMapping", true, "value"));
-        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.DeleteMapping", true, "value"));
-        actionRequests.add(new ActionRequest("org.springframework.web.bind.annotation.PatchMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.GET,"org.springframework.web.bind.annotation.GetMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.POST,"org.springframework.web.bind.annotation.PostMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.PUT,"org.springframework.web.bind.annotation.PutMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.DELETE,"org.springframework.web.bind.annotation.DeleteMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.PATCH,"org.springframework.web.bind.annotation.PatchMapping", true, "value"));
 
         LOGGER.info("====");
         String requestAnno = null, requestAnnoOrign = null;
@@ -393,7 +392,8 @@ public class ActionImpl implements IAction {
                 requestUrls = new String[]{StringUtils.substring(symAndValue.trim(), 1, -1)};
             }
         }
-        return requestUrls;
+
+        return new ActionRequest(requestUrls,actionRequest.getMethod());
     }
 
     /**
@@ -420,7 +420,7 @@ public class ActionImpl implements IAction {
             methodImpl.setDocs(methodDocs);
             methodImpl.setAnnotations(extractMethod.getAnnotations());
             methodImpl.setReturnType(extractMethod.getReturnType());
-            methodImpl.setRequests(extractMethod.getRequests());
+            methodImpl.setRequest(extractMethod.getRequest());
             methodImpl.setParameters(extractMethod.getParameters());
 
             methodImpls.add(methodImpl);
@@ -428,7 +428,7 @@ public class ActionImpl implements IAction {
         if (true) {
             for (IActionMethod actionMethod : methodImpls) {
                 System.out.println("方法描述：" + actionMethod.getMethodDescription());
-                System.out.println("请求地扯：" + JSON.toJSON(actionMethod.getRequests()));
+                System.out.println("请求信息：" + JSON.toJSON(actionMethod.getRequest()));
                 System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
                 System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
                 boolean hasReturnDoc = false;

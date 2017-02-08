@@ -1,5 +1,7 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.core.annotation.impl.ActionRequest;
+
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ public interface IActionMethod {
 
     IReturnType getReturnType();
 
-    String[] getRequests();
+    ActionRequest getRequest();
 
     List<String> getParameters();
 
