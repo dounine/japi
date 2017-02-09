@@ -23,7 +23,7 @@ public class MainRoot {
      * @param bb  测试参数
      * @param last 测试参数1
      */
-    @org.springframework.web.bind.annotation.GetMapping("aa")
+    @org.springframework.web.bind.annotation.GetMapping(value = "aa")
     @ResponseBody
     public User testUser(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
         return null;
@@ -39,7 +39,7 @@ public class MainRoot {
      * @deprecated1 yes
      * @deprecated yes
      */
-    @RequestMapping(value = "llogin",method = {RequestMethod.DELETE,RequestMethod.GET})
+    @RequestMapping(value = "login",method = {RequestMethod.GET,RequestMethod.POST})
     @ResponseBody
     public void login(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
     }

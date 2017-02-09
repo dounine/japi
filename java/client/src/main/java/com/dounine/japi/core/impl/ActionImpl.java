@@ -391,7 +391,7 @@ public class ActionImpl implements IAction {
                 String beginStr = StringUtils.substring(requestAnnoOrign, matcher.start());
                 if (beginStr.startsWith(arryOrSingle + "\"")) {//单个值
                     String valueAndEndSym = beginStr.substring(arryOrSingle.length());
-                    requestUrls = new String[]{StringUtils.substring(valueAndEndSym, 2, valueAndEndSym.indexOf("\"", 2))};
+                    requestUrls = new String[]{StringUtils.substring(valueAndEndSym, 1, valueAndEndSym.indexOf("\"", 2))};
                 } else if (beginStr.startsWith(arryOrSingle + "{")) {//多个值
                     Matcher symBeginMatcher = Const.PATTERN_SYM_BEGIN.matcher(beginStr);
                     Matcher symEndMatcher = Const.PATTERN_SYM_END.matcher(beginStr);
@@ -414,12 +414,10 @@ public class ActionImpl implements IAction {
                 Pattern methodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*");
                 Matcher methodMatcher = methodPattern.matcher(requestAnnoOrign);
                 if (methodMatcher.find()) {
-                    //@RequestMapping(value = "llogin",method = RequestMethod.DELETE)
-                    //@RequestMapping(value = "llogin",method = {RequestMethod.DELETE,RequestMethod.GET})
-                    Pattern singleMethodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//单个请求方式
-                    Matcher singleMethodMatcher = singleMethodPattern.matcher(requestAnnoOrign);
-                    if (singleMethodMatcher.find()) {
-                        String arrMethod = singleMethodMatcher.group();
+                    Pattern multiMethodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//多个请求方式
+                    Matcher multiMethodMatcher = multiMethodPattern.matcher(requestAnnoOrign);
+                    if (multiMethodMatcher.find()) {
+                        String arrMethod = multiMethodMatcher.group();
                         arrMethod = StringUtils.substring(arrMethod, arrMethod.indexOf("{") + 1, arrMethod.lastIndexOf("}"));
                         String[] arrMethods = arrMethod.split(",");
                         methodTypeList = new RequestMethod[arrMethods.length];
@@ -431,16 +429,31 @@ public class ActionImpl implements IAction {
                                 }
                             }
                         }
+                    }else{
+                        Pattern singleMethodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*\\S*");//单个请求方式
+                        Matcher singleMethodMatcher = singleMethodPattern.matcher(requestAnnoOrign);
+                        if(singleMethodMatcher.find()){
+                            String matchStr = singleMethodMatcher.group();
+                            String spectorStr = null;
+                            if(matchStr.indexOf(",")!=-1){
+                                spectorStr = ",";
+                            }else{
+                                spectorStr = ")";
+                            }
+                            String singleMethodStr = matchStr.substring(matchStr.indexOf("=")+1,matchStr.lastIndexOf(spectorStr)).trim();
+                            methodTypeList = new RequestMethod[1];
+                            for (String[] methodType : actionRequest.methodValues()) {
+                                if (methodType[0].endsWith(singleMethodStr)) {
+                                    methodTypeList[0] = RequestMethod.match(methodType[1]);
+                                    break;
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
         return new ActionRequest(requestUrls, (null != methodTypeList && methodTypeList.length > 0) ? methodTypeList : new RequestMethod[]{actionRequest.getMethod()});
-    }
-
-    public static void main(String[] args) {
-        String m = "a.b.c.d";
-        System.out.println(m.indexOf(".", 2));
     }
 
     /**
