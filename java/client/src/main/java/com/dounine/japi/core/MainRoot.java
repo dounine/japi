@@ -39,11 +39,7 @@ public class MainRoot {
      * @deprecated1 yes
      * @deprecated yes
      */
-    @GetMapping(value = {"login", "cc"})
-    @PostMapping(value = "login")
-    @DeleteMapping({"login", "mlogin/{id}"})
-    @PutMapping(value = {"login", "mlogin/{id}"})
-    @RequestMapping(value = "llogin")
+    @RequestMapping(value = "llogin",method = {RequestMethod.DELETE,RequestMethod.GET})
     @ResponseBody
     public void login(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
     }

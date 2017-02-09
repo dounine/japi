@@ -197,8 +197,8 @@ public class ActionImpl implements IAction {
                                         docImpl.setValue(valueAndDes);
                                         LOGGER.warn(methodLine.trim().substring(2) + " 没有注释信息.");
                                     } else {
-                                        docImpl.setValue(StringUtils.substring(valueAndDes,0,emptySpaceIndex));
-                                        docImpl.setDes(StringUtils.substring(valueAndDes,docImpl.getValue().length()).trim());
+                                        docImpl.setValue(StringUtils.substring(valueAndDes, 0, emptySpaceIndex));
+                                        docImpl.setDes(StringUtils.substring(valueAndDes, docImpl.getValue().length()).trim());
                                     }
                                 } else {
                                     docImpl.setValue(valueAndDes);
@@ -337,11 +337,23 @@ public class ActionImpl implements IAction {
      */
     private ActionRequest getRequestsByAnnotations(List<String> annotationStrs) {
         List<IActionRequest> actionRequests = new ArrayList<>();
-        actionRequests.add(new ActionRequestImpl(RequestMethod.GET,"org.springframework.web.bind.annotation.GetMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.POST,"org.springframework.web.bind.annotation.PostMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.PUT,"org.springframework.web.bind.annotation.PutMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.DELETE,"org.springframework.web.bind.annotation.DeleteMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.PATCH,"org.springframework.web.bind.annotation.PatchMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.GET, "org.springframework.web.bind.annotation.GetMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.POST, "org.springframework.web.bind.annotation.PostMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.PUT, "org.springframework.web.bind.annotation.PutMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.DELETE, "org.springframework.web.bind.annotation.DeleteMapping", true, "value"));
+        actionRequests.add(new ActionRequestImpl(RequestMethod.PATCH, "org.springframework.web.bind.annotation.PatchMapping", true, "value"));
+        ActionRequestImpl allMethod = new ActionRequestImpl(RequestMethod.ALL, "org.springframework.web.bind.annotation.RequestMapping", true, "value", "method");
+        List<String[]> methodValues = new ArrayList<>();
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.GET", RequestMethod.GET.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.POST", RequestMethod.POST.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.HEAD", RequestMethod.HEAD.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.PUT", RequestMethod.PUT.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.PATCH", RequestMethod.PATCH.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.DELETE", RequestMethod.DELETE.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.OPTIONS", RequestMethod.OPTIONS.name()});
+        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.TRACE", RequestMethod.TRACE.name()});
+        allMethod.setMethodFieldValues(methodValues);
+        actionRequests.add(allMethod);
 
         LOGGER.info("====");
         String requestAnno = null, requestAnnoOrign = null;
@@ -370,15 +382,16 @@ public class ActionImpl implements IAction {
             }
         }
         String[] requestUrls = null;
+        RequestMethod[] methodTypeList = null;
         if (null != actionRequest) {
-            Pattern pattern = Pattern.compile(actionRequest.valueField() + "(\\s){0,}[=](\\s){0,}");
+            Pattern pattern = Pattern.compile(actionRequest.valueField() + "(\\s)*[=](\\s)*");
             Matcher matcher = pattern.matcher(requestAnnoOrign);
             if (matcher.find()) {
                 String arryOrSingle = matcher.group();
                 String beginStr = StringUtils.substring(requestAnnoOrign, matcher.start());
                 if (beginStr.startsWith(arryOrSingle + "\"")) {//单个值
                     String valueAndEndSym = beginStr.substring(arryOrSingle.length());
-                    requestUrls = new String[]{StringUtils.substring(valueAndEndSym, 0, valueAndEndSym.lastIndexOf(")"))};
+                    requestUrls = new String[]{StringUtils.substring(valueAndEndSym, 2, valueAndEndSym.indexOf("\"", 2))};
                 } else if (beginStr.startsWith(arryOrSingle + "{")) {//多个值
                     Matcher symBeginMatcher = Const.PATTERN_SYM_BEGIN.matcher(beginStr);
                     Matcher symEndMatcher = Const.PATTERN_SYM_END.matcher(beginStr);
@@ -389,11 +402,45 @@ public class ActionImpl implements IAction {
                 }
             } else {
                 String symAndValue = StringUtils.substring(requestAnnoOrign, requestAnno.length());
-                requestUrls = new String[]{StringUtils.substring(symAndValue.trim(), 1, -1)};
+                requestUrls = new String[]{StringUtils.substring(symAndValue.trim(), 2, -2)};
+            }
+
+            if (actionRequest.getMethod().equals(RequestMethod.ALL)) {//未知请求,找定义方法字段
+                if (StringUtils.isBlank(actionRequest.methodField())) {
+                    String errMsg = "actionRequest methodField 未知请求的字段不能为空";
+                    LOGGER.error(errMsg);
+                    throw new JapiException(errMsg);
+                }
+                Pattern methodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*");
+                Matcher methodMatcher = methodPattern.matcher(requestAnnoOrign);
+                if (methodMatcher.find()) {
+                    //@RequestMapping(value = "llogin",method = RequestMethod.DELETE)
+                    //@RequestMapping(value = "llogin",method = {RequestMethod.DELETE,RequestMethod.GET})
+                    Pattern singleMethodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//单个请求方式
+                    Matcher singleMethodMatcher = singleMethodPattern.matcher(requestAnnoOrign);
+                    if (singleMethodMatcher.find()) {
+                        String arrMethod = singleMethodMatcher.group();
+                        arrMethod = StringUtils.substring(arrMethod, arrMethod.indexOf("{") + 1, arrMethod.lastIndexOf("}"));
+                        String[] arrMethods = arrMethod.split(",");
+                        methodTypeList = new RequestMethod[arrMethods.length];
+                        int methodTypeListIndex = 0;
+                        for (String[] methodType : actionRequest.methodValues()) {
+                            for (String arrMethodStr : arrMethods) {
+                                if (methodType[0].endsWith(arrMethodStr)) {
+                                    methodTypeList[methodTypeListIndex++] = RequestMethod.match(methodType[1]);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
+        return new ActionRequest(requestUrls, (null != methodTypeList && methodTypeList.length > 0) ? methodTypeList : new RequestMethod[]{actionRequest.getMethod()});
+    }
 
-        return new ActionRequest(requestUrls,actionRequest.getMethod());
+    public static void main(String[] args) {
+        String m = "a.b.c.d";
+        System.out.println(m.indexOf(".", 2));
     }
 
     /**
@@ -433,18 +480,18 @@ public class ActionImpl implements IAction {
                 System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
                 boolean hasReturnDoc = false;
                 for (IActionMethodDoc doc : actionMethod.getDocs()) {
-                    if(doc.getName().equals("return")){
+                    if (doc.getName().equals("return")) {
                         hasReturnDoc = true;
                     }
-                    if(hasReturnDoc&&doc.getValue().split(" ")[0].equals("class")){
-                        IReturnType returnType  = getMethodReturnType(doc.getValue().split(" ")[1]);
-                        System.out.println(doc.getDocType()+"："+JSON.toJSONString(returnType));
-                    }else{
+                    if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
+                        IReturnType returnType = getMethodReturnType(doc.getValue().split(" ")[1]);
+                        System.out.println(doc.getDocType() + "：" + JSON.toJSONString(returnType));
+                    } else {
                         System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
                     }
                 }
-                if(!hasReturnDoc){
-                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.")+"：" + JSON.toJSONString(actionMethod.getReturnType()));
+                if (!hasReturnDoc) {
+                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.") + "：" + JSON.toJSONString(actionMethod.getReturnType()));
                 }
                 System.out.println("----------");
             }

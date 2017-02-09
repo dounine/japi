@@ -7,11 +7,11 @@ import com.dounine.japi.core.type.RequestMethod;
  */
 public class ActionRequest {
     private String[] urls;
-    private RequestMethod method = RequestMethod.GET;
+    private RequestMethod[] methods;
     public ActionRequest(){}
-    public ActionRequest(String[] urls,RequestMethod method){
+    public ActionRequest(String[] urls,RequestMethod[] method){
         this.urls = urls;
-        this.method = method;
+        this.methods = method;
     }
 
     public String[] getUrls() {
@@ -22,11 +22,11 @@ public class ActionRequest {
         this.urls = urls;
     }
 
-    public RequestMethod getMethod() {
-        return method;
+    public RequestMethod[] getMethods() {
+        return methods;
     }
 
-    public void setMethod(RequestMethod method) {
-        this.method = method;
+    public void setMethods(RequestMethod[] methods) {
+        this.methods = methods;
     }
 }
