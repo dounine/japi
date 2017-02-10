@@ -1,11 +1,9 @@
 package com.dounine.japi.core.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.Const;
-import com.dounine.japi.core.IBuiltIn;
-import com.dounine.japi.core.IReturnField;
-import com.dounine.japi.core.IReturnFieldDoc;
-import com.dounine.japi.core.IReturnType;
+import com.dounine.japi.core.IField;
+import com.dounine.japi.core.IFieldDoc;
+import com.dounine.japi.core.IType;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,17 +22,22 @@ import java.util.regex.Pattern;
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public class ReturnTypeImpl implements IReturnType {
-    private static final Logger CONSOLE = LoggerFactory.getLogger(ReturnTypeImpl.class);
+public class TypeImpl implements IType {
+    private static final Logger CONSOLE = LoggerFactory.getLogger(TypeImpl.class);
 
     private String javaFilePath;
     private String projectPath;
     private List<String> includePaths = new ArrayList<>();
     private String javaKeyTxt;
-    private List<IReturnField> returnFields;
+    private List<IField> returnFields;
+
+    /**
+     * 自身引用对象
+     */
+    private static final String MY_SELF_REF = "$this";
 
     @Override
-    public List<IReturnField> getFields() {
+    public List<IField> getFields() {
         if(null==javaKeyTxt){
             CONSOLE.error("javaKeyTxt 不能为空");
             throw new JapiException("javaKeyTxt 不能为空");
@@ -91,7 +94,7 @@ public class ReturnTypeImpl implements IReturnType {
         return fieldBodyAndDocs;
     }
 
-    private List<IReturnField> extractDocAndFieldInfo() {
+    private List<IField> extractDocAndFieldInfo() {
         JavaFileImpl javaFile = new JavaFileImpl();
         javaFile.setJavaFilePath(javaFilePath);
         javaFile.setProjectPath(projectPath);
@@ -130,12 +133,12 @@ public class ReturnTypeImpl implements IReturnType {
         noPackageLines = noPackageLines.subList(1, noPackageLines.size() - 1);//去掉类头与尾巴
         final List<List<String>> fieldBodyAndDocs = fieldBodyAndDoc(noPackageLines);
 
-        List<IReturnField> fieldImpls = new ArrayList<>(fieldBodyAndDocs.size());
+        List<IField> fieldImpls = new ArrayList<>(fieldBodyAndDocs.size());
         for (List<String> fieldLines : fieldBodyAndDocs) {
-            ReturnFieldImpl fieldImpl = new ReturnFieldImpl();
+            FieldImpl fieldImpl = new FieldImpl();
 
-            List<IReturnFieldDoc> fieldDocs = extractDoc(fieldLines);//提取属性注释信息
-            ReturnFieldImpl extractField = extractField(fieldLines);//提取属性信息
+            List<IFieldDoc> fieldDocs = extractDoc(fieldLines);//提取属性注释信息
+            FieldImpl extractField = extractField(fieldLines);//提取属性信息
 
             fieldImpl.setDocs(fieldDocs);
             fieldImpl.setAnnotations(extractField.getAnnotations());
@@ -144,9 +147,9 @@ public class ReturnTypeImpl implements IReturnType {
                 File childTypeFile = javaFile.searchTxtJavaFileForProjectsPath(extractField.getType());
                 if(childTypeFile.getAbsoluteFile().equals(returnTypeFile.getAbsoluteFile())){//自身对象
                     fieldImpl.setName(extractField.getName());
-                    fieldImpl.setType("$this");
+                    fieldImpl.setType(MY_SELF_REF);
                 }else{
-                    ReturnTypeImpl returnTypeImpl = new ReturnTypeImpl();
+                    TypeImpl returnTypeImpl = new TypeImpl();
                     returnTypeImpl.setJavaFilePath(returnTypeFile.getAbsolutePath());
                     returnTypeImpl.setProjectPath(projectPath);
                     returnTypeImpl.setIncludePaths(includePaths);
@@ -163,9 +166,9 @@ public class ReturnTypeImpl implements IReturnType {
         return fieldImpls;
     }
 
-    private List<IReturnFieldDoc> extractDoc(final List<String> fieldLines) {
+    private List<IFieldDoc> extractDoc(final List<String> fieldLines) {
         boolean fieldBegin = false;
-        List<IReturnFieldDoc> fieldDocs = new ArrayList<>();
+        List<IFieldDoc> fieldDocs = new ArrayList<>();
         for (String fieldLine : fieldLines) {
             Matcher matcherDocBegin = Const.DOC_PATTERN_BEGIN.matcher(fieldLine);
             if (!fieldBegin && matcherDocBegin.find()) {
@@ -179,7 +182,7 @@ public class ReturnTypeImpl implements IReturnType {
                 }
             }
             if (fieldBegin) {
-                ReturnFieldDocImpl docImpl = new ReturnFieldDocImpl();
+                FieldDocImpl docImpl = new FieldDocImpl();
                 Matcher methodFunDesMatcher = Const.DOC_METHOD_FUN_DES.matcher(fieldLine);//方法功能描述
                 if (methodFunDesMatcher.find()) {
                     Matcher methodMoreMatcher = Const.DOC_MORE.matcher(fieldLine);
@@ -217,8 +220,8 @@ public class ReturnTypeImpl implements IReturnType {
         return fieldDocs;
     }
 
-    private ReturnFieldImpl extractField(List<String> fieldLines) {
-        ReturnFieldImpl fieldImpl = new ReturnFieldImpl();
+    private FieldImpl extractField(List<String> fieldLines) {
+        FieldImpl fieldImpl = new FieldImpl();
         List<String> annotationStrs = new ArrayList<>();
         String fieldLineStr = null;
         boolean docBegin = false;
@@ -238,7 +241,7 @@ public class ReturnTypeImpl implements IReturnType {
             }
         }
         String returnTypeStr = getFieldTypeStr(fieldLineStr);
-//        IReturnType returnType = getFieldType(returnTypeStr);
+//        IType returnType = getFieldType(returnTypeStr);
         fieldImpl.setType(returnTypeStr);
         fieldImpl.setAnnotations(annotationStrs);
         //fieldImpl.setReturnFields(returnType.getFields());
@@ -269,8 +272,8 @@ public class ReturnTypeImpl implements IReturnType {
         return returnType;
     }
 
-    private IReturnType getFieldType(final String returnTypeStr) {
-        ReturnTypeImpl returnTypeImpl =  new ReturnTypeImpl();
+    private IType getFieldType(final String returnTypeStr) {
+        TypeImpl returnTypeImpl =  new TypeImpl();
         returnTypeImpl.setJavaFilePath(javaFilePath);
         returnTypeImpl.setProjectPath(projectPath);
         returnTypeImpl.setIncludePaths(includePaths);

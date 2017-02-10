@@ -5,15 +5,15 @@ import java.util.List;
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public interface IReturnField {
+public interface IField {
 
     List<String> getAnnotations();
 
-    List<IReturnField> getReturnFields();
+    List<IField> getReturnFields();
 
     String getName();
 
     String getType();
 
-    List<IReturnFieldDoc> getDocs();
+    List<IFieldDoc> getDocs();
 }

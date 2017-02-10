@@ -5,7 +5,6 @@ import com.dounine.japi.common.Const;
 import com.dounine.japi.core.*;
 import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
-import com.dounine.japi.core.annotation.impl.ActionRequestImpl;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.core.type.RequestMethod;
 import com.dounine.japi.entity.User;
@@ -15,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.File;
 import java.io.IOException;
@@ -230,8 +228,8 @@ public class ActionImpl implements IAction {
     }
 
 
-    private IReturnType getMethodReturnType(final String returnTypeStr) {
-        ReturnTypeImpl returnTypeImpl = new ReturnTypeImpl();
+    private IType getType(final String returnTypeStr) {
+        TypeImpl returnTypeImpl = new TypeImpl();
         returnTypeImpl.setJavaFilePath(javaFilePath);
         returnTypeImpl.setProjectPath(projectPath);
         returnTypeImpl.setIncludePaths(includePaths);
@@ -283,7 +281,7 @@ public class ActionImpl implements IAction {
                 initSearchIndex = lastSearchIndex;
             }
             if (lastSearchIndex < parStrs.length()) {
-                parameters.add(parStrs.substring(lastSearchIndex));
+                parameters.add(parStrs.substring(lastSearchIndex).trim());
             }
         }
         return parameters;
@@ -316,12 +314,12 @@ public class ActionImpl implements IAction {
             }
         }
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
-        IReturnType returnType = getMethodReturnType(returnTypeStr);
+        IType type = getType(returnTypeStr);
         ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs);
 
         List<String> methodParameters = getMethodParameters(methodLineStr);
 
-        methodImpl.setReturnType(returnType);
+        methodImpl.setType(type);
         methodImpl.setAnnotations(annotationStrs);
         methodImpl.setRequest(actionRequest);
         methodImpl.setParameters(methodParameters);
@@ -336,30 +334,9 @@ public class ActionImpl implements IAction {
      * @return
      */
     private ActionRequest getRequestsByAnnotations(List<String> annotationStrs) {
-        List<IActionRequest> actionRequests = new ArrayList<>();
-        actionRequests.add(new ActionRequestImpl(RequestMethod.GET, "org.springframework.web.bind.annotation.GetMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.POST, "org.springframework.web.bind.annotation.PostMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.PUT, "org.springframework.web.bind.annotation.PutMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.DELETE, "org.springframework.web.bind.annotation.DeleteMapping", true, "value"));
-        actionRequests.add(new ActionRequestImpl(RequestMethod.PATCH, "org.springframework.web.bind.annotation.PatchMapping", true, "value"));
-        ActionRequestImpl allMethod = new ActionRequestImpl(RequestMethod.ALL, "org.springframework.web.bind.annotation.RequestMapping", true, "value", "method");
-        List<String[]> methodValues = new ArrayList<>();
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.GET", RequestMethod.GET.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.POST", RequestMethod.POST.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.HEAD", RequestMethod.HEAD.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.PUT", RequestMethod.PUT.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.PATCH", RequestMethod.PATCH.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.DELETE", RequestMethod.DELETE.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.OPTIONS", RequestMethod.OPTIONS.name()});
-        methodValues.add(new String[]{"org.springframework.web.bind.annotation.RequestMethod.TRACE", RequestMethod.TRACE.name()});
-        allMethod.setMethodFieldValues(methodValues);
-        actionRequests.add(allMethod);
-
-        LOGGER.info("====");
         String requestAnno = null, requestAnnoOrign = null;
-        Pattern REQUEST_ANNO_PATTERN = Pattern.compile("^\\S+[(]");
         for (String annotationLine : annotationStrs) {
-            Matcher requestAnnoMatcher = REQUEST_ANNO_PATTERN.matcher(annotationLine);
+            Matcher requestAnnoMatcher = Const.REQUEST_ANNO_PATTERN.matcher(annotationLine);
             if (requestAnnoMatcher.find()) {
                 requestAnnoOrign = annotationLine;
                 requestAnno = StringUtils.substring(requestAnnoMatcher.group(), 0, -1);
@@ -369,7 +346,7 @@ public class ActionImpl implements IAction {
 
         IActionRequest actionRequest = null;
         if (StringUtils.isNotBlank(requestAnno)) {
-            for (IActionRequest ar : actionRequests) {
+            for (IActionRequest ar : MVCActionRequest.getMVCActionRequest()) {
                 if (ar.annotation().equals(requestAnno)) {
                     actionRequest = ar;
                     break;
@@ -384,7 +361,7 @@ public class ActionImpl implements IAction {
         String[] requestUrls = null;
         RequestMethod[] methodTypeList = null;
         if (null != actionRequest) {
-            Pattern pattern = Pattern.compile(actionRequest.valueField() + "(\\s)*[=](\\s)*");
+            Pattern pattern = Const.getPattern(actionRequest.valueField() + "(\\s)*[=](\\s)*");
             Matcher matcher = pattern.matcher(requestAnnoOrign);
             if (matcher.find()) {
                 String arryOrSingle = matcher.group();
@@ -411,10 +388,10 @@ public class ActionImpl implements IAction {
                     LOGGER.error(errMsg);
                     throw new JapiException(errMsg);
                 }
-                Pattern methodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*");
+                Pattern methodPattern = Const.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*");
                 Matcher methodMatcher = methodPattern.matcher(requestAnnoOrign);
                 if (methodMatcher.find()) {
-                    Pattern multiMethodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//多个请求方式
+                    Pattern multiMethodPattern = Const.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//多个请求方式
                     Matcher multiMethodMatcher = multiMethodPattern.matcher(requestAnnoOrign);
                     if (multiMethodMatcher.find()) {
                         String arrMethod = multiMethodMatcher.group();
@@ -430,7 +407,7 @@ public class ActionImpl implements IAction {
                             }
                         }
                     }else{
-                        Pattern singleMethodPattern = Pattern.compile(actionRequest.methodField() + "(\\s)*[=](\\s)*\\S*");//单个请求方式
+                        Pattern singleMethodPattern = Const.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*\\S*");//单个请求方式
                         Matcher singleMethodMatcher = singleMethodPattern.matcher(requestAnnoOrign);
                         if(singleMethodMatcher.find()){
                             String matchStr = singleMethodMatcher.group();
@@ -479,7 +456,7 @@ public class ActionImpl implements IAction {
             }
             methodImpl.setDocs(methodDocs);
             methodImpl.setAnnotations(extractMethod.getAnnotations());
-            methodImpl.setReturnType(extractMethod.getReturnType());
+            methodImpl.setType(extractMethod.getType());
             methodImpl.setRequest(extractMethod.getRequest());
             methodImpl.setParameters(extractMethod.getParameters());
 
@@ -497,14 +474,14 @@ public class ActionImpl implements IAction {
                         hasReturnDoc = true;
                     }
                     if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
-                        IReturnType returnType = getMethodReturnType(doc.getValue().split(" ")[1]);
+                        IType returnType = getType(doc.getValue().split(" ")[1]);
                         System.out.println(doc.getDocType() + "：" + JSON.toJSONString(returnType));
                     } else {
                         System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
                     }
                 }
                 if (!hasReturnDoc) {
-                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.") + "：" + JSON.toJSONString(actionMethod.getReturnType()));
+                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.") + "：" + JSON.toJSONString(actionMethod.getType()));
                 }
                 System.out.println("----------");
             }

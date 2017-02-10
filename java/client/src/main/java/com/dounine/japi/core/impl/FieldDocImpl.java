@@ -1,11 +1,11 @@
 package com.dounine.japi.core.impl;
 
-import com.dounine.japi.core.IReturnFieldDoc;
+import com.dounine.japi.core.IFieldDoc;
 
 /**
  * Created by huanghuanlai on 2017/1/20.
  */
-public class ReturnFieldDocImpl implements IReturnFieldDoc {
+public class FieldDocImpl implements IFieldDoc {
 
     private String name;
     private String value;

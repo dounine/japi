@@ -1,5 +1,7 @@
 package com.dounine.japi.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -64,4 +66,24 @@ public final class Const {
 
     public static final Pattern PATTERN_SYM_BEGIN = Pattern.compile("[{]\\s*[\"]");
     public static final Pattern PATTERN_SYM_END = Pattern.compile("[\"]\\s*[}]");
+
+    public static final Pattern REQUEST_ANNO_PATTERN = Pattern.compile("^\\S+[(]");
+
+
+    private static final List<Pattern> PATTERNS = new ArrayList<>();
+    public static final Pattern getPattern(String compileValue){
+        Pattern contain = null;
+        for(Pattern pattern : PATTERNS){
+            if(pattern.pattern().equals(compileValue)){
+                contain = pattern;
+                break;
+            }
+        }
+        if(null==contain){
+            contain = Pattern.compile(compileValue);
+            PATTERNS.add(Pattern.compile(compileValue));
+        }
+        return contain;
+    }
 }
+

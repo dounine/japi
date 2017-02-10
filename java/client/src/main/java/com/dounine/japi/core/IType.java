@@ -5,9 +5,9 @@ import java.util.List;
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public interface IReturnType {
+public interface IType {
 
-    List<IReturnField> getFields();
+    List<IField> getFields();
 
     boolean isBuiltInType();
 

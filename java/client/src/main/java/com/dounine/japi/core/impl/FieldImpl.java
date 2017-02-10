@@ -1,8 +1,7 @@
 package com.dounine.japi.core.impl;
 
-import com.dounine.japi.core.IParameterField;
-import com.dounine.japi.core.IReturnField;
-import com.dounine.japi.core.IReturnFieldDoc;
+import com.dounine.japi.core.IField;
+import com.dounine.japi.core.IFieldDoc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,19 +9,19 @@ import java.util.List;
 /**
  * Created by huanghuanlai on 2017/1/18.
  */
-public class ReturnFieldImpl implements IReturnField {
+public class FieldImpl implements IField {
     private List<String> annotations = new ArrayList<>();
-    private List<IReturnField> returnFields;
+    private List<IField> returnFields;
     private String name;
     private String type;
-    private List<IReturnFieldDoc> docs = new ArrayList<>();
+    private List<IFieldDoc> docs = new ArrayList<>();
 
     @Override
-    public List<IReturnField> getReturnFields() {
+    public List<IField> getReturnFields() {
         return returnFields;
     }
 
-    public void setReturnFields(List<IReturnField> returnFields) {
+    public void setReturnFields(List<IField> returnFields) {
         this.returnFields = returnFields;
     }
 
@@ -45,11 +44,11 @@ public class ReturnFieldImpl implements IReturnField {
     }
 
     @Override
-    public List<IReturnFieldDoc> getDocs() {
+    public List<IFieldDoc> getDocs() {
         return docs;
     }
 
-    public void setDocs(List<IReturnFieldDoc> docs) {
+    public void setDocs(List<IFieldDoc> docs) {
         this.docs = docs;
     }
 

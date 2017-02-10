@@ -3,6 +3,7 @@ package com.dounine.japi.core;
 import com.dounine.japi.core.impl.ActionImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.entity.*;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +26,7 @@ public class MainRoot {
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "aa")
     @ResponseBody
-    public User testUser(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
+    public User testUser(@Validated(value = {IActionMethod.class, IParameterField.class}) User user,@RequestParam Integer cc, BindingResult bindingResult) {
         return null;
     }
 

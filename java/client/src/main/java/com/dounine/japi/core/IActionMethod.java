@@ -15,7 +15,7 @@ public interface IActionMethod {
 
     String getMethodDescription();
 
-    IReturnType getReturnType();
+    IType getType();
 
     ActionRequest getRequest();
 
