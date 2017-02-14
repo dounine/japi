@@ -42,14 +42,14 @@ $(document).ready(function(){
             })
             cont+="</div><section class='section'><div class='basic-info'><div class='item urls'></div><div class='item extype'></div></div></section>" +
                 "<section class='section'><div class='sec-head'><h4> 请求参数</h4></div> " +
-                "<div class='sec-table'><div><ul class='sec-table-head'>" +
-                "<li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li><li class='col-6'>描述</li>" +
-                "</ul><div class=' req'></div></div></div> </section>" +
+                "<div class='sec-table'><div class='sec-table-wrap'><ul class='sec-table-head'>" +
+                "<li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li><li class='col-1'>默认值</li><li class='col-6'>描述</li>" +
+                "</ul><div id='req'></div></div></div> </section>" +
 
                 "<section class='section'><div class='sec-head'><h4> 响应参数</h4></div> " +
-                "<div class='sec-table'><div><ul class='sec-table-head'>" +
-                "<li class='col-2'>参数名称</li><li class='col-1'>类型</li><li class='col-6'>描述</li>" +
-                "</ul><div class=' res'></div></div></div> </section>" +
+                "<div class='sec-table'><div class='sec-table-wrap'><ul class='sec-table-head'>" +
+                "<li class='col-2'>参数名称</li><li class='col-1'>类型</li><li class='col-1'>默认值</li><li class='col-6'>描述</li>" +
+                "</ul><div id='res'></div></div></div> </section>" +
                 "</div>";
             $("#content").html(cont);
             verSel()
@@ -69,8 +69,8 @@ var is_array = function(value) {
 function verSel(){
     var versionSelect = $('.version-list option:selected').val();
     extype="<div>";
-    reqParm="<div>";
-    resParm="<div>";
+    reqParm="<div >";
+    resParm="<div >";
     urls="<select class='urls-select' onchange='urlSel()'>"
     $.each(newDatas,function(i,t){
         if(t.name==versionSelect){
@@ -83,14 +83,33 @@ function verSel(){
             }
             var subReqData ,subResData;
             var level = new Object();
-            level.str = "";
+            level.indent = 0;
             level.count = 0;
+            level.parent = "";
             level.datas = new Object();
             subObj(t.requestParms,level);
-            console.info(level.datas);
+
             for(var subIndex in level.datas){
                 // console.info(level.datas[subIndex]);
-                reqParm+="<div class='sec-table-list' index='"+level.datas[subIndex]+"' end='%{_end}'> <ul><li class='col-2'><i class='%{_sub}'></i> %{_str}%{requestName}</li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class=' col-6'>%{des}</li></ul></div>".format(level.datas[subIndex])
+                level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+2;
+                reqParm+="<div class='sec-table-list %{_open}' parent='%{_parent}'> <ul><li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i> <span style='text-indent:%{_indent}px'>%{requestName}</span></li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class='col-1'>%{default}</li><li class=' col-6'>%{des}</li></ul></div>".format(level.datas[subIndex])
+                // reqParm+="<div class='sec-table-list'> ";
+                // if(level.datas[subIndex]._sub="icon-sub"){
+                //     reqParm+= "<ul><li class='col-2'><i class='%{_sub}'></i> %{_str}%{requestName}</li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class=' col-6'>%{des}</li></ul>".format(level.datas[subIndex])
+                // }
+                // reqParm+="</div>"
+            }
+
+            var level = new Object();
+            level.indent = 0;
+            level.count = 0;
+            level.parent = "";
+            level.datas = new Object();
+            subObj(t.responseParms,level);
+            for(var subIndex in level.datas){
+                // console.info(level.datas[subIndex]);
+                level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+2;
+                resParm+="<div class='sec-table-list %{_open}' parent='%{_parent}'> <ul><li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i> <span style='text-indent:%{_indent}px'>%{responseName}</span></li><li class='col-1'>%{datatype}</li><li class='col-1'>%{default}</li><li class=' col-6'>%{des}</li></ul></div>".format(level.datas[subIndex])
                 // reqParm+="<div class='sec-table-list'> ";
                 // if(level.datas[subIndex]._sub="icon-sub"){
                 //     reqParm+= "<ul><li class='col-2'><i class='%{_sub}'></i> %{_str}%{requestName}</li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class=' col-6'>%{des}</li></ul>".format(level.datas[subIndex])
@@ -164,15 +183,15 @@ function verSel(){
             //     }
             // }
 
-            for(var idx in t.responseParms){
-                resParm+="<div class='sec-table-list'><ul><li class='col-2'>%{resParmName}</li><li class='col-1'>%{resParmType}</li><li class=' col-6'>%{resParmDes}</li></ul></div>".format({
-                    resParmName:t.responseParms[idx].responseName,
-                    resParmType:t.responseParms[idx].datatype,
-                    resParmDes:t.responseParms[idx].des
-                });
-
-
-            }
+            // for(var idx in t.responseParms){
+            //     resParm+="<div class='sec-table-list'><ul><li class='col-2'>%{resParmName}</li><li class='col-1'>%{resParmType}</li><li class=' col-6'>%{resParmDes}</li></ul></div>".format({
+            //         resParmName:t.responseParms[idx].responseName,
+            //         resParmType:t.responseParms[idx].datatype,
+            //         resParmDes:t.responseParms[idx].des
+            //     });
+            //
+            //
+            // }
         }
     });
     extype+="</div>";
@@ -182,8 +201,8 @@ function verSel(){
         "<a href='javascript:void(0)' class='copy' onclick='copy()'>复制</a><span class='copysuc'>复制成功</span> ";
     $('.urls').html(urls);
     $('.extype').html(extype);
-    $('.req').html(reqParm);
-    $('.res').html(resParm);
+    $('#req').html(reqParm);
+    $('#res').html(resParm);
     var urlMethod = $('.urls-select option:selected').attr('data-method');
     $('.method strong').html(urlMethod)
 }
@@ -193,26 +212,30 @@ function urlSel(){
     $('.method strong').html(urlSelect)
 }
 function subObj(arr,level){
-    var str = level.str;
-
+    var indent = level.indent;
+    var parent = level.parent;
+    var c = 0;
     for(var obj in arr){
         var _obj = arr[obj];
         level.count += 1;
         level.datas[level.count] = new Object();
-        level.datas[level.count]["_str"] = str;
+        level.datas[level.count]["_indent"] = indent;
         level.datas[level.count]["_sub"] = "";
+        level.datas[level.count]["_parent"] = parent;
 
 
         for(var name in _obj){
             if(is_array(_obj[name])){
-                level.str += "&nbsp;&nbsp;";
+                level.indent += 10;
                 level.datas[level.count]["_sub"] = "icon-sub";
+                level.datas[level.count]["_open"] = "isOpen";
+                level.parent += ("-"+(++c));
                 subObj(_obj[name],level);
-                level.str="";
-
+                level.str= 0;
+                level.parent ="";
+                level.indent=10;
             }else{
                 level.datas[level.count][name] = _obj[name];
-                level.datas[level.count][name].tt = _obj.requestName;
             }
         }
 

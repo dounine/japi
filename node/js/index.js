@@ -23,20 +23,39 @@ $(document).ready(function(){
         }
     })
     $('#content').on("click",".icon-sub",function(){
-        if($(this).hasClass('open')){
-            $(this).removeClass('open').parents('.sec-table-list').children('.sub').slideToggle("fast");
-
-        }else {
-            $(this).addClass('open').parents('.sec-table-list').children('.sub').slideToggle("fast");
+        var area = $(this).parents('.sec-table-wrap').children('div').prop('id');
+        var areaId = "#"+area+" ";
+        var par = $(this).parents(areaId+'div.sec-table-list');
+        var asMyParents = $(areaId+'div.sec-table-list[parent="%{parent}"]'.format({parent:par.attr('parent')}));
+        var index = 1;
+        $.each(asMyParents,function(i,item){
+            if($(item).is(par)){
+                index += i;
+            }
+        })
+        var es = $(areaId+'div.sec-table-list[parent^="%{parent}"]'.format({parent:par.attr('parent')+('-'+index)}));
+        if(par.hasClass("isOpen")){
+            es.hide();
+            par.removeClass("isOpen");
+        }else{
+            es.show();
+            par.addClass("isOpen");
         }
+
+         if($(this).hasClass('open')){
+             $(this).removeClass('open').parents('.sec-table-list').children('.sub').slideToggle("fast");
+
+         }else {
+             $(this).addClass('open').parents('.sec-table-list').children('.sub').slideToggle("fast");
+         }
     });
 });
 
 //复制
 function copy(){
-    var apiSelect=document.getElementsByClassName('api-select')[0];
-    var index=apiSelect.selectedIndex ; // selectedIndex代表的是你所选中项的index
-    var apiVal = apiSelect.options[index].value;
+    var apiSelect=document.getElementsByClassName('urls-select')[0];
+    var apiIndex=apiSelect.selectedIndex ; // selectedIndex代表的是你所选中项的index
+    var apiVal = apiSelect.options[apiIndex].value;
     // 创建元素用于复制
     var aux = document.createElement("input");
     // 设置元素内容
