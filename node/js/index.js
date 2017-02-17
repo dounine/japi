@@ -43,10 +43,10 @@ $(document).ready(function(){
         }
 
          if($(this).hasClass('open')){
-             $(this).removeClass('open').parents('.sec-table-list').children('.sub').slideToggle("fast");
+             $(this).removeClass('open').parents('.sec-table-list').children('.sub').slideToggle();
 
          }else {
-             $(this).addClass('open').parents('.sec-table-list').children('.sub').slideToggle("fast");
+             $(this).addClass('open').parents('.sec-table-list').children('.sub').slideToggle();
          }
     });
 });
@@ -54,8 +54,14 @@ $(document).ready(function(){
 //复制
 function copy(){
     var apiSelect=document.getElementsByClassName('urls-select')[0];
-    var apiIndex=apiSelect.selectedIndex ; // selectedIndex代表的是你所选中项的index
-    var apiVal = apiSelect.options[apiIndex].value;
+    var copyName = apiSelect.tagName;
+    if(copyName=="SELECT"){
+        var apiIndex=apiSelect.selectedIndex ; // selectedIndex代表的是你所选中项的index
+        var apiVal = apiSelect.options[apiIndex].value;
+    }else if(copyName=="SPAN"){
+        var apiVal = $('.urls-select').attr('data-value')
+    }
+
     // 创建元素用于复制
     var aux = document.createElement("input");
     // 设置元素内容
@@ -66,4 +72,11 @@ function copy(){
     aux.select();
     // 将内容复制到剪贴板
     document.execCommand("copy");
+    $('.copysuc').show();
+    $('.copy').attr("disabled");
+    setTimeout(function(){
+        $('.copy').removeAttr("disabled")
+        $('.copysuc').hide();
+    },2000)
+
 }

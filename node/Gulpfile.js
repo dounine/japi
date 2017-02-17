@@ -10,7 +10,6 @@ const sassLint = require('gulp-sass-lint');//sass代码规范检查
 const path = require('path');
 
 
-
 gulp.task('sass', ()=> {
     return gulp.src('./sass/**/*.scss')
         .pipe(sourcemaps.init())
@@ -44,7 +43,7 @@ gulp.task('serve', ['sass'], ()=> {
 
     bs.init({
         server: './',
-        startPath:'index.html'
+        startPath:'list.html'
     });
 
     gulp.watch('./sass/**/*.scss', ['sass']);

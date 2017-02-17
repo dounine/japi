@@ -199,7 +199,10 @@
           "datetime":"2017-2-9",
           "msg":"最新",
           "urls":[
-            {"method":"post","url":"http://www.bjike.com"}
+            {"method":"post","url":"http://www.bjike.com"},
+            {"method":"get","url":"http://sh.bjike.com"},
+            {"method":"get","url":"http://www.qq.com"}
+
           ],
           "ex":[
             {"name":"请求方式","value":"GET"},
@@ -236,42 +239,42 @@
   ],
   "list":[
     {
-      "icon":"/images/icon01.png",
+      "icon":"src/images/icon01.png",
       "name":"IOS",
       "version":"1.0.0",
       "time":"2017-2-10",
       "detailed":"文档",
       "url":"/index"
     },{
-      "icon":"/images/icon02.png",
+      "icon":"src/images/icon02.png",
       "name":"Android",
       "version":"1.1.1",
       "time":"2017-2-11",
       "detailed":"文档",
       "url":"/index"
     },{
-      "icon":"/images/icon03.png",
+      "icon":"src/images/icon03.png",
       "name":"Web",
       "version":"2.2.2",
       "time":"2017-2-12",
       "detailed":"文档",
       "url":"/index.html"
     },{
-      "icon":"/images/icon04.png",
+      "icon":"src/images/icon04.png",
       "name":"PHP",
       "version":"3.3.3",
       "time":"2017-2-13",
       "detailed":"文档",
       "url":"/index"
     },{
-      "icon":"/images/icon05.png",
+      "icon":"src/images/icon05.png",
       "name":"Java",
       "version":"4.4.4",
       "time":"2017-2-14",
       "detailed":"文档",
       "url":"/index"
     },{
-      "icon":"/images/icon06.png",
+      "icon":"src/images/icon06.png",
       "name":"UI",
       "version":"5.5.5",
       "time":"2017-2-15",

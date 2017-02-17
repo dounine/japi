@@ -1,10 +1,9 @@
 $(document).ready(function(){
     $.ajax({
-        type:"get",
-        url:"/data/data.json",
+        type:"post",
+        url:"/index",
         success:function(data){
             //遍历生成导航
-
             $.each(data.nav,function(ind,item){
                 var mainbav = "<div class='nav-section'><span class='mainbav open'><a href='javascript:void(0)'> " +
                     item.mainNav+"</a></span><ul>";
@@ -14,7 +13,6 @@ $(document).ready(function(){
                 mainbav+="</ul></div>";
                 $("#nav .nav-list").append(mainbav);
             });
-
         },
         error: function(request) {
             console.info(request);
@@ -55,6 +53,27 @@ $(document).ready(function(){
             verSel()
         })
     });
+    //搜索
+    // var searchArr=[];
+    // var searchLen,alltext,seaul
+    // $('.search').on('focus',"input",function(){
+    //      searchLen=$("#nav ul li").length;
+    //     for(var i=0,len=searchLen; i<len; i++){
+    //          alltext = $("#nav ul li").eq(i).find('a').text();
+    //          searchArr.push(alltext)
+    //     }
+        // $('.search').keyup(function(){
+        //     var inputVal = $(this).val();
+        //      seaul ="<ul>";
+        //      $.each(searchArr,function(i,t){
+        //          if(t.indexOf(inputVal)!=-1){
+        //              seaul+="<li><a href='javascript:void(0)'>"+t+"</a></li>"
+        //          }
+        //      })
+        //     seaul+="</ul>";
+        //      $('.secrchList').html(seaul)
+        // })
+    // })
 
 });
 var version,newtime,urls,extype,reqParm,resParm,newDatas;
@@ -71,13 +90,27 @@ function verSel(){
     extype="<div>";
     reqParm="<div >";
     resParm="<div >";
-    urls="<select class='urls-select' onchange='urlSel()'>"
+
     $.each(newDatas,function(i,t){
         if(t.name==versionSelect){
             $('.time').html(t.datetime);
-            for(var idx in t.urls){
-                urls+="<option value=%{urlVal} data-method=%{dataMethod}>%{urlVal}</option>".format({urlVal:t.urls[idx].url,dataMethod:t.urls[idx].method})
+
+            console.info(t.urls[0].method);
+            if(t.urls.length=="1"){
+                urls=(" <span class='urls-select' data-value='%{urlVal}' data-method=%{dataMethod}>%{urlVal}</span><span class='method'>请求方式：<strong>%{dataMethod}</strong></span><button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span>").format({urlVal:t.urls[0].url,dataMethod:t.urls[0].method})
+            }else {
+                urls="<select class='urls-select' onchange='urlSel()'>";
+                for(var idx in t.urls){
+                    urls+="<option value=%{urlVal} data-method=%{dataMethod}>%{urlVal}</option>".format({urlVal:t.urls[idx].url,dataMethod:t.urls[idx].method})
+                }
+                urls+="</select><span class='method'>请求方式：<strong></strong></span>" +
+                    "<button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span> ";
             }
+
+
+
+
+
             for(var idx in t.ex){
                 extype+="<p>%{exName}:<span>%{exVal}</span></p>".format({exName:t.ex[idx].name,exVal:t.ex[idx].value})
             }
@@ -90,14 +123,8 @@ function verSel(){
             subObj(t.requestParms,level);
 
             for(var subIndex in level.datas){
-                // console.info(level.datas[subIndex]);
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+2;
                 reqParm+="<div class='sec-table-list %{_open}' parent='%{_parent}'> <ul><li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i> <span style='text-indent:%{_indent}px'>%{requestName}</span></li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class='col-1'>%{default}</li><li class=' col-6'>%{des}</li></ul></div>".format(level.datas[subIndex])
-                // reqParm+="<div class='sec-table-list'> ";
-                // if(level.datas[subIndex]._sub="icon-sub"){
-                //     reqParm+= "<ul><li class='col-2'><i class='%{_sub}'></i> %{_str}%{requestName}</li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class=' col-6'>%{des}</li></ul>".format(level.datas[subIndex])
-                // }
-                // reqParm+="</div>"
             }
 
             var level = new Object();
@@ -107,98 +134,16 @@ function verSel(){
             level.datas = new Object();
             subObj(t.responseParms,level);
             for(var subIndex in level.datas){
-                // console.info(level.datas[subIndex]);
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+2;
                 resParm+="<div class='sec-table-list %{_open}' parent='%{_parent}'> <ul><li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i> <span style='text-indent:%{_indent}px'>%{responseName}</span></li><li class='col-1'>%{datatype}</li><li class='col-1'>%{default}</li><li class=' col-6'>%{des}</li></ul></div>".format(level.datas[subIndex])
-                // reqParm+="<div class='sec-table-list'> ";
-                // if(level.datas[subIndex]._sub="icon-sub"){
-                //     reqParm+= "<ul><li class='col-2'><i class='%{_sub}'></i> %{_str}%{requestName}</li><li class='col-1'>%{required}</li><li class='col-1'>%{datatype}</li><li class=' col-6'>%{des}</li></ul>".format(level.datas[subIndex])
-                // }
-                // reqParm+="</div>"
             }
 
-            // for(var idx in t.requestParms){
-            //     var obj = t.requestParms[idx];
-            //     msg = "";
-            //     for(var j in obj){//[{},{}]
-            //         if(is_array(obj[j])){//child
-            //             for(var i in obj[j]){//arr
-            //                 if(is_array(obj[j][i])){
-            //                     subObj(obj[j][i]);
-            //                 }else if(typeof obj[j][i] == "object"){
-            //                     for(var name in obj[j][i]){
-            //                         console.info("2:"+name);
-            //                     }
-            //                     //msg += obj[j][i];
-            //
-            //                 }else{
-            //                     console.info("2:"+obj[j][i]);
-            //                 }
-            //             }
-            //         }else{
-            //             console.error("1:"+j);
-            //             //msg += obj[j];
-            //         }
-            //
-            //     }
-                //console.info(msg);
-
-
-                // for(var objKey in t.requestParms[idx]){
-                //     if(typeof t.requestParms[idx][objKey]=="object"){
-                //         console.info(t.requestParms[idx][objKey]);
-                //     }
-                // }
-                var arrKeys=[];
-                // for(var ke in t.requestParms[idx]){
-                //     if (t.requestParms[idx].hasOwnProperty(ke))
-                //         arrKeys.push(ke);
-                // }
-
-            //     reqParm+="<div class='sec-table-list'> <ul><li class='col-2'>%{requestName}</li><li class='col-1'>%{reqParmreq}</li><li class='col-1'>%{reqParmType}</li><li class=' col-6'>%{reqParmDes}</li></ul></div>".format({
-            //         reqParmName:t.requestParms[idx].requestName,
-            //         reqParmreq:t.requestParms[idx].required,
-            //         reqParmType:t.requestParms[idx].datatype,
-            //         reqParmDes:t.requestParms[idx].des
-            //     });
-            //
-            //     if(t.requestParms[idx].sub){
-            //         subReqData = t.requestParms[idx].sub;
-            //         reqParm+="<div class='sec-table-list'><ul><li class='col-2'><i class='icon-sub open'></i>%{reqParmName}</li><li class='col-1'>%{reqParmreq}</li><li class='col-1'>%{reqParmType}</li><li class=' col-6'>%{reqParmDes}</li></ul><div class='sub'>".format({
-            //             reqParmName:t.requestParms[idx].requestName,
-            //             reqParmreq:t.requestParms[idx].required,
-            //             reqParmType:t.requestParms[idx].datatype,
-            //             reqParmDes:t.requestParms[idx].des
-            //         });
-            //         for(ind in subReqData){
-            //             reqParm+="<ul><li class='col-2'>%{subReqParm}</li><li class='col-1'>%{subReqReq}</li><li class='col-1'>%{subReqType}</li><li class='col-6'>%{subReqDes}</li></ul>".format({
-            //                     subReqParm:subReqData[ind].requestName,
-            //                     subReqReq:subReqData[ind].required,
-            //                     subReqType:subReqData[ind].datatype,
-            //                     subReqDes:subReqData[ind].des
-            //             });
-            //         }
-            //
-            //         reqParm+="</div></div";
-            //     }
-            // }
-
-            // for(var idx in t.responseParms){
-            //     resParm+="<div class='sec-table-list'><ul><li class='col-2'>%{resParmName}</li><li class='col-1'>%{resParmType}</li><li class=' col-6'>%{resParmDes}</li></ul></div>".format({
-            //         resParmName:t.responseParms[idx].responseName,
-            //         resParmType:t.responseParms[idx].datatype,
-            //         resParmDes:t.responseParms[idx].des
-            //     });
-            //
-            //
-            // }
         }
     });
     extype+="</div>";
     reqParm+="</div>";
     resParm+="</div>";
-    urls+="</select><span class='method'>请求方式：<strong></strong></span>" +
-        "<a href='javascript:void(0)' class='copy' onclick='copy()'>复制</a><span class='copysuc'>复制成功</span> ";
+
     $('.urls').html(urls);
     $('.extype').html(extype);
     $('#req').html(reqParm);

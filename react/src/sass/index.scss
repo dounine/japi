@@ -96,7 +96,7 @@ header{
           display:flex;
           width:25px;
           height:25px;
-          background:url("../images/search.png") no-repeat;
+          background:url("/src/images/search.png") no-repeat;
           background-size:100% 100%;
         }
         .secrchList{
@@ -153,11 +153,11 @@ header{
       .icon{
         width:15px;
         height:15px;
-        background:url("../images/category.png") no-repeat;
+        background:url("/src/images/category.png") no-repeat;
         background-size:15px;
         margin-right:20px;
         &:hover{
-          background:url("../images/category_hover.png") no-repeat;
+          background:url("/src/images/category_hover.png") no-repeat;
           background-size:15px;
           cursor:pointer;
         }
@@ -168,11 +168,11 @@ header{
         .mainbav{
           a{
             text-indent:20px;
-            background:url("../images/right.png") no-repeat 5px center;
+            background:url("/src/images/right.png") no-repeat 5px center;
             background-size:12px 12px;
           }
           &.open a{
-            background:url("../images/under.png") no-repeat 5px center;
+            background:url("/src/images/under.png") no-repeat 5px center;
             background-size:12px 12px;
           }
         }
