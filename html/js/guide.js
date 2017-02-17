@@ -85,36 +85,46 @@ $(function(){
         $(this).parents('.menu').children('a').children('i').css("color",$color);
         $(this).parents('.menu').siblings('.menu').children('a').children('.iconfont').html("&#xe608;").css("color","#555B5E");
         $(this).parents('.menu').siblings('.menu').children('.change').hide();
-        $(this).parents('.menu').children('a').next().show();
-        $(this).addClass('active');
-
-
+        $(this).parents('.menu').children('a').next().show()
+        $(this).addClass('active')
     })
 
     //滚动监听
-
     $(window).scroll(function(){
         var wst = $(window).scrollTop();
         var i= 0,j= 0,rl,sl,ll;
-        var lastIndex = $('nav .active').parent('li').index();
-        var secondIndex = $('nav .active').parents('.menu').index();
-        var rootIndex = $('nav .active').parents('.mainbav').index();
-        rl=rootIndex+1;sl=secondIndex+1;ll=lastIndex+1
-        var navLen = $('nav .active').parents('.change').children('li').length;
-        for(var i=0;i<navLen; i++){
-            ll = i+1
-            var scrId = '#'+rl+'-'+sl+'-'+ll
+        var lastIndex = $('.active').parent().index();
+        var secondIndex = $('.active').parents('.menu').index();
+        var rootIndex = $('.active').parents('.mainbav').index();
 
-            if($(scrId).offset().top<=wst+80){
-                $('.change a').removeClass('active');
-                $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change li').eq(i).children('a').addClass('active');
+        rl=rootIndex+1;sl=secondIndex+1;ll=lastIndex+1
+        var ahash = window.location.hash.slice(1,7);
+        var ahashLen = $('#nav'+ahash).parents('.change').children().length;
+        var sobj = [];
+        for(var i=0;i<ahashLen; i++){
+            var navId = $('#nav'+ahash).parents('.change').children().eq(i).find('.submenu').attr('id');
+            var conId = $('#'+navId.slice(3,8));
+            if(conId.offset().top<=wst+80){
+                var idValue = conId.attr('id');
+                sobj.push(conId.attr('id'));
             }
         }
-        var newhash = '#'+rootIndex+'-'+secondIndex+'-'+lastIndex;
-            window.location.hash = newhash;
-            var rhtml = $('nav .mainbav').eq(rootIndex).children('a').children('span').html();
-            var shtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).children('a').children('span').html();
-            var lhtml = $('nav .mainbav').eq(rootIndex).find('.menu').eq(secondIndex).find('.change').children('li').eq(lastIndex).children('a').html()
+        for(var n =0;n<sobj.length;n++){
+            if( n== (sobj.length-1)){
+                $('nav .submenu').removeClass('active')
+                $('#nav'+sobj[n]).addClass('active');
+                window.location.hash='#'+sobj[n];
+            }
+        }
+        var t = $('#'+ahash).children('.main').offset().top;
+        var h =$('#'+ahash).children('.main').height();
+        var wstH = wst+120;
+        var a = (wstH-t)/h*100+'%';
+        $('.bar .barload').css('width',a);
+        
+        var lhtml = $('#nav'+ahash).text();
+        var shtml = $('#nav'+ahash).parents('.menu').children('a').children('span').text();
+        var rhtml = $('#nav'+ahash).parents('.mainbav').children('a').children('span').text();
             var contitle = rhtml + '>' + shtml + '>' + lhtml
             $('.conTitle').html(contitle);
 
@@ -146,27 +156,11 @@ $(function(){
             })
             tab+="</ul>";
             $('.searchtxt').html(tab);
-            $('.searchtxt li a').eq(0).addClass('act')
+            $('.searchtxt li a').eq(0).addClass('active')
             $('.searchtxt a').click(function(){
-                $('nav span').removeClass('allsear')
                 var findmenu = $(this).text();
-                var $color = $('header').css('background-color');
                 var findid = $(this).attr('myid');
-                var arr = findid.slice('3').split('-');
-                $('nav .mainbav').eq(arr[0]).children('a').click();
-                $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).children('a').click();
-                $('nav .mainbav').eq(arr[0]).find('.menu').eq(arr[1]).find('.change li').eq(arr[2]).children('a').click();
-
-
-
-
-
-                $("nav .submenu:contains('"+findmenu+"')").parents('.mainbav').children('a').children('span').addClass('allsear');
-                $("nav .submenu:contains('"+findmenu+"')").parents('.menu').children('a').children('span').addClass('allsear');
-                // $("nav .change a:contains('"+findmenu+"')").css('color','#40fc07')
-                //$("nav .submenu:contains('"+findmenu+"')").click()
-
-
+                $('#'+findid).click()
                 $('.searchtxt').hide();
                 $('#search').val(findmenu);
             });
@@ -177,6 +171,7 @@ $(function(){
         }else{
             $('.searchtxt').hide();
         }
+
     });
     $('.searchBtn').click(function(){
         var findmenu = $('#search').val();
@@ -184,22 +179,13 @@ $(function(){
             return;
         }
         $("nav .submenu:contains('"+findmenu+"')").eq(0).click()
-        $('.searchtxt').hide();
-    })
-    $('body').click(function(){
-        $('.searchtxt').hide();
+
     })
 
     
-    $('nav .menuClick').click(function(){
-        $(this).find('.point').remove();
-        if($(this).parents('.mainbav').find('.point').length==0){
-            $(this).parents('.mainbav').find('.new').remove()
-        }
-    })
 
+});
 
-})
 
 
 
