@@ -1,6 +1,6 @@
 package com.dounine.japi.core.impl;
 
-import com.dounine.japi.common.Const;
+import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IType;
@@ -26,6 +26,7 @@ public class TypeImpl implements IType {
     private static final Logger CONSOLE = LoggerFactory.getLogger(TypeImpl.class);
 
     private String javaFilePath;
+    private String javaType;
     private String projectPath;
     private List<String> includePaths = new ArrayList<>();
     private String javaKeyTxt;
@@ -43,7 +44,7 @@ public class TypeImpl implements IType {
             throw new JapiException("javaKeyTxt 不能为空");
         }
 
-        if(BuiltInImpl.getInstance().isBuiltInType(javaKeyTxt)){
+        if(BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt)){
             return null;
         }
         if (null == returnFields) {
@@ -54,7 +55,7 @@ public class TypeImpl implements IType {
 
     @Override
     public boolean isBuiltInType() {
-        return BuiltInImpl.getInstance().isBuiltInType(javaKeyTxt);
+        return BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt);
     }
 
     private List<List<String>> fieldBodyAndDoc(final List<String> noPackageLines) {
@@ -64,7 +65,7 @@ public class TypeImpl implements IType {
         Iterator<String> newNoPackageLines = new ArrayList<>(noPackageLines).iterator();
         while (newNoPackageLines.hasNext()) {
             String line = newNoPackageLines.next();
-            Matcher docMatcher = Const.DOC_PATTERN_BEGIN.matcher(line);
+            Matcher docMatcher = JapiPattern.DOC_PATTERN_BEGIN.matcher(line);
             if (!isFindDocBegin && docMatcher.find()) {//匹配到注释
                 isFindDocBegin = true;
             }
@@ -79,7 +80,7 @@ public class TypeImpl implements IType {
                 }
             }
             if (null != fieldLines && fieldLines.size() > 0) {
-                for (Pattern methodPattern : Const.FIELD_KEYWORD) {
+                for (Pattern methodPattern : JapiPattern.FIELD_KEYWORD) {
                     Matcher matcher = methodPattern.matcher(line);
                     if (matcher.find()) {//匹配到属性
                         fieldBodyAndDocs.add(fieldLines);
@@ -119,7 +120,7 @@ public class TypeImpl implements IType {
         boolean match = false;//true 找到类的开始，开始查找方法
         for (String line : javaFileLines) {
             if (!match) {
-                for (String chart : Const.MATCH_CHARTS) {
+                for (String chart : JapiPattern.MATCH_CHARTS) {
                     if (line.startsWith(chart)) {
                         match = true;
                         break;
@@ -143,7 +144,7 @@ public class TypeImpl implements IType {
             fieldImpl.setDocs(fieldDocs);
             fieldImpl.setAnnotations(extractField.getAnnotations());
             fieldImpl.setType(extractField.getType());
-            if(!BuiltInImpl.getInstance().isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
+            if(!BuiltInJavaImpl.getInstance().isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
                 File childTypeFile = javaFile.searchTxtJavaFileForProjectsPath(extractField.getType());
                 if(childTypeFile.getAbsoluteFile().equals(returnTypeFile.getAbsoluteFile())){//自身对象
                     fieldImpl.setName(extractField.getName());
@@ -170,35 +171,35 @@ public class TypeImpl implements IType {
         boolean fieldBegin = false;
         List<IFieldDoc> fieldDocs = new ArrayList<>();
         for (String fieldLine : fieldLines) {
-            Matcher matcherDocBegin = Const.DOC_PATTERN_BEGIN.matcher(fieldLine);
+            Matcher matcherDocBegin = JapiPattern.DOC_PATTERN_BEGIN.matcher(fieldLine);
             if (!fieldBegin && matcherDocBegin.find()) {
                 fieldBegin = true;
                 continue;
             }
             if (fieldBegin) {
-                Matcher matcherDocEnd = Const.DOC_PATTERN_END.matcher(fieldLine);
+                Matcher matcherDocEnd = JapiPattern.DOC_PATTERN_END.matcher(fieldLine);
                 if (matcherDocEnd.find()) {
                     break;
                 }
             }
             if (fieldBegin) {
                 FieldDocImpl docImpl = new FieldDocImpl();
-                Matcher methodFunDesMatcher = Const.DOC_METHOD_FUN_DES.matcher(fieldLine);//方法功能描述
+                Matcher methodFunDesMatcher = JapiPattern.DOC_METHOD_FUN_DES.matcher(fieldLine);//方法功能描述
                 if (methodFunDesMatcher.find()) {
-                    Matcher methodMoreMatcher = Const.DOC_MORE.matcher(fieldLine);
+                    Matcher methodMoreMatcher = JapiPattern.DOC_MORE.matcher(fieldLine);
                     if (methodMoreMatcher.find()) {
                         docImpl.setName(methodFunDesMatcher.group().substring(methodMoreMatcher.group().length()));
                     }
                 } else {
-                    Matcher methodMoreMatcher = Const.DOC_MORE.matcher(fieldLine);//注释左   *
+                    Matcher methodMoreMatcher = JapiPattern.DOC_MORE.matcher(fieldLine);//注释左   *
                     if (methodMoreMatcher.find()) {//   *
                         docImpl.setName(fieldLine.substring(methodMoreMatcher.group().length()));
-                        Matcher methodNameMatcher = Const.DOC_NAME.matcher(fieldLine);//注释名称 * \@param
+                        Matcher methodNameMatcher = JapiPattern.DOC_NAME.matcher(fieldLine);//注释名称 * \@param
                         if (methodNameMatcher.find()) {
                             String methodNameValue = methodNameMatcher.group();
                             String docName = methodNameValue.substring(3);
                             docImpl.setName(docName);
-                            Matcher methodNameValueMatcher = Const.DOC_NAME_VALUE.matcher(fieldLine);//注释名称 * \@param user
+                            Matcher methodNameValueMatcher = JapiPattern.DOC_NAME_VALUE.matcher(fieldLine);//注释名称 * \@param user
                             if (methodNameValueMatcher.find()) {
                                 String docValue = methodNameValueMatcher.group().substring(methodNameValue.length());
                                 if (fieldLine.endsWith(docValue)) {
@@ -226,13 +227,13 @@ public class TypeImpl implements IType {
         String fieldLineStr = null;
         boolean docBegin = false;
         for (String fieldLine : fieldLines) {
-            Matcher fieldDocEnd = Const.DOC_PATTERN_END.matcher(fieldLine);
+            Matcher fieldDocEnd = JapiPattern.DOC_PATTERN_END.matcher(fieldLine);
             if (!docBegin && fieldDocEnd.find()) {
                 docBegin = true;
                 continue;
             }
             if (docBegin) {
-                Matcher annotationMatcher = Const.ANNOTATION_PATTERN.matcher(fieldLine);
+                Matcher annotationMatcher = JapiPattern.ANNOTATION_PATTERN.matcher(fieldLine);
                 if (annotationMatcher.find()) {//注解
                     annotationStrs.add(fieldLine.trim().substring(1));
                 } else {//方法
@@ -253,7 +254,7 @@ public class TypeImpl implements IType {
 
     private String getFieldTypeStr(final String fieldLineStr) {
         String typeStr = null;
-        for (Pattern typePattern : Const.FIELD_KEYWORD) {
+        for (Pattern typePattern : JapiPattern.FIELD_KEYWORD) {
             Matcher typeMatch = typePattern.matcher(fieldLineStr);
             if (typeMatch.find()) {
                 typeStr = StringUtils.substring(typeMatch.group(), 0, -1).trim();//public String testUser
@@ -295,5 +296,13 @@ public class TypeImpl implements IType {
 
     public void setJavaKeyTxt(String javaKeyTxt) {
         this.javaKeyTxt = javaKeyTxt;
+    }
+
+    public String getJavaType() {
+        return javaType;
+    }
+
+    public void setJavaType(String javaType) {
+        this.javaType = javaType;
     }
 }

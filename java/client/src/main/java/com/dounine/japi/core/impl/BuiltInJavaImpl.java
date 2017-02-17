@@ -17,15 +17,15 @@ import java.util.List;
 /**
  * Created by huanghuanlai on 2017/1/19.
  */
-public class BuiltInImpl implements IBuiltIn {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuiltInImpl.class);
+public class BuiltInJavaImpl implements IBuiltIn {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuiltInJavaImpl.class);
 
     private static String[] builtInPaths;
     private static List<String> types;
     private static File builtInFile;
-    private static final BuiltInImpl builtIn = new BuiltInImpl();
+    private static final BuiltInJavaImpl builtIn = new BuiltInJavaImpl();
 
-    private BuiltInImpl() {
+    private BuiltInJavaImpl() {
         if (null == builtInFile) {
             URL url = this.getClass().getResource("/class-builtIn-types.txt");
             builtInFile = new File(url.getFile());
@@ -38,7 +38,7 @@ public class BuiltInImpl implements IBuiltIn {
         }
     }
 
-    public static BuiltInImpl getInstance(){
+    public static BuiltInJavaImpl getInstance(){
         return builtIn;
     }
 

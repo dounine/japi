@@ -1,39 +1,25 @@
 package com.dounine.japi.core.impl;
 
+import com.dounine.japi.core.IAnno;
 import com.dounine.japi.core.IParameter;
+import com.dounine.japi.core.IType;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by lake on 17-2-10.
  */
 public class ParameterImpl implements IParameter {
-    private String type;
-    private String name;
-    private String anno;
+    private List<String> requestInfos = new ArrayList<>();
 
-    @Override
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setRequestInfos(List<String> requestInfos) {
+        this.requestInfos = requestInfos;
     }
 
     @Override
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String getAnno() {
-        return anno;
-    }
-
-    public void setAnno(String anno) {
-        this.anno = anno;
+    public String getRequestInfo() {
+        return StringUtils.join(requestInfos.toArray(),",");
     }
 }

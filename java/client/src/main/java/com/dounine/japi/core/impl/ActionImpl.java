@@ -1,12 +1,14 @@
 package com.dounine.japi.core.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.dounine.japi.common.Const;
+import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.*;
 import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.core.type.RequestMethod;
+import com.dounine.japi.core.valid.JSR303Valid;
+import com.dounine.japi.core.valid.MVCValid;
 import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
@@ -77,7 +79,7 @@ public class ActionImpl implements IAction {
             boolean match = false;//true 找到类的开始，开始查找方法
             for (String line : javaFileLines) {
                 if (!match) {
-                    for (String chart : Const.MATCH_CHARTS) {
+                    for (String chart : JapiPattern.MATCH_CHARTS) {
                         if (line.startsWith(chart)) {
                             match = true;
                             break;
@@ -112,7 +114,7 @@ public class ActionImpl implements IAction {
         Iterator<String> newNoPackageLines = new ArrayList<>(noPackageLines).iterator();
         while (newNoPackageLines.hasNext()) {
             String line = newNoPackageLines.next();
-            Matcher docMatcher = Const.DOC_PATTERN_BEGIN.matcher(line);
+            Matcher docMatcher = JapiPattern.DOC_PATTERN_BEGIN.matcher(line);
             if (!isFindDocBegin && docMatcher.find()) {//匹配到注释
                 isFindDocBegin = true;
             }
@@ -127,7 +129,7 @@ public class ActionImpl implements IAction {
                 }
             }
             if (null != methodLines && methodLines.size() > 0) {
-                for (Pattern methodPattern : Const.METHOD_KEYWORD) {
+                for (Pattern methodPattern : JapiPattern.METHOD_KEYWORD) {
                     Matcher matcher = methodPattern.matcher(line);
                     if (matcher.find()) {//匹配到方法
                         methodBodyAndDocs.add(methodLines);
@@ -153,36 +155,36 @@ public class ActionImpl implements IAction {
         List<IActionMethodDoc> methodDocs = new ArrayList<>();
 
         for (String methodLine : methodLines) {
-            Matcher matcherDocBegin = Const.DOC_PATTERN_BEGIN.matcher(methodLine);
+            Matcher matcherDocBegin = JapiPattern.DOC_PATTERN_BEGIN.matcher(methodLine);
             if (!methodBegin && matcherDocBegin.find()) {
                 methodBegin = true;
                 continue;
             }
             if (methodBegin) {
-                Matcher matcherDocEnd = Const.DOC_PATTERN_END.matcher(methodLine);
+                Matcher matcherDocEnd = JapiPattern.DOC_PATTERN_END.matcher(methodLine);
                 if (matcherDocEnd.find()) {
                     break;
                 }
             }
             if (methodBegin) {
                 ActionMethodDocImpl docImpl = new ActionMethodDocImpl();
-                Matcher methodFunDesMatcher = Const.DOC_METHOD_FUN_DES.matcher(methodLine);//方法功能描述
+                Matcher methodFunDesMatcher = JapiPattern.DOC_METHOD_FUN_DES.matcher(methodLine);//方法功能描述
                 if (methodFunDesMatcher.find()) {
-                    Matcher methodMoreMatcher = Const.DOC_MORE.matcher(methodLine);
+                    Matcher methodMoreMatcher = JapiPattern.DOC_MORE.matcher(methodLine);
                     if (methodMoreMatcher.find()) {
                         docImpl.setName(methodFunDesMatcher.group().substring(methodMoreMatcher.group().length()));
                         docImpl.setDocType(DocType.FUNDES.name());
                     }
                 } else {
-                    Matcher methodMoreMatcher = Const.DOC_MORE.matcher(methodLine);//注释左   *
+                    Matcher methodMoreMatcher = JapiPattern.DOC_MORE.matcher(methodLine);//注释左   *
                     if (methodMoreMatcher.find()) {//   *
                         docImpl.setName(methodLine.substring(methodMoreMatcher.group().length()));
-                        Matcher methodNameMatcher = Const.DOC_NAME.matcher(methodLine);//注释名称 * \@param
+                        Matcher methodNameMatcher = JapiPattern.DOC_NAME.matcher(methodLine);//注释名称 * \@param
                         if (methodNameMatcher.find()) {
                             String methodNameValue = methodNameMatcher.group();
                             String docName = methodNameValue.substring(3);
                             docImpl.setName(docName);
-                            Matcher methodNameValueMatcher = Const.DOC_NAME_VALUE.matcher(methodLine);//注释名称 * \@param user
+                            Matcher methodNameValueMatcher = JapiPattern.DOC_NAME_VALUE.matcher(methodLine);//注释名称 * \@param user
                             String docTagDes = DocTagImpl.getInstance().getTagDesByName(docName);
                             String _docTagDes = StringUtils.isBlank(docTagDes) ? DocTagImpl.getInstance().getTagDesByName(docName + ".") : docTagDes;
                             boolean isSingleTag = StringUtils.isBlank(docTagDes) && !(StringUtils.isNotBlank(_docTagDes) && _docTagDes.equals(docTagDes));
@@ -245,7 +247,7 @@ public class ActionImpl implements IAction {
      */
     private String getMethodReturnTypeStr(final String methodLineStr) {
         String returnTypeStr = null;
-        for (Pattern typePattern : Const.METHOD_RETURN_TYPES) {
+        for (Pattern typePattern : JapiPattern.METHOD_RETURN_TYPES) {
             Matcher returnTypeMatch = typePattern.matcher(methodLineStr);
             if (returnTypeMatch.find()) {
                 returnTypeStr = StringUtils.substring(returnTypeMatch.group(), 0, -1).trim();//public String testUser
@@ -266,13 +268,13 @@ public class ActionImpl implements IAction {
      * @param methodLineStr 方法行
      * @return 参数列表
      */
-    private List<String> getMethodParameters(String methodLineStr) {
+    private List<String> getMethodParameterStrs(String methodLineStr) {
         List<String> parameters = new ArrayList<>();
-        Matcher matcher = Const.PARAMETER_BODYS.matcher(methodLineStr);
+        Matcher matcher = JapiPattern.PARAMETER_BODYS.matcher(methodLineStr);
         if (matcher.find()) {
             String parStrs = StringUtils.substring(matcher.group(), 1, -1).trim();
             parStrs = StringUtils.substring(parStrs.trim(), 0, -1);
-            Matcher parMatcher = Const.PARAMETER_SINGLE_NAME.matcher(parStrs);
+            Matcher parMatcher = JapiPattern.PARAMETER_SINGLE_NAME.matcher(parStrs);
             int initSearchIndex = 0;
             int lastSearchIndex = 0;
             while (parMatcher.find()) {
@@ -299,13 +301,13 @@ public class ActionImpl implements IAction {
         String methodLineStr = null;
         boolean docBegin = false;
         for (String methodLine : methodLines) {
-            Matcher matcherDocEnd = Const.DOC_PATTERN_END.matcher(methodLine);
+            Matcher matcherDocEnd = JapiPattern.DOC_PATTERN_END.matcher(methodLine);
             if (!docBegin && matcherDocEnd.find()) {
                 docBegin = true;
                 continue;
             }
             if (docBegin) {
-                Matcher annotationMatcher = Const.ANNOTATION_PATTERN.matcher(methodLine);
+                Matcher annotationMatcher = JapiPattern.ANNOTATION_PATTERN.matcher(methodLine);
                 if (annotationMatcher.find()) {//注解
                     annotationStrs.add(methodLine.trim().substring(1));
                 } else {//方法
@@ -317,14 +319,56 @@ public class ActionImpl implements IAction {
         IType type = getType(returnTypeStr);
         ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs);
 
-        List<String> methodParameters = getMethodParameters(methodLineStr);
+        List<String> methodParameterStrs = getMethodParameterStrs(methodLineStr);
+        List<IParameter> parameters = getMethodParameter(methodParameterStrs);
 
         methodImpl.setType(type);
         methodImpl.setAnnotations(annotationStrs);
         methodImpl.setRequest(actionRequest);
-        methodImpl.setParameters(methodParameters);
+        methodImpl.setParameters(parameters);
 
         return methodImpl;
+    }
+
+    /**
+     * 将参数字符串转为参数对象
+     *
+     * @param methodParameterStrs
+     * @return 参数对象列表
+     */
+    private List<IParameter> getMethodParameter(List<String> methodParameterStrs) {
+        MVCValid mvcValid = new MVCValid();
+        mvcValid.setIncludePaths(includePaths);
+        mvcValid.setJavaFilePath(javaFilePath);
+        mvcValid.setProjectPath(projectPath);
+        JSR303Valid jsr303Valid = new JSR303Valid();
+        List<IParameter> parameterList = new ArrayList<>();
+        for (String parameter : methodParameterStrs) {
+            if (checkHasAnno(parameter)) {//包含注解 @RequestParam Integer cc
+                Matcher annotationMatcher = JapiPattern.ANNOTATION.matcher(parameter);
+                if (annotationMatcher.find()) {//查找注解
+                    String annoStr = annotationMatcher.group();
+                    if (mvcValid.isValid(annoStr)) {//是否是MVC注解
+                        IParameter iParameter = mvcValid.getParameter(parameter);
+                        if (null != iParameter) {
+                            parameterList.add(iParameter);
+                        }
+                    } else if (jsr303Valid.isValid(annoStr)) {//是否是jsr303注解
+                        IParameter iParameter = jsr303Valid.getParameter(parameter);
+                        if (null != iParameter) {
+                            parameterList.add(jsr303Valid.getParameter(parameter));
+                        }
+                    }
+                }
+            } else {//不包含,看是否在action所排除的字段内
+
+            }
+        }
+        return parameterList;
+    }
+
+    private boolean checkHasAnno(String parameter) {
+        return parameter.startsWith("@");
     }
 
     /**
@@ -336,7 +380,7 @@ public class ActionImpl implements IAction {
     private ActionRequest getRequestsByAnnotations(List<String> annotationStrs) {
         String requestAnno = null, requestAnnoOrign = null;
         for (String annotationLine : annotationStrs) {
-            Matcher requestAnnoMatcher = Const.REQUEST_ANNO_PATTERN.matcher(annotationLine);
+            Matcher requestAnnoMatcher = JapiPattern.REQUEST_ANNO_PATTERN.matcher(annotationLine);
             if (requestAnnoMatcher.find()) {
                 requestAnnoOrign = annotationLine;
                 requestAnno = StringUtils.substring(requestAnnoMatcher.group(), 0, -1);
@@ -361,7 +405,7 @@ public class ActionImpl implements IAction {
         String[] requestUrls = null;
         RequestMethod[] methodTypeList = null;
         if (null != actionRequest) {
-            Pattern pattern = Const.getPattern(actionRequest.valueField() + "(\\s)*[=](\\s)*");
+            Pattern pattern = JapiPattern.getPattern(actionRequest.valueField() + "(\\s)*[=](\\s)*");
             Matcher matcher = pattern.matcher(requestAnnoOrign);
             if (matcher.find()) {
                 String arryOrSingle = matcher.group();
@@ -370,8 +414,8 @@ public class ActionImpl implements IAction {
                     String valueAndEndSym = beginStr.substring(arryOrSingle.length());
                     requestUrls = new String[]{StringUtils.substring(valueAndEndSym, 1, valueAndEndSym.indexOf("\"", 2))};
                 } else if (beginStr.startsWith(arryOrSingle + "{")) {//多个值
-                    Matcher symBeginMatcher = Const.PATTERN_SYM_BEGIN.matcher(beginStr);
-                    Matcher symEndMatcher = Const.PATTERN_SYM_END.matcher(beginStr);
+                    Matcher symBeginMatcher = JapiPattern.PATTERN_SYM_BEGIN.matcher(beginStr);
+                    Matcher symEndMatcher = JapiPattern.PATTERN_SYM_END.matcher(beginStr);
                     if (symBeginMatcher.find() && symEndMatcher.find()) {
                         String arrStr = StringUtils.substring(beginStr, symBeginMatcher.start() + 1, symEndMatcher.end() - 1).trim();
                         requestUrls = arrStr.split(",");
@@ -388,10 +432,10 @@ public class ActionImpl implements IAction {
                     LOGGER.error(errMsg);
                     throw new JapiException(errMsg);
                 }
-                Pattern methodPattern = Const.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*");
+                Pattern methodPattern = JapiPattern.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*");
                 Matcher methodMatcher = methodPattern.matcher(requestAnnoOrign);
                 if (methodMatcher.find()) {
-                    Pattern multiMethodPattern = Const.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//多个请求方式
+                    Pattern multiMethodPattern = JapiPattern.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*[{]\\S*[}]");//多个请求方式
                     Matcher multiMethodMatcher = multiMethodPattern.matcher(requestAnnoOrign);
                     if (multiMethodMatcher.find()) {
                         String arrMethod = multiMethodMatcher.group();
@@ -406,18 +450,18 @@ public class ActionImpl implements IAction {
                                 }
                             }
                         }
-                    }else{
-                        Pattern singleMethodPattern = Const.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*\\S*");//单个请求方式
+                    } else {
+                        Pattern singleMethodPattern = JapiPattern.getPattern(actionRequest.methodField() + "(\\s)*[=](\\s)*\\S*");//单个请求方式
                         Matcher singleMethodMatcher = singleMethodPattern.matcher(requestAnnoOrign);
-                        if(singleMethodMatcher.find()){
+                        if (singleMethodMatcher.find()) {
                             String matchStr = singleMethodMatcher.group();
                             String spectorStr = null;
-                            if(matchStr.indexOf(",")!=-1){
+                            if (matchStr.indexOf(",") != -1) {
                                 spectorStr = ",";
-                            }else{
+                            } else {
                                 spectorStr = ")";
                             }
-                            String singleMethodStr = matchStr.substring(matchStr.indexOf("=")+1,matchStr.lastIndexOf(spectorStr)).trim();
+                            String singleMethodStr = matchStr.substring(matchStr.indexOf("=") + 1, matchStr.lastIndexOf(spectorStr)).trim();
                             methodTypeList = new RequestMethod[1];
                             for (String[] methodType : actionRequest.methodValues()) {
                                 if (methodType[0].endsWith(singleMethodStr)) {

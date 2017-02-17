@@ -19,6 +19,6 @@ public interface IActionMethod {
 
     ActionRequest getRequest();
 
-    List<String> getParameters();
+    List<IParameter> getParameters();
 
 }

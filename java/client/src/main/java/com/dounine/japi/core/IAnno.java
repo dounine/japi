@@ -5,8 +5,10 @@ import java.util.List;
 /**
  * Created by lake on 17-2-10.
  */
-public interface IParameter {
+public interface IAnno {
 
-    String getRequestInfo();
+    String getName();
+
+    List<IAnnoVal> getAnnoVals();
 
 }

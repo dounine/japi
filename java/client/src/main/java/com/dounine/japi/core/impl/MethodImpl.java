@@ -2,6 +2,7 @@ package com.dounine.japi.core.impl;
 
 import com.dounine.japi.core.IActionMethod;
 import com.dounine.japi.core.IActionMethodDoc;
+import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.IType;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class MethodImpl implements IActionMethod {
 
     private List<String> annotations;
-    private List<String> parameters;
+    private List<IParameter> parameters;
     private IType type;
     private String methodDescription;
     private ActionRequest request;
@@ -43,11 +44,11 @@ public class MethodImpl implements IActionMethod {
     }
 
     @Override
-    public List<String> getParameters() {
+    public List<IParameter> getParameters() {
         return parameters;
     }
 
-    public void setParameters(List<String> parameters) {
+    public void setParameters(List<IParameter> parameters) {
         this.parameters = parameters;
     }
 

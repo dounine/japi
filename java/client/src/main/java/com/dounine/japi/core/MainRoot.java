@@ -3,6 +3,7 @@ package com.dounine.japi.core;
 import com.dounine.japi.core.impl.ActionImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.entity.*;
+import com.sun.istack.internal.NotNull;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class MainRoot {
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "aa")
     @ResponseBody
-    public User testUser(@Validated(value = {IActionMethod.class, IParameterField.class}) User user,@RequestParam Integer cc, BindingResult bindingResult) {
+    public User testUser(@Validated(value = {IActionMethod.class}) User user,@RequestParam(required = false) String   cc, BindingResult bindingResult) {
         return null;
     }
 
@@ -42,7 +43,7 @@ public class MainRoot {
      */
     @RequestMapping(value = "login",method = {RequestMethod.GET,RequestMethod.POST})
     @ResponseBody
-    public void login(@Validated(value = {IActionMethod.class, IParameterField.class}) User user, String bb, Integer[] last) {
+    public void login(@Validated(value = {IActionMethod.class}) User user, String bb, Integer[] last) {
     }
 
     public static String javaFilePath = "/home/lake/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";
@@ -63,7 +64,7 @@ public class MainRoot {
         actionImpl.getIncludePaths().addAll(Arrays.asList(includePaths));
         List<IActionMethod> methods = actionImpl.getMethods();
 
-//        BuiltInImpl builtIn = new BuiltInImpl();
+//        BuiltInJavaImpl builtIn = new BuiltInJavaImpl();
 
     }
 
