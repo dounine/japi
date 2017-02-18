@@ -1,5 +1,6 @@
 package com.dounine.japi.entity.u;
 
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
@@ -8,30 +9,28 @@ import org.springframework.beans.factory.annotation.Value;
 public class UserChild {
 
     /**
-     * 用户名
-     * @reg 这是正则表达式
-     * @des 这是描述信息
+     * 爱人
      */
-    @Value("")
-    String username;
+    @NotBlank
+    String love;
     /**
-     * 用户密码
+     * 年龄
      */
-    private String password;
+    private Integer age;
 
-    public String getUsername() {
-        return username;
+    public String getLove() {
+        return love;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setLove(String love) {
+        this.love = love;
     }
 
-    public String getPassword() {
-        return password;
+    public Integer getAge() {
+        return age;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }

@@ -3,7 +3,6 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
-import com.dounine.japi.core.valid.mvc.IMVC;
 import com.dounine.japi.core.valid.mvc.RequestParamValid;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,38 +23,11 @@ public class MVCValid implements IValid {
     private String javaFilePath;
     private List<String> includePaths = new ArrayList<>();
 
-    private static final List<IMVC> TYPES = new ArrayList<>();
-
-    static {
-        TYPES.add(new RequestParamValid());
-    }
-
-    public IMVC getValid(String annoStr) {
-        String anno = null;
-        if (annoStr.startsWith("@")) {
-            if(annoStr.indexOf("(")!=-1){
-                anno = annoStr.substring(1,annoStr.indexOf("("));
-            }else{
-                anno = annoStr.substring(1);
-            }
-        }else{
-            if(annoStr.indexOf("(")!=-1){
-                anno = annoStr.substring(0,annoStr.indexOf("("));
-            }else{
-                anno = annoStr;
-            }
-        }
-        for (IMVC imvc : TYPES) {
-            if (imvc.getRequestParamName().endsWith(anno)) {
-                return imvc;
-            }
-        }
-        return null;
-    }
-
     @Override
-    public boolean isValid(String annoStr) {
-        return null!=getValid(annoStr);
+    public List<IMVC> getTypes() {
+        List<IMVC> imvcs = new ArrayList<>();
+        imvcs.add(new RequestParamValid(projectPath,javaFilePath,includePaths));
+        return imvcs;
     }
 
     @Override

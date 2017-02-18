@@ -7,6 +7,8 @@ import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.core.type.RequestMethod;
+import com.dounine.japi.core.valid.IMVC;
+import com.dounine.japi.core.valid.IValid;
 import com.dounine.japi.core.valid.JSR303Valid;
 import com.dounine.japi.core.valid.MVCValid;
 import com.dounine.japi.entity.User;
@@ -330,6 +332,21 @@ public class ActionImpl implements IAction {
         return methodImpl;
     }
 
+    private List<IValid> getImvcs(){
+        List<IValid> imvcs = new ArrayList<>();
+        MVCValid mvcValid = new MVCValid();
+        mvcValid.setIncludePaths(includePaths);
+        mvcValid.setJavaFilePath(javaFilePath);
+        mvcValid.setProjectPath(projectPath);
+        imvcs.add(mvcValid);
+        JSR303Valid jsr303Valid = new JSR303Valid();
+        jsr303Valid.setIncludePaths(includePaths);
+        jsr303Valid.setJavaFilePath(javaFilePath);
+        jsr303Valid.setProjectPath(projectPath);
+        imvcs.add(jsr303Valid);
+        return imvcs;
+    }
+
     /**
      * 将参数字符串转为参数对象
      *
@@ -337,26 +354,19 @@ public class ActionImpl implements IAction {
      * @return 参数对象列表
      */
     private List<IParameter> getMethodParameter(List<String> methodParameterStrs) {
-        MVCValid mvcValid = new MVCValid();
-        mvcValid.setIncludePaths(includePaths);
-        mvcValid.setJavaFilePath(javaFilePath);
-        mvcValid.setProjectPath(projectPath);
-        JSR303Valid jsr303Valid = new JSR303Valid();
+        List<IValid> imvcs = getImvcs();
         List<IParameter> parameterList = new ArrayList<>();
         for (String parameter : methodParameterStrs) {
             if (checkHasAnno(parameter)) {//包含注解 @RequestParam Integer cc
                 Matcher annotationMatcher = JapiPattern.ANNOTATION.matcher(parameter);
                 if (annotationMatcher.find()) {//查找注解
                     String annoStr = annotationMatcher.group();
-                    if (mvcValid.isValid(annoStr)) {//是否是MVC注解
-                        IParameter iParameter = mvcValid.getParameter(parameter);
-                        if (null != iParameter) {
-                            parameterList.add(iParameter);
-                        }
-                    } else if (jsr303Valid.isValid(annoStr)) {//是否是jsr303注解
-                        IParameter iParameter = jsr303Valid.getParameter(parameter);
-                        if (null != iParameter) {
-                            parameterList.add(jsr303Valid.getParameter(parameter));
+                    for(IValid valid : imvcs){
+                        if(valid.isValid(annoStr)){
+                            IParameter iParameter = valid.getParameter(parameter);
+                            if (null != iParameter) {
+                                parameterList.add(iParameter);
+                            }
                         }
                     }
                 }

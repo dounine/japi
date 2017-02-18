@@ -8,6 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,7 +28,7 @@ public class MainRoot {
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "aa")
     @ResponseBody
-    public User testUser(@Validated(value = {IActionMethod.class}) User user,@RequestParam(required = false) String   cc, BindingResult bindingResult) {
+    public User testUser(@Valid User user, @RequestParam(required = false) String   cc, BindingResult bindingResult) {
         return null;
     }
 

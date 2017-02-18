@@ -1,7 +1,10 @@
 package com.dounine.japi.core.valid.mvc;
 
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.valid.IMVC;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -10,14 +13,14 @@ import java.util.regex.Pattern;
  */
 public class RequestParamValid implements IMVC {
 
-    public String getRequestInfo(String parameter) {
+    private String projectPath;
+    private String javaFilePath;
+    private List<String> includePaths = new ArrayList<>();
 
-//        validAnno.getValidAnnoVals().add(new ValidAnnoVal("required", "boolean", "true"));
-//        validAnno.getValidAnnoVals().add(new ValidAnnoVal("value", "string", ""));
-//        validAnno.getValidAnnoVals().add(new ValidAnnoVal("name", "string", ""));
-//        validAnno.getValidAnnoVals().add(new ValidAnnoVal("defaultValue", "string", ""));
-//        validAnno.getValidAnnoVals().add(new ValidAnnoVal("value","Class<?>[]","{}"));
-        return null;
+    public RequestParamValid(String projectPath,String javaFilePath,List<String> includePaths){
+        this.projectPath = projectPath;
+        this.javaFilePath = javaFilePath;
+        this.includePaths = includePaths;
     }
 
     @Override
@@ -30,6 +33,7 @@ public class RequestParamValid implements IMVC {
         StringBuffer sb = new StringBuffer("{");
         String newNameStr = nameStr;
         String defaultValue = "";
+        String description = "";
         String required = "true";
         sb.append("\"type\":\"");
         sb.append(typeStr);
@@ -54,6 +58,9 @@ public class RequestParamValid implements IMVC {
                 required = requiredMatcherStr.split("=")[1].trim();
             }
         }
+        sb.append("\"description\":\"");
+        sb.append(description);
+        sb.append("\",");
         sb.append("\"required\":");
         sb.append(required);
         sb.append(",");
@@ -66,5 +73,29 @@ public class RequestParamValid implements IMVC {
         sb.append("\"");
         sb.append("}");
         return sb.toString();
+    }
+
+    public String getProjectPath() {
+        return projectPath;
+    }
+
+    public void setProjectPath(String projectPath) {
+        this.projectPath = projectPath;
+    }
+
+    public String getJavaFilePath() {
+        return javaFilePath;
+    }
+
+    public void setJavaFilePath(String javaFilePath) {
+        this.javaFilePath = javaFilePath;
+    }
+
+    public List<String> getIncludePaths() {
+        return includePaths;
+    }
+
+    public void setIncludePaths(List<String> includePaths) {
+        this.includePaths = includePaths;
     }
 }

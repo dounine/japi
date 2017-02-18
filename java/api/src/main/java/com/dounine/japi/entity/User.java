@@ -1,6 +1,7 @@
 package com.dounine.japi.entity;
 
 import com.dounine.japi.entity.u.UserChild;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 
@@ -14,11 +15,12 @@ public class User {
      * @reg 这是正则表达式
      * @des 这是描述信息
      */
-    @Value("")
+    @NotBlank(message = "用户用户名不能为空")
     String username;
     /**
      * 用户密码
      */
+    @NotBlank(message = "密码不能为空")
     private String password;
     /**
      * 测试子类

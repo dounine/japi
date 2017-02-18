@@ -5,6 +5,7 @@ dependencies {
 
     compile group: 'com.alibaba', name: 'fastjson', version: '1.2.23'
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.22'
+    // https://mvnrepository.com/artifact/org.hibernate/hibernate-validator
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.2'
     compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.2'
 
