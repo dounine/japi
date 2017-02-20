@@ -29,7 +29,7 @@ public interface IValid {
             }
         }
         for (IMVC imvc : getTypes()) {
-            if (imvc.getRequestParamName().endsWith(anno)) {
+            if (imvc.getRequestParamName().endsWith(anno)||imvc.getRequestParamName().equals(anno)) {
                 return imvc;
             }
         }
@@ -38,5 +38,5 @@ public interface IValid {
 
     List<IMVC> getTypes();
 
-    IParameter getParameter(String parameterStr);
+    IParameter getParameter(String parameterStr,List<String> docsStrs);
 }

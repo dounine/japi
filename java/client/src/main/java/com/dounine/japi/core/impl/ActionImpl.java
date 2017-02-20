@@ -14,6 +14,7 @@ import com.dounine.japi.core.valid.MVCValid;
 import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -300,30 +301,33 @@ public class ActionImpl implements IAction {
     private MethodImpl extractMethod(List<String> methodLines) {
         MethodImpl methodImpl = new MethodImpl();
         List<String> annotationStrs = new ArrayList<>();
+        List<String> docsStrs = new ArrayList<>();
         String methodLineStr = null;
-        boolean docBegin = false;
+        boolean annoBegin = false;
         for (String methodLine : methodLines) {
             Matcher matcherDocEnd = JapiPattern.DOC_PATTERN_END.matcher(methodLine);
-            if (!docBegin && matcherDocEnd.find()) {
-                docBegin = true;
+            if (!annoBegin && matcherDocEnd.find()) {
+                annoBegin = true;
                 continue;
             }
-            if (docBegin) {
+            if (annoBegin) {
                 Matcher annotationMatcher = JapiPattern.ANNOTATION_PATTERN.matcher(methodLine);
                 if (annotationMatcher.find()) {//注解
                     annotationStrs.add(methodLine.trim().substring(1));
                 } else {//方法
                     methodLineStr = methodLine.trim();
                 }
+            }else{
+                docsStrs.add(methodLine);
             }
         }
+        docsStrs.remove(0);//remove /**
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
         IType type = getType(returnTypeStr);
         ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs);
 
         List<String> methodParameterStrs = getMethodParameterStrs(methodLineStr);
-        List<IParameter> parameters = getMethodParameter(methodParameterStrs);
-
+        List<IParameter> parameters = getMethodParameter(methodParameterStrs,docsStrs);//TODO 需要 docs
         methodImpl.setType(type);
         methodImpl.setAnnotations(annotationStrs);
         methodImpl.setRequest(actionRequest);
@@ -353,17 +357,17 @@ public class ActionImpl implements IAction {
      * @param methodParameterStrs
      * @return 参数对象列表
      */
-    private List<IParameter> getMethodParameter(List<String> methodParameterStrs) {
+    private List<IParameter> getMethodParameter(List<String> methodParameterStrs,List<String> docsStrs) {
         List<IValid> imvcs = getImvcs();
         List<IParameter> parameterList = new ArrayList<>();
-        for (String parameter : methodParameterStrs) {
-            if (checkHasAnno(parameter)) {//包含注解 @RequestParam Integer cc
-                Matcher annotationMatcher = JapiPattern.ANNOTATION.matcher(parameter);
+        for (String parameterStr : methodParameterStrs) {
+            if (checkHasAnno(parameterStr)) {//包含注解 @RequestParam Integer cc
+                Matcher annotationMatcher = JapiPattern.ANNOTATION.matcher(parameterStr);
                 if (annotationMatcher.find()) {//查找注解
                     String annoStr = annotationMatcher.group();
                     for(IValid valid : imvcs){
                         if(valid.isValid(annoStr)){
-                            IParameter iParameter = valid.getParameter(parameter);
+                            IParameter iParameter = valid.getParameter(parameterStr,docsStrs);
                             if (null != iParameter) {
                                 parameterList.add(iParameter);
                             }

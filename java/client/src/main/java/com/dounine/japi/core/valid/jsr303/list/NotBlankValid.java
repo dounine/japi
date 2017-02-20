@@ -22,7 +22,7 @@ public class NotBlankValid implements IMVC {
 
     @Override
     @NotBlank(message = "",groups = {IMVC.class})
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs) {
+    public String getRequestInfoForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs) {
         StringBuffer sb = new StringBuffer("{");
         String newNameStr = nameStr;
         String defaultValue = "";

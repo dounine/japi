@@ -31,7 +31,7 @@ public class MVCValid implements IValid {
     }
 
     @Override
-    public IParameter getParameter(String parameterStr) {
+    public IParameter getParameter(String parameterStr,List<String> docsStrs) {
         Matcher typeAndNameMatcher = JapiPattern.TYPE_NAME_PATTERN.matcher(parameterStr);
         typeAndNameMatcher.find();
         String typeAndName = typeAndNameMatcher.group();
@@ -78,7 +78,7 @@ public class MVCValid implements IValid {
             if(isValid(annoStr)){//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if(null!=imvc){
-                    String requestInfo = imvc.getRequestInfo(annoStr,typeStr,nameStr);
+                    String requestInfo = imvc.getRequestInfo(annoStr,typeStr,nameStr,null);
                     if(StringUtils.isNotBlank(requestInfo)){
                         requestInfos.add(requestInfo);
                     }

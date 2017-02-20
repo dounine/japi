@@ -1,6 +1,7 @@
 package com.dounine.japi.core.valid;
 
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
 import com.dounine.japi.core.valid.jsr303.ValidValid;
@@ -34,7 +35,7 @@ public class JSR303Valid implements IValid {
     }
 
     @Override
-    public IParameter getParameter(String parameterStr) {
+    public IParameter getParameter(String parameterStr,List<String> docsStrs) {
         Matcher typeAndNameMatcher = JapiPattern.TYPE_NAME_PATTERN.matcher(parameterStr);
         typeAndNameMatcher.find();
         String typeAndName = typeAndNameMatcher.group();
@@ -51,7 +52,7 @@ public class JSR303Valid implements IValid {
 //        if (returnTypeImpl.isBuiltInType()) {
 //            returnTypeImpl.setJavaType(typeStr);
 //        }
-        List<String> requestInfos = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()),typeStr,nameStr);
+        List<String> requestInfos = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()),typeStr,nameStr,docsStrs);
         parameter.setRequestInfos(requestInfos);
 //        parameter.setAnnos(annos);
 //        parameter.setType(returnTypeImpl);
@@ -59,7 +60,7 @@ public class JSR303Valid implements IValid {
         return parameter;
     }
 
-    private List<String> getRequestInfos(String parameterStrExcTypeAndName,String typeStr,String nameStr) {
+    private List<String> getRequestInfos(String parameterStrExcTypeAndName,String typeStr,String nameStr,List<String> docsStrs) {
         Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
         List<String> annos = new ArrayList<>();
         int preIndex = -1, nextIndex = -1;
@@ -80,7 +81,7 @@ public class JSR303Valid implements IValid {
             if(isValid(annoStr)){//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if(null!=imvc){
-                    String requestInfo = imvc.getRequestInfo(annoStr,typeStr,nameStr);
+                    String requestInfo = imvc.getRequestInfo(annoStr,typeStr,nameStr,docsStrs);
                     if(StringUtils.isNotBlank(requestInfo)){
                         requestInfos.add(requestInfo);
                     }

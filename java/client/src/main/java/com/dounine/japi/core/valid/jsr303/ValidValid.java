@@ -44,7 +44,7 @@ public class ValidValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr,List<IFieldDoc> docs) {
+    public String getRequestInfo(String annoStr, String typeStr, String nameStr, List<String> docs) {
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             TypeImpl typeImpl = new TypeImpl();
             typeImpl.setJavaFilePath(javaFilePath);
@@ -84,18 +84,33 @@ public class ValidValid implements IMVC {
                         }
                     }
                     if (null != mvc) {
-                        fieldBuffer.add(mvc.getRequestInfo(anno, iField.getType(), iField.getName(), iField.getDocs()));
+                        fieldBuffer.add(mvc.getRequestInfoForField(anno, iField.getType(), iField.getName(), iField.getDocs()));
                     } else {//其它注没有注解
                         if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
                             System.out.println(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");
-                        }else{
-                            if(!"$this".equals(iField.getType())){
-                                String requestInfo = getRequestInfo(annoStr,iField.getType(),iField.getName());
-                                if(StringUtils.isNotBlank(requestInfo)){
+                        } else {
+                            if (!"$this".equals(iField.getType())) {
+                                List<String> _docs = new ArrayList<>();
+                                _docs.add("* @param "+iField.getName()+" "+iField.getDocs().get(0).getName());
+                                String requestInfo = getRequestInfo(annoStr, iField.getType(), iField.getName(), _docs);
+                                if (StringUtils.isNotBlank(requestInfo)) {
                                     fieldBuffer.add(requestInfo);
                                 }
-                            }else{
-                                System.out.println(iField.getType()+"自身对象");
+                            } else {
+                                StringBuffer mySelf = new StringBuffer("{");
+                                mySelf.append("\"name\":\"");
+                                mySelf.append(iField.getName());
+                                mySelf.append("\",");
+                                mySelf.append("\"type\":");
+                                mySelf.append("\"$this\",");
+                                mySelf.append("\"description\":\"");
+                                mySelf.append("\"自身对象\",");
+                                mySelf.append("\"required\":");
+                                mySelf.append("false,");
+                                mySelf.append("\"defaultValue\":");
+                                mySelf.append("\"\"");
+                                mySelf.append("}");
+                                fieldBuffer.add(mySelf.toString());
                             }
                         }
                     }
@@ -104,15 +119,25 @@ public class ValidValid implements IMVC {
                 sb.append(childStr);
                 sb.append("]");
             }
-            if(StringUtils.join(fieldBuffer.toArray(), ",").contains("\"required\":true")){
+            if (StringUtils.join(fieldBuffer.toArray(), ",").contains("\"required\":true")) {
                 sb.append(",\"required\":true");
             }
+            String description = "";
             sb.append(",\"defaultValue\":\"\"");
             sb.append(",\"description\":\"");
-            sb.append("");
+            if (null != docs && docs.size() > 0) {
+                for (String doc : docs) {
+                    Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr);//找到action传进来的注解信息
+                    Matcher matcher = pattern.matcher(doc);
+                    if (matcher.find()) {
+                        description = doc.substring(matcher.end()).trim();
+                        break;
+                    }
+                }
+            }
+            sb.append(description);
             sb.append("\"");
             sb.append("}");
-            System.out.println(sb.toString());
             return sb.toString();
         }
         return null;

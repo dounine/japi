@@ -26,7 +26,7 @@ public class ValidatedValid implements IMVC{
     }
 
     @Override
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr) {
+    public String getRequestInfo(String annoStr, String typeStr, String nameStr,List<String> docsStrs) {
         return null;
     }
 

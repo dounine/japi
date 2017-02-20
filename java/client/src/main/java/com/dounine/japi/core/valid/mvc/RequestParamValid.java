@@ -29,7 +29,7 @@ public class RequestParamValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr) {
+    public String getRequestInfo(String annoStr, String typeStr, String nameStr,List<String> docsStrs) {
         StringBuffer sb = new StringBuffer("{");
         String newNameStr = nameStr;
         String defaultValue = "";

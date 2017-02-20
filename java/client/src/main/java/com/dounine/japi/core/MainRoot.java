@@ -37,7 +37,6 @@ public class MainRoot {
      *
      * @param user 没用户
      * @param bb 测试参数
-     * @param last
      * @return class User
      * @deprecated1 yes
      * @deprecated yes
