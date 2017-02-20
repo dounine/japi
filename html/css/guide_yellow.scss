@@ -125,7 +125,7 @@ nav{
       line-height:25px;
       span{
         display:inline-block;
-        max-width:190px;
+        max-width:170px;
         font-size:16px;
         overflow:hidden;
         text-overflow:ellipsis;
@@ -136,6 +136,7 @@ nav{
         padding-right:25px;
         .new{
           background:url("/html/img/new.png");
+          opacity:0.7;
           width:29px;
           height:12px;
           position:absolute;
@@ -146,14 +147,14 @@ nav{
     }
     .menu{
       span{
-        max-width:162px;
+        max-width:152px;
         .point{
           background:url("/html/img/red-piont.png");
           position:absolute;
           width:6px;
           height:6px;
           right:15px;
-          top:10px;
+          top:3px;
         }
       }
       .iconfont{font-size:14px}
