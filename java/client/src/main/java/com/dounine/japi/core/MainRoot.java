@@ -16,7 +16,7 @@ import java.util.List;
  * Created by huanghuanlai on 2017/1/18.
  */
 @RestController
-@RequestMapping( "main" )
+@RequestMapping("asdf/main")
 public class MainRoot {
     public static String javaFilePath = "/home/lake/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";
     public static String[] includePaths = {"/home/lake/github/japi/java/api/src/main/java"};
