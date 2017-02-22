@@ -6,10 +6,13 @@ import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
+import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.jsr303.list.NotBlankValid;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -21,6 +24,8 @@ import java.util.regex.Pattern;
  * Created by lake on 17-2-17.
  */
 public class ValidValid implements IMVC {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ValidValid.class);
 
     private String projectPath;
     private String javaFilePath;
@@ -34,7 +39,11 @@ public class ValidValid implements IMVC {
 
     private List<IMVC> getJsr303List() {
         List<IMVC> imvcs = new ArrayList<>();
-        imvcs.add(new NotBlankValid());
+        NotBlankValid notBlankValid = new NotBlankValid();
+        notBlankValid.setIncludePaths(includePaths);
+        notBlankValid.setProjectPath(projectPath);
+        notBlankValid.setJavaFilePath(javaFilePath);
+        imvcs.add(notBlankValid);
         return imvcs;
     }
 
@@ -44,7 +53,12 @@ public class ValidValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr, List<String> docs) {
+    public String getRequestInfo(String parameterStrExcTypeAndName,String typeStr, String nameStr, List<String> docs) {
+        StringBuffer sb = new StringBuffer("{");
+        sb.append("\"name\":\"");
+        sb.append(nameStr);
+        sb.append(",");
+        String description = "";
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             TypeImpl typeImpl = new TypeImpl();
             typeImpl.setJavaFilePath(javaFilePath);
@@ -54,12 +68,7 @@ public class ValidValid implements IMVC {
 
             List<IField> fields = typeImpl.getFields();
             List<IMVC> imvcs = getJsr303List();
-
-            StringBuffer sb = new StringBuffer("{");
-            sb.append("\"name\":\"");
-            sb.append(nameStr);
-            sb.append(",");
-            sb.append("\"type\":\"Object\"");
+            sb.append("\"type\":\"object\"");
             sb.append(",");
             List<String> fieldBuffer = new ArrayList<>();
             if (fields.size() > 0) {
@@ -83,8 +92,8 @@ public class ValidValid implements IMVC {
                             }
                         }
                     }
-                    if (null != mvc) {
-                        fieldBuffer.add(mvc.getRequestInfoForField(anno, iField.getType(), iField.getName(), iField.getDocs()));
+                    if (null != mvc) {//找到对应jsr303注解
+                        fieldBuffer.add(mvc.getRequestInfoForField(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
                     } else {//其它注没有注解
                         if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
                             System.out.println(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");
@@ -92,7 +101,7 @@ public class ValidValid implements IMVC {
                             if (!"$this".equals(iField.getType())) {
                                 List<String> _docs = new ArrayList<>();
                                 _docs.add("* @param "+iField.getName()+" "+iField.getDocs().get(0).getName());
-                                String requestInfo = getRequestInfo(annoStr, iField.getType(), iField.getName(), _docs);
+                                String requestInfo = getRequestInfo(null,iField.getType(), iField.getName(), _docs);
                                 if (StringUtils.isNotBlank(requestInfo)) {
                                     fieldBuffer.add(requestInfo);
                                 }
@@ -122,7 +131,7 @@ public class ValidValid implements IMVC {
             if (StringUtils.join(fieldBuffer.toArray(), ",").contains("\"required\":true")) {
                 sb.append(",\"required\":true");
             }
-            String description = "";
+
             sb.append(",\"defaultValue\":\"\"");
             sb.append(",\"description\":\"");
             if (null != docs && docs.size() > 0) {
@@ -137,10 +146,28 @@ public class ValidValid implements IMVC {
             }
             sb.append(description);
             sb.append("\"");
-            sb.append("}");
-            return sb.toString();
+        }else{
+            sb.append("\"type\":\"");
+            sb.append(TypeConvert.getHtmlType(typeStr));
+            sb.append("\"");
+            sb.append(",\"defaultValue\":\"\"");
+            sb.append(",\"required\":false");
+            sb.append(",\"description\":\"");
+            if (null != docs && docs.size() > 0) {
+                for (String doc : docs) {
+                    Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr);//找到action传进来的注解信息
+                    Matcher matcher = pattern.matcher(doc);
+                    if (matcher.find()) {
+                        description = doc.substring(matcher.end()).trim();
+                        break;
+                    }
+                }
+            }
+            sb.append(description);
+            sb.append("\"");
         }
-        return null;
+        sb.append("}");
+        return sb.toString();
     }
 
     public String getProjectPath() {

@@ -18,11 +18,11 @@ public interface IMVC {
 //        return null;
 //    }
 
-    default String getRequestInfo(String annoStr,String typeStr,String nameStr,List<String> docs){
+    default String getRequestInfo(String annoStr, String typeStr, String nameStr,List<String> docs){
         return null;
     }
 
-    default String getRequestInfoForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs){
+    default String getRequestInfoForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs,List<String> interfaceGroups){
         return null;
     }
 }

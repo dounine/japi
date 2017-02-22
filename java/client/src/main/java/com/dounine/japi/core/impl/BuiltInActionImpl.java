@@ -65,7 +65,14 @@ public class BuiltInActionImpl implements IBuiltIn {
 
     public boolean isBuiltInType(String keyType) {
         List<String> keyTypes = getBuiltInTypes();
-        return keyTypes.contains(keyType);
+        boolean isBuiltIn = false;
+        for(String key : keyTypes){
+            if(key.equals(keyType)||key.endsWith(keyType)){
+                isBuiltIn = true;
+                break;
+            }
+        }
+        return isBuiltIn;
     }
 
     public void setBuiltInPaths(String[] builtInPaths) {

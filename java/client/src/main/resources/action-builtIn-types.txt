@@ -1,1 +1,1 @@
-BindResult,HttpServletRequest,HttpServletResponse
+org.springframework.validation.BindingResult,HttpServletRequest,HttpServletResponse

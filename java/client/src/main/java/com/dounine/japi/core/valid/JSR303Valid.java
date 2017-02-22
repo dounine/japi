@@ -81,7 +81,7 @@ public class JSR303Valid implements IValid {
             if(isValid(annoStr)){//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if(null!=imvc){
-                    String requestInfo = imvc.getRequestInfo(annoStr,typeStr,nameStr,docsStrs);
+                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName,typeStr,nameStr,docsStrs);
                     if(StringUtils.isNotBlank(requestInfo)){
                         requestInfos.add(requestInfo);
                     }

@@ -18,32 +18,16 @@ import java.util.List;
 @RestController
 @RequestMapping("main")
 public class MainRoot {
-//@Validated(value = {IActionMethod.class, IParameterField.class}) UserChild user, String bb, Integer[] last
 
     /**
      * 测试例子
      * @param user 用户信息
-     * @param bb  测试参数
-     * @param last 测试参数1
+     * @param cc 测试参数
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "aa")
     @ResponseBody
-    public User testUser(@Valid User user, @RequestParam(required = false) String   cc, BindingResult bindingResult) {
+    public User testUser(@Validated(value = {AddInterface.class}) User user, @RequestParam String  cc, BindingResult bindingResult) {
         return null;
-    }
-
-    /**
-     * 哈哈
-     *
-     * @param user 没用户
-     * @param bb 测试参数
-     * @return class User
-     * @deprecated1 yes
-     * @deprecated yes
-     */
-    @RequestMapping(value = "login",method = {RequestMethod.GET,RequestMethod.POST})
-    @ResponseBody
-    public void login(@Validated(value = {IActionMethod.class}) User user, String bb, Integer[] last) {
     }
 
     public static String javaFilePath = "/home/lake/github/japi/java/client/src/main/java/com/dounine/japi/core/MainRoot.java";

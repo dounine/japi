@@ -37,27 +37,13 @@ public class MVCValid implements IValid {
         String typeAndName = typeAndNameMatcher.group();
         String typeStr = typeAndName.substring(0, typeAndName.indexOf(" "));
         String nameStr = typeAndName.substring(typeStr.length() + 1).trim();
-
-//        TypeImpl returnTypeImpl = new TypeImpl();
-//        returnTypeImpl.setJavaFilePath(javaFilePath);
-//        returnTypeImpl.setProjectPath(projectPath);
-//        returnTypeImpl.setIncludePaths(includePaths);
-//        returnTypeImpl.setJavaKeyTxt(typeStr);
-
         ParameterImpl parameter = new ParameterImpl();
-//        if (returnTypeImpl.isBuiltInType()) {
-//            returnTypeImpl.setJavaType(typeStr);
-//        }
-        List<String> requestInfos = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()),typeStr,nameStr);
+        List<String> requestInfos = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()),typeStr,nameStr,docsStrs);
         parameter.setRequestInfos(requestInfos);
-//        parameter.setAnnos(annos);
-//        parameter.setType(returnTypeImpl);
-//        parameter.setName(nameStr);
-
         return parameter;
     }
 
-    private List<String> getRequestInfos(String parameterStrExcTypeAndName,String typeStr,String nameStr) {
+    private List<String> getRequestInfos(String parameterStrExcTypeAndName,String typeStr,String nameStr,List<String> docs) {
         Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
         List<String> annos = new ArrayList<>();
         int preIndex = -1, nextIndex = -1;
@@ -78,7 +64,7 @@ public class MVCValid implements IValid {
             if(isValid(annoStr)){//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if(null!=imvc){
-                    String requestInfo = imvc.getRequestInfo(annoStr,typeStr,nameStr,null);
+                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName,typeStr,nameStr,docs);
                     if(StringUtils.isNotBlank(requestInfo)){
                         requestInfos.add(requestInfo);
                     }

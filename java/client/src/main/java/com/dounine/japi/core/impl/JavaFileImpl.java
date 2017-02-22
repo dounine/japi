@@ -75,27 +75,34 @@ public class JavaFileImpl implements IJavaFile {
                 findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                 javaFile = findChildFiles.get(0);
                 LOGGER.warn("找到多个文件" + JSON.toJSONString(findChildFiles));
-            }else if(findChildFiles.size()==1){
+            } else if (findChildFiles.size() == 1) {
                 javaFile = findChildFiles.get(0);
             }
-        } else {
+        } else {//根据导入包的信息查找类的所在地
+            final IOFileFilter javaFileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    return pathname.isFile() && pathname.getName().equals(javaTxt + CHECK_FILE_SUFFIX);
+                }
+            });
             List<File> findChildFiles = new ArrayList<>();
             List<String> javaFileLines = null;
             try {
                 javaFileLines = FileUtils.readLines(new File(javaFilePath), Charset.forName("utf-8"));
             } catch (IOException e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage());
             }
             List<String> javaFileImportPackageLines = filterJavaFileImportPackageLines(javaFileLines);
             Optional<String> optionalLine = javaFileImportPackageLines.stream().filter(line -> line.endsWith("." + javaTxt + ";")).findFirst();
-            if (optionalLine.isPresent()) {
+            if (optionalLine.isPresent()) {//has package info
                 String packageStr = StringUtils.substring(optionalLine.get(), PACKAGE_PREFIX.length(), -1).replace(".", "/");
-                File javaTxtFile = new File(getEndSplitPath(projectPath) + CHECK_FILE_SUFFIX);
+                File javaTxtFile = new File(getEndSplitPath(projectPath) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
                 if (!javaTxtFile.exists()) {//主项目不存在,查找其它项目
                     for (String childProjectPath : includePaths) {
                         javaTxtFile = new File(getEndSplitPath(childProjectPath) + packageStr.replace(".", "/") + CHECK_FILE_SUFFIX);
                         if (javaTxtFile.exists()) {
                             findChildFiles.add(javaTxtFile);
+                            break;
                         }
                     }
                 } else {
@@ -107,18 +114,10 @@ public class JavaFileImpl implements IJavaFile {
                 findChildFiles = findChildFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                 javaFile = findChildFiles.get(0);
                 LOGGER.warn("找到多个文件" + JSON.toJSONString(findChildFiles));
-            }else if(findChildFiles.size()==1){
+            } else if (findChildFiles.size() == 1) {
                 javaFile = findChildFiles.get(0);
-            }
-
-            if (findChildFiles.size() == 0) {
+            } else {//size = 0
                 List<String> containEndStrs = javaFileImportPackageLines.stream().filter(line -> line.endsWith(".*;")).collect(Collectors.toList());
-                final IOFileFilter javaFileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
-                    @Override
-                    public boolean accept(File pathname) {
-                        return pathname.isFile() && pathname.getName().equals(javaTxt + CHECK_FILE_SUFFIX);
-                    }
-                });
                 List<File> containFiles = new ArrayList<>();
                 for (String containStr : containEndStrs) {
                     String packagePath = StringUtils.substring(containStr, PACKAGE_PREFIX.length(), -3).replace(".", "/");
@@ -140,12 +139,17 @@ public class JavaFileImpl implements IJavaFile {
                         }
                     }
                 }
-                if(containFiles.size()>1){
+                if (containFiles.size() > 1) {
                     containFiles = containFiles.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList());//优先取包层次少的文件
                     javaFile = containFiles.get(0);
                     LOGGER.warn("找到多个文件,默认取路径最短一个 " + JSON.toJSONString(containFiles));
-                }else if(containFiles.size()==1){
+                } else if (containFiles.size() == 1) {
                     javaFile = containFiles.get(0);
+                }else{//size = 0
+                    Collection<File> packageChildFiles = FileUtils.listFiles(new File(projectPath), javaFileFilter, TrueFileFilter.INSTANCE);//查找所有文件
+                    if (packageChildFiles.size() > 0) {
+                        javaFile = packageChildFiles.iterator().next();
+                    }
                 }
             }
         }

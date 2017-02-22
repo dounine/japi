@@ -7,6 +7,8 @@ import java.util.List;
  */
 public interface IAction {
 
+    interface cc{}
+
     String readClassInfo();
 
     String readPackageName();

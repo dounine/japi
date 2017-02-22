@@ -15,7 +15,7 @@ public class User {
      * @reg 这是正则表达式
      * @des 这是描述信息
      */
-    @NotBlank(message = "用户用户名不能为空")
+    @NotBlank(message = "用户用户名不能为空",groups = {AddInterface.class})
     String username;
     /**
      * 用户密码

@@ -11,6 +11,7 @@ import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.IValid;
 import com.dounine.japi.core.valid.JSR303Valid;
 import com.dounine.japi.core.valid.MVCValid;
+import com.dounine.japi.core.valid.comm.DefaultValid;
 import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
@@ -317,7 +318,7 @@ public class ActionImpl implements IAction {
                 } else {//方法
                     methodLineStr = methodLine.trim();
                 }
-            }else{
+            } else {
                 docsStrs.add(methodLine);
             }
         }
@@ -327,7 +328,7 @@ public class ActionImpl implements IAction {
         ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs);
 
         List<String> methodParameterStrs = getMethodParameterStrs(methodLineStr);
-        List<IParameter> parameters = getMethodParameter(methodParameterStrs,docsStrs);//TODO 需要 docs
+        List<IParameter> parameters = getMethodParameter(methodParameterStrs, docsStrs);//TODO 需要 docs
         methodImpl.setType(type);
         methodImpl.setAnnotations(annotationStrs);
         methodImpl.setRequest(actionRequest);
@@ -336,7 +337,7 @@ public class ActionImpl implements IAction {
         return methodImpl;
     }
 
-    private List<IValid> getImvcs(){
+    private List<IValid> getImvcs() {
         List<IValid> imvcs = new ArrayList<>();
         MVCValid mvcValid = new MVCValid();
         mvcValid.setIncludePaths(includePaths);
@@ -357,17 +358,22 @@ public class ActionImpl implements IAction {
      * @param methodParameterStrs
      * @return 参数对象列表
      */
-    private List<IParameter> getMethodParameter(List<String> methodParameterStrs,List<String> docsStrs) {
+    private List<IParameter> getMethodParameter(List<String> methodParameterStrs, List<String> docsStrs) {
         List<IValid> imvcs = getImvcs();
         List<IParameter> parameterList = new ArrayList<>();
+        DefaultValid defaultValid = new DefaultValid();
+        defaultValid.setJavaFilePath(javaFilePath);
+        defaultValid.setIncludePaths(includePaths);
+        defaultValid.setProjectPath(projectPath);
+
         for (String parameterStr : methodParameterStrs) {
             if (checkHasAnno(parameterStr)) {//包含注解 @RequestParam Integer cc
                 Matcher annotationMatcher = JapiPattern.ANNOTATION.matcher(parameterStr);
                 if (annotationMatcher.find()) {//查找注解
                     String annoStr = annotationMatcher.group();
-                    for(IValid valid : imvcs){
-                        if(valid.isValid(annoStr)){
-                            IParameter iParameter = valid.getParameter(parameterStr,docsStrs);
+                    for (IValid valid : imvcs) {
+                        if (valid.isValid(annoStr)) {
+                            IParameter iParameter = valid.getParameter(parameterStr, docsStrs);
                             if (null != iParameter) {
                                 parameterList.add(iParameter);
                             }
@@ -375,7 +381,10 @@ public class ActionImpl implements IAction {
                     }
                 }
             } else {//不包含,看是否在action所排除的字段内
-
+                String type = parameterStr.split(" ")[0];
+                if (!BuiltInActionImpl.getInstance().isBuiltInType(type)) {
+                    parameterList.add(defaultValid.getParameter(parameterStr, docsStrs));
+                }
             }
         }
         return parameterList;
@@ -533,19 +542,95 @@ public class ActionImpl implements IAction {
                     }
                     if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
                         IType returnType = getType(doc.getValue().split(" ")[1]);
-                        System.out.println(doc.getDocType() + "：" + JSON.toJSONString(returnType));
+                        System.out.println(doc.getDocType() + "：" + getReturnInfos(returnType));
                     } else {
                         System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
                     }
                 }
-                if (!hasReturnDoc) {
-                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.") + "：" + JSON.toJSONString(actionMethod.getType()));
+                if (!hasReturnDoc) {//use action return default type
+                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.") + "：" + getReturnInfos(actionMethod.getType()));
                 }
                 System.out.println("----------");
             }
         }
 
         return methodImpls;
+    }
+
+    private String getReturnInfos(IType type) {
+        List<String> types = new ArrayList<>();
+        for (IField iField : type.getFields()) {
+            String typeStr = getChildField(iField);
+            if (StringUtils.isNotBlank(typeStr)) {
+                types.add(typeStr);
+            }
+        }
+        return StringUtils.join(types.toArray(), ",");
+    }
+
+    private String getChildField(IField iField) {
+        List<String> fields = new ArrayList<>();
+        String description = "";
+        StringBuffer c = new StringBuffer("{");
+        c.append("\"name\":\"");
+        c.append(iField.getName());
+        c.append("\",");
+        c.append("\"type\":\"");
+        if (!"$this".equals(iField.getType())) {
+            c.append(TypeConvert.getHtmlType(iField.getType()));
+        } else {
+            c.append("$this");
+        }
+        c.append("\",");
+        c.append("\"description\":\"");
+        for (IFieldDoc fieldDoc : iField.getDocs()) {
+            if (StringUtils.isBlank(fieldDoc.getValue())) {
+                description = fieldDoc.getName();
+                break;
+            }
+        }
+        c.append(description);
+        c.append("\"");
+        if (null != iField.getReturnFields()) {
+            c.append("\",");
+            c.append("\"fields\":[");
+            for (IField childiField : iField.getReturnFields()) {
+                StringBuffer fieldSb = new StringBuffer("{");
+                description = "";
+                fieldSb.append("\"name\":\"");
+                fieldSb.append(childiField.getName());
+                fieldSb.append("\",");
+                fieldSb.append("\"type\":\"");
+                if (!"$this".equals(childiField.getType())) {
+                    fieldSb.append(TypeConvert.getHtmlType(childiField.getType()));
+                } else {
+                    fieldSb.append("$this");
+                }
+                fieldSb.append("\",");
+                fieldSb.append("\"description\":\"");
+                for (IFieldDoc fieldDoc : childiField.getDocs()) {
+                    if (StringUtils.isBlank(fieldDoc.getValue())) {
+                        description = fieldDoc.getName();
+                        break;
+                    }
+                }
+                fieldSb.append(description);
+                fieldSb.append("\",");
+                fieldSb.append("\"defaultValue\":\"\"");
+                if (null != childiField.getReturnFields()) {
+                    fieldSb.append("\",");
+                    fieldSb.append("\"fields\":[");
+                    fieldSb.append(getChildField(childiField));
+                    fieldSb.append("]");
+                }
+                fieldSb.append("}");
+                fields.add(fieldSb.toString());
+            }
+            c.append(StringUtils.join(fields.toArray(), ","));
+            c.append("]");
+        }
+        c.append("}");
+        return c.toString();
     }
 
     public String getJavaFilePath() {
