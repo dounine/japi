@@ -80,6 +80,7 @@ public class ActionImpl implements IAction {
         try {
             List<String> javaFileLines = FileUtils.readLines(new File(javaFilePath), Charset.forName("utf-8"));
             List<String> noPackageLines = new ArrayList<>();
+            List<String> javaAnnoLines = new ArrayList<>();
             boolean match = false;//true 找到类的开始，开始查找方法
             for (String line : javaFileLines) {
                 if (!match) {
@@ -92,11 +93,15 @@ public class ActionImpl implements IAction {
                 }
                 if (match) {
                     noPackageLines.add(line);
+                }else{
+                    if(JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(line).find()){
+                        javaAnnoLines.add(line);
+                    }
                 }
             }
             noPackageLines = noPackageLines.subList(1, noPackageLines.size() - 1);//去掉类头与尾巴
             List<List<String>> methodBodyAndDocs = methodBodyAndDoc(noPackageLines);
-            methods = extractDocAndMethodInfo(methodBodyAndDocs);//提取方法注释及方法信息
+            methods = extractDocAndMethodInfo(methodBodyAndDocs,javaAnnoLines);//提取方法注释及方法信息
 
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
@@ -299,7 +304,7 @@ public class ActionImpl implements IAction {
      * @param methodLines 方法doc及注解及行信息
      * @return 方法信息
      */
-    private MethodImpl extractMethod(List<String> methodLines) {
+    private MethodImpl extractMethod(List<String> methodLines,List<String> annoLines) {
         MethodImpl methodImpl = new MethodImpl();
         List<String> annotationStrs = new ArrayList<>();
         List<String> docsStrs = new ArrayList<>();
@@ -325,10 +330,10 @@ public class ActionImpl implements IAction {
         docsStrs.remove(0);//remove /**
         String returnTypeStr = getMethodReturnTypeStr(methodLineStr);
         IType type = getType(returnTypeStr);
-        ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs);
+        ActionRequest actionRequest = getRequestsByAnnotations(annotationStrs,annoLines);
 
         List<String> methodParameterStrs = getMethodParameterStrs(methodLineStr);
-        List<IParameter> parameters = getMethodParameter(methodParameterStrs, docsStrs);//TODO 需要 docs
+        List<IParameter> parameters = getMethodParameter(methodParameterStrs, docsStrs);
         methodImpl.setType(type);
         methodImpl.setAnnotations(annotationStrs);
         methodImpl.setRequest(actionRequest);
@@ -400,7 +405,7 @@ public class ActionImpl implements IAction {
      * @param annotationStrs
      * @return
      */
-    private ActionRequest getRequestsByAnnotations(List<String> annotationStrs) {
+    private ActionRequest getRequestsByAnnotations(List<String> annotationStrs,List<String> annoLines) {
         String requestAnno = null, requestAnnoOrign = null;
         for (String annotationLine : annotationStrs) {
             Matcher requestAnnoMatcher = JapiPattern.REQUEST_ANNO_PATTERN.matcher(annotationLine);
@@ -497,6 +502,21 @@ public class ActionImpl implements IAction {
                 }
             }
         }
+        String javaUrl = "";
+        for(String anno : annoLines){
+            Pattern requestMapping = JapiPattern.getPattern("^@RequestMapping\\s*[(]\\s*[\"][a-zA-Z0-9_]*[\"]\\s*[)]$");
+            Matcher requestMatcher = requestMapping.matcher(anno);
+            if(requestMatcher.find()){
+                String annoAndUrl = requestMatcher.group();
+                javaUrl = annoAndUrl.substring(annoAndUrl.indexOf("\"")+1,annoAndUrl.lastIndexOf("\""));
+            }
+        }
+
+        if(StringUtils.isNotBlank(javaUrl)){
+            for(int i =0,len=requestUrls.length;i<len;i++){
+                requestUrls[i] = javaUrl+"/"+requestUrls[i];
+            }
+        }
         return new ActionRequest(requestUrls, (null != methodTypeList && methodTypeList.length > 0) ? methodTypeList : new RequestMethod[]{actionRequest.getMethod()});
     }
 
@@ -505,13 +525,13 @@ public class ActionImpl implements IAction {
      *
      * @return 方法列表
      */
-    private List<IActionMethod> extractDocAndMethodInfo(final List<List<String>> methodBodyAndDocs) {
+    private List<IActionMethod> extractDocAndMethodInfo(final List<List<String>> methodBodyAndDocs,List<String> annoLines) {
         List<IActionMethod> methodImpls = new ArrayList<>(methodBodyAndDocs.size());
         for (List<String> methodLines : methodBodyAndDocs) {
             MethodImpl methodImpl = new MethodImpl();
 
             List<IActionMethodDoc> methodDocs = extractDoc(methodLines);//提取方法注释信息
-            MethodImpl extractMethod = extractMethod(methodLines);//提取方法信息
+            MethodImpl extractMethod = extractMethod(methodLines,annoLines);//提取方法信息
             Iterator<IActionMethodDoc> methodDocIterator = methodDocs.iterator();
             while (methodDocIterator.hasNext()) {//提取方法描述信息
                 IActionMethodDoc actionMethodDoc = methodDocIterator.next();
