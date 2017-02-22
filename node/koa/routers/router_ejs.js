@@ -39,10 +39,10 @@ module.exports = function (config) {
             }));
         yield this.render('navs',{navs:responseText.nav,layout:"index"});
 
-    }).post('/ejs/data',function*(next){
+    }).post('/ejs/index',function*(next){
         let navInd = this.request.body;
         let $self = this;
-        let responseText,nav
+        let responseText
         yield (server().version(navInd)
             .then( (parsedBody)=> {
                 responseText = JSON.parse(parsedBody);
@@ -61,8 +61,6 @@ module.exports = function (config) {
                 }
             }));
 
-        yield this.render('version',{contDatas:responseText.version,layout: 'index'});
-        console.info(responseText);
     })
     return router;
 };

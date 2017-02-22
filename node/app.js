@@ -7,6 +7,7 @@ const koaBody = require('koa-body');
 const json = require('koa-json');
 const cors = require('koa-cors');
 const render = require('koa-ejs');
+const EJS = require('ejs')
 const port = 7777;
 app.use(cors());//跨域请求,用于与browsesync调试
 app.keys = ['feedback'];//session加密值

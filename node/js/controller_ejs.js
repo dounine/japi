@@ -1,5 +1,4 @@
 var newDatas,urls,extype,reqParm,resParm ;
-
 $(document).ready(function(){
     //导航点击
     $("#nav").on("click",".nav-list li a",function(){
@@ -11,13 +10,15 @@ $(document).ready(function(){
         data.navInd=navInd
         $.ajax({
             type:"post",
-            url:"/ejs/data",
+            url:"/ejs/index",
             data:data,
-            success:function(req){
-                console.info(req);
+            success:function(res){
+                console.info(res);
+                var h = new EJS({url: '/views/version.ejs'}).render(res)
+                $("#content").html(h)
             },
-            error: function(req) {
-                console.info(req);
+            error: function(res) {
+                console.info(res);
             }
         })
 

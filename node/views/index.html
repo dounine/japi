@@ -1,7 +1,7 @@
 <html>
 <head>
   <title>koa ejs</title>
-  <!--<link rel="stylesheet" href="/css/index.css">-->
+  <link rel="stylesheet" href="/css/index.css">
 
 </head>
 <body>
@@ -9,9 +9,14 @@
   <%- include header.html %>
 </header>
 <div id="containal">
-  <%- body %>
+  <div id="nav">
+    <%- include navs.html %>
+  </div>
+  <div id="content">
+  </div>
 </div>
 </body>
 </html>
 <script src="/js/jquery-2.1.1.min.js"></script>
+<script src="/js/ejs.min.js"></script>
 <script src="/js/controller_ejs.js"></script>
