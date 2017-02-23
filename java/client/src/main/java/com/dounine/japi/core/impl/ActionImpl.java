@@ -7,6 +7,7 @@ import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
 import com.dounine.japi.core.impl.response.ActionInfo;
 import com.dounine.japi.core.impl.response.ActionInfoDoc;
+import com.dounine.japi.core.impl.response.ActionInfoRequest;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.core.type.RequestMethod;
 import com.dounine.japi.core.valid.IMVC;
@@ -477,9 +478,9 @@ public class ActionImpl implements IAction {
                 Matcher requestMappingMatcherPathAndValue = requestMappingPatternPathAndValue.matcher(anno);
                 if (requestMappingMatcherPathAndValue.find()) {
                     String mappingStrs = requestMappingMatcherPathAndValue.group();
-                    String[] urls = mappingStrs.substring(mappingStrs.indexOf("{")+1,mappingStrs.lastIndexOf("}")).split(",");
-                    for(String url : urls){
-                        javaUrls.add(url.substring(url.indexOf("\"")+1,url.lastIndexOf("\"")));
+                    String[] urls = mappingStrs.substring(mappingStrs.indexOf("{") + 1, mappingStrs.lastIndexOf("}")).split(",");
+                    for (String url : urls) {
+                        javaUrls.add(url.substring(url.indexOf("\"") + 1, url.lastIndexOf("\"")));
                     }
                 }
             }
@@ -495,19 +496,23 @@ public class ActionImpl implements IAction {
         } else {
             newRequests = requestUrls;
         }
-        return new ActionRequest(newRequests, (null != methodTypeList && methodTypeList.length > 0) ? methodTypeList : new RequestMethod[]{actionRequest.getMethod()});
+        return new ActionRequest(newRequests, (null != methodTypeList && methodTypeList.length > 0) ? Arrays.asList(methodTypeList) : Arrays.asList(new RequestMethod[]{actionRequest.getMethod()}));
     }
 
-    public List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods){
+    public List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods) {
         List<ActionInfo> actionInfos = new ArrayList<>();
         for (IActionMethod actionMethod : actionMethods) {
             ActionInfo actionInfo = new ActionInfo();
             actionInfo.setActionName(actionMethod.getMethodDescription());
             List<String> requestInfoList = new ArrayList<>();
-            for(IParameter parameter : actionMethod.getParameters()){
+            for (IParameter parameter : actionMethod.getParameters()) {
                 requestInfoList.add(parameter.getRequestInfo());
             }
-            actionInfo.setRequestInfoStr("["+StringUtils.join(requestInfoList.toArray(),",")+"]");
+            ActionInfoRequest actionInfoRequest = new ActionInfoRequest();
+            actionInfoRequest.setUrls(actionMethod.getRequest().getUrls());
+            actionInfoRequest.setMethods(actionMethod.getRequest().getMethods());
+            actionInfo.setActionInfoRequest(actionInfoRequest);
+            actionInfo.setRequestInfoStr("[" + StringUtils.join(requestInfoList.toArray(), ",") + "]");
             boolean hasReturnDoc = false;
             for (IActionMethodDoc doc : actionMethod.getDocs()) {
                 if (doc.getName().equals("return")) {
@@ -517,7 +522,7 @@ public class ActionImpl implements IAction {
                     IType returnType = getType(doc.getValue().split(" ")[1]);
                     actionInfo.setResponseInfoStr(getReturnInfos(returnType));
                 } else {
-                    if(!"param".equals(doc.getName())){
+                    if (!"param".equals(doc.getName())) {
                         ActionInfoDoc actionInfoDoc = new ActionInfoDoc();
                         actionInfoDoc.setTagName(doc.getDocType());
                         actionInfoDoc.setTagValue(doc.getValue());
@@ -526,12 +531,56 @@ public class ActionImpl implements IAction {
                 }
             }
             if (!hasReturnDoc) {//use action return default type
-                actionInfo.setResponseInfoStr("["+getReturnInfos(actionMethod.getType())+"]");
+                actionInfo.setResponseInfoStr("[" + getReturnInfos(actionMethod.getType()) + "]");
             }
             actionInfos.add(actionInfo);
         }
 
         return actionInfos;
+    }
+
+    @Override
+    public String getName() {
+        try {
+            List<String> javaLines = FileUtils.readLines(actionFile, Charset.forName("utf-8"));
+            Pattern docBeginPattern = JapiPattern.getPattern("[/][*][*]");
+            Pattern classBeginPattern = JapiPattern.getPattern("[a-zA-Z0-9_]+\\s*[{]$");
+            List<String> docsAndAnnos = new ArrayList<>();
+            boolean docBegin = false;
+            boolean classBegin = false;
+            for (String line : javaLines) {
+                if (false == docBegin && docBeginPattern.matcher(line).find()) {
+                    docBegin = true;
+                }
+                if (docBegin && !classBegin) {
+                    docsAndAnnos.add(line);
+                }
+                if(classBeginPattern.matcher(line).find()){
+                    classBegin = true;
+                }
+            }
+            if(docsAndAnnos.size()>0){
+                Pattern docEndPattern = JapiPattern.getPattern("[*][/]$");
+                List<String> docs = new ArrayList<>();
+                for(String line : docsAndAnnos){
+                    docs.add(line);
+                    if(docEndPattern.matcher(line).find()){
+                        break;
+                    }
+                }
+                String name = "";
+                for(String line : docs){
+                    if(line.length()>3){
+                        name = line.substring(3).trim();
+                        break;
+                    }
+                }
+                return name;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

@@ -1,5 +1,7 @@
 package com.dounine.japi.core.impl.response;
 
+import com.dounine.japi.core.type.RequestMethod;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +10,7 @@ import java.util.List;
  */
 public class ActionInfoRequest {
     private List<String> urls = new ArrayList<>();
-    private List<String> methods = new ArrayList<>();
+    private List<RequestMethod> methods = new ArrayList<>();
 
     public List<String> getUrls() {
         return urls;
@@ -18,11 +20,11 @@ public class ActionInfoRequest {
         this.urls = urls;
     }
 
-    public List<String> getMethods() {
+    public List<RequestMethod> getMethods() {
         return methods;
     }
 
-    public void setMethods(List<String> methods) {
+    public void setMethods(List<RequestMethod> methods) {
         this.methods = methods;
     }
 }

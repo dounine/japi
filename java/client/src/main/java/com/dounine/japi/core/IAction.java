@@ -13,4 +13,6 @@ public interface IAction {
     List<IActionMethod> getMethods();
 
     List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods);
+
+    String getName();
 }

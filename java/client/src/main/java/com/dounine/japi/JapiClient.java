@@ -38,13 +38,20 @@ public class JapiClient {
         JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
 
         IProject project = ProjectImpl.init();
-
+        System.out.println(project.getProperties());
         for(IPackage iPackage : project.getPackages()){
             List<IAction> actions = iPackage.getActions();
+            System.out.println("package:"+iPackage.getName());
             for(IAction action : actions){
+                System.out.println("class:"+action.getName());
                 List<IActionMethod> actionMethods = action.getMethods();
                 List<ActionInfo> actionInfos = action.getActionInfos(actionMethods);
-                System.out.println(JSON.toJSONString(actionInfos,true));
+                for(ActionInfo actionInfo : actionInfos){
+                    System.out.println(JSON.toJSONString(actionInfo));
+                    System.out.println("request信息:"+JSON.toJSONString(actionInfo.getActionInfoRequest()));
+                    System.out.println("request参数:"+actionInfo.getRequestInfoStr());
+                    System.out.println("response信息:"+actionInfo.getRequestInfoStr());
+                }
             }
         }
     }

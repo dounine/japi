@@ -10,11 +10,11 @@ import java.util.List;
  */
 public class ActionRequest {
     private List<String> urls = new ArrayList<>();
-    private RequestMethod[] methods;
+    private List<RequestMethod> methods = new ArrayList<>();
     public ActionRequest(){}
-    public ActionRequest(List<String> urls,RequestMethod[] method){
+    public ActionRequest(List<String> urls,List<RequestMethod> methods){
         this.urls = urls;
-        this.methods = method;
+        this.methods = methods;
     }
 
     public List<String> getUrls() {
@@ -25,11 +25,11 @@ public class ActionRequest {
         this.urls = urls;
     }
 
-    public RequestMethod[] getMethods() {
+    public List<RequestMethod> getMethods() {
         return methods;
     }
 
-    public void setMethods(RequestMethod[] methods) {
+    public void setMethods(List<RequestMethod> methods) {
         this.methods = methods;
     }
 }
