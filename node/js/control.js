@@ -10,7 +10,16 @@ $(document).ready(function(){
                 var mainbav = ("<div class='nav-section' data-index='%{mainInd}'><span class='mainbav open'><a href='javascript:void(0)' >" +
                 " %{mainNav}</a></span><ul>").format({mainInd:item.mainInd,mainNav:item.mainNav});
                 for(var index in item.subNav){
-                    mainbav+="<li><a href='javascript:void(0)' data-index='%{subInd}'>%{navList}</a></li>".format({subInd:item.subNav[index].subInd,navList:item.subNav[index].subName})
+                    if(item.subNav[index].subsub){
+                        mainbav+="<li><span class='mainbav open'><a href='javascript:void(0)'>%{navTwo}</a></span><ul class='nav-section'>".format({navTwo:item.subNav[index].subName})
+                        var navThree = item.subNav[index].subsub;
+                        for(var ind in navThree){
+                            mainbav+="<li class='acLi'><a href='javascript:void(0)' data-index='%{subInd}'>%{navList}</a></li>".format({subInd:navThree[ind].subInd,navList:navThree[ind].subsubName})
+                        }
+                        mainbav+="</ul></li>"
+                    }else {
+                        mainbav+="<li class='acLi'><a href='javascript:void(0)' data-index='%{subInd}'>%{navList}</a></li>".format({subInd:item.subNav[index].subInd,navList:item.subNav[index].subName})
+                    }
                 }
                 mainbav+="</ul></div>";
                 $("#nav .nav-list").append(mainbav);
@@ -22,9 +31,9 @@ $(document).ready(function(){
     });
 
     //导航点击
-    $("#nav").on("click",".nav-list li a",function(){
+    $("#nav").on("click",".nav-list .acLi a",function(){
         var subInd = $(this).attr("data-index"),
-         mainInd = $(this).parents('.nav-section').attr("data-index"),
+         mainInd = $(this).parents('div.nav-section').attr("data-index"),
          navInd = mainInd+subInd,
          cont;
         $.get("/data/data_new.json",function(data){
@@ -77,14 +86,12 @@ function verSel(){
 }
 function timeSel(){
     var timeSelect = $('.time option:selected').val();
-    console.info(timeSelect);
    $.get('data/data_new.json',function(data){
        extype="<div>";
        reqParm="<div >";
        resParm="<div >";
        $.each(data.details,function(i,t){
             if(t.name==timeSelect){
-                console.info(t);
                 if(t.urls.length=="1"){
                     urls=(" <span class='urls-select' data-value='%{urlVal}' data-method=%{dataMethod}>%{urlVal}</span><span class='method'>请求方式：<strong>%{dataMethod}</strong></span><button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span>").format({urlVal:t.urls[0].url,dataMethod:t.urls[0].method})
                 }else {

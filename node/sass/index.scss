@@ -161,15 +161,23 @@ header{
             background-size:12px 12px;
           }
         }
-        li{
-          &:hover{
-            background:rgba(221,236,244,1);
-          }
-          a{
-            font-size:14px;
-            text-indent:30px;
+        ul{
+          text-indent:20px;
+          li{
+            &.acLi{
+              &:hover{
+                background:rgba(221,236,244,1);
+              }
+            }
+            a{
+              font-size:14px;
+            }
+            ul.nav-section{
+              text-indent:30px;
+            }
           }
         }
+
       }
     }
     .active{

@@ -32,13 +32,12 @@ module.exports = function (config) {
                 // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
+                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {
                     $self.body = {'msg':'请求错误！',errno:3};
                     $self.status = 408;
                 }
             }));
         yield this.render('navs',{navs:responseText.nav,layout:"index"});
-
     }).post('/ejs/index',function*(next){
         let navInd = this.request.body;
         let $self = this;
@@ -51,11 +50,12 @@ module.exports = function (config) {
                     if(item.key==navInd.navInd){
                         responseText=item;
                         $self.body = responseText;
+                        $self.render('version',{datas:responseText});
+                        console.info(responseText);
                     }
                 })
-
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
+                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {
                     $self.body = {'msg':'请求错误！',errno:3};
                     $self.status = 408;
                 }

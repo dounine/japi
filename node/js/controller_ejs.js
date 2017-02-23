@@ -14,8 +14,6 @@ $(document).ready(function(){
             data:data,
             success:function(res){
                 console.info(res);
-                var h = new EJS({url: '/views/version.ejs'}).render(res)
-                $("#content").html(h)
             },
             error: function(res) {
                 console.info(res);
