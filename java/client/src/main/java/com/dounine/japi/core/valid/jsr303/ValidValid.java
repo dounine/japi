@@ -2,6 +2,7 @@ package com.dounine.japi.core.valid.jsr303;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.validation.Valid;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -27,21 +29,15 @@ public class ValidValid implements IMVC {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidValid.class);
 
-    private String projectPath;
     private String javaFilePath;
-    private List<String> includePaths = new ArrayList<>();
 
-    public ValidValid(String projectPath, String javaFilePath, List<String> includePaths) {
-        this.projectPath = projectPath;
+    public ValidValid(String javaFilePath) {
         this.javaFilePath = javaFilePath;
-        this.includePaths = includePaths;
     }
 
     private List<IMVC> getJsr303List() {
         List<IMVC> imvcs = new ArrayList<>();
         NotBlankValid notBlankValid = new NotBlankValid();
-        notBlankValid.setIncludePaths(includePaths);
-        notBlankValid.setProjectPath(projectPath);
         notBlankValid.setJavaFilePath(javaFilePath);
         imvcs.add(notBlankValid);
         return imvcs;
@@ -53,7 +49,7 @@ public class ValidValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String parameterStrExcTypeAndName,String typeStr, String nameStr, List<String> docs) {
+    public String getRequestInfo(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs, File javaFile) {
         StringBuffer sb = new StringBuffer("{");
         sb.append("\"name\":\"");
         sb.append(nameStr);
@@ -61,9 +57,7 @@ public class ValidValid implements IMVC {
         String description = "";
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             TypeImpl typeImpl = new TypeImpl();
-            typeImpl.setJavaFilePath(javaFilePath);
-            typeImpl.setProjectPath(projectPath);
-            typeImpl.setIncludePaths(includePaths);
+            typeImpl.setJavaFile(javaFile);
             typeImpl.setJavaKeyTxt(typeStr);
 
             List<IField> fields = typeImpl.getFields();
@@ -101,7 +95,7 @@ public class ValidValid implements IMVC {
                             if (!"$this".equals(iField.getType())) {
                                 List<String> _docs = new ArrayList<>();
                                 _docs.add("* @param "+iField.getName()+" "+iField.getDocs().get(0).getName());
-                                String requestInfo = getRequestInfo(null,iField.getType(), iField.getName(), _docs);
+                                String requestInfo = getRequestInfo(null,iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
                                 if (StringUtils.isNotBlank(requestInfo)) {
                                     fieldBuffer.add(requestInfo);
                                 }
@@ -170,27 +164,11 @@ public class ValidValid implements IMVC {
         return sb.toString();
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
-
     public String getJavaFilePath() {
         return javaFilePath;
     }
 
     public void setJavaFilePath(String javaFilePath) {
         this.javaFilePath = javaFilePath;
-    }
-
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
     }
 }

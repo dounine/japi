@@ -2,6 +2,7 @@ package com.dounine.japi.core.valid.jsr303;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IField;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
@@ -27,21 +28,15 @@ public class ValidatedValid implements IMVC {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidatedValid.class);
 
-    private String projectPath;
     private String javaFilePath;
-    private List<String> includePaths = new ArrayList<>();
 
-    public ValidatedValid(String projectPath, String javaFilePath, List<String> includePaths) {
-        this.projectPath = projectPath;
+    public ValidatedValid( String javaFilePath) {
         this.javaFilePath = javaFilePath;
-        this.includePaths = includePaths;
     }
 
     private List<IMVC> getJsr303List() {
         List<IMVC> imvcs = new ArrayList<>();
         NotBlankValid notBlankValid = new NotBlankValid();
-        notBlankValid.setIncludePaths(includePaths);
-        notBlankValid.setProjectPath(projectPath);
         notBlankValid.setJavaFilePath(javaFilePath);
         imvcs.add(notBlankValid);
         return imvcs;
@@ -73,12 +68,8 @@ public class ValidatedValid implements IMVC {
     private List<String> getInterfacePaths(List<String> interfaceGroups) {
         List<String> paths = new ArrayList<>();
         for (String interfaceGroup : interfaceGroups) {
-            JavaFileImpl javaFile = new JavaFileImpl();
-            javaFile.setJavaFilePath(javaFilePath);
-            javaFile.setProjectPath(projectPath);
-            javaFile.setIncludePaths(includePaths);
             String key = interfaceGroup.substring(0, interfaceGroup.lastIndexOf("."));
-            File file = javaFile.searchTxtJavaFileForProjectsPath(key);
+            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key,javaFilePath);
             if (null != file) {
                 paths.add(file.getAbsolutePath());
             }
@@ -87,7 +78,7 @@ public class ValidatedValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
+    public String getRequestInfo(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs,File javaFile) {
         List<String> interfaceGroups = getValidatedGroups(parameterStrExcTypeAndName);
         List<String> interfaceGroupPaths = getInterfacePaths(interfaceGroups);
 
@@ -98,9 +89,7 @@ public class ValidatedValid implements IMVC {
         String description = "";
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             TypeImpl typeImpl = new TypeImpl();
-            typeImpl.setJavaFilePath(javaFilePath);
-            typeImpl.setProjectPath(projectPath);
-            typeImpl.setIncludePaths(includePaths);
+            typeImpl.setJavaFile(javaFile);
             typeImpl.setJavaKeyTxt(typeStr);
 
             List<IField> fields = typeImpl.getFields();
@@ -138,7 +127,7 @@ public class ValidatedValid implements IMVC {
                             if (!"$this".equals(iField.getType())) {
                                 List<String> _docs = new ArrayList<>();
                                 _docs.add("* @param " + iField.getName() + " " + iField.getDocs().get(0).getName());
-                                String requestInfo = getRequestInfo(null, iField.getType(), iField.getName(), _docs);
+                                String requestInfo = getRequestInfo(null, iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
                                 if (StringUtils.isNotBlank(requestInfo)) {
                                     fieldBuffer.add(requestInfo);
                                 }
@@ -207,14 +196,6 @@ public class ValidatedValid implements IMVC {
         return sb.toString();
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
-
     public String getJavaFilePath() {
         return javaFilePath;
     }
@@ -223,11 +204,4 @@ public class ValidatedValid implements IMVC {
         this.javaFilePath = javaFilePath;
     }
 
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
-    }
 }

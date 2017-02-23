@@ -1,6 +1,7 @@
 package com.dounine.japi.core.valid;
 
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -20,17 +22,14 @@ import java.util.regex.Matcher;
  */
 public class JSR303Valid implements IValid {
 
-    private String projectPath;
     private String javaFilePath;
-    private List<String> includePaths = new ArrayList<>();
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JSR303Valid.class);
 
     @Override
     public List<IMVC> getTypes() {
         List<IMVC> imvcs = new ArrayList<>();
-        imvcs.add(new ValidatedValid(projectPath,javaFilePath,includePaths));
-        imvcs.add(new ValidValid(projectPath,javaFilePath,includePaths));
+        imvcs.add(new ValidatedValid(javaFilePath));
+        imvcs.add(new ValidValid(javaFilePath));
         return imvcs;
     }
 
@@ -41,22 +40,9 @@ public class JSR303Valid implements IValid {
         String typeAndName = typeAndNameMatcher.group();
         String typeStr = typeAndName.substring(0, typeAndName.indexOf(" "));
         String nameStr = typeAndName.substring(typeStr.length() + 1).trim();
-
-//        TypeImpl returnTypeImpl = new TypeImpl();
-//        returnTypeImpl.setJavaFilePath(javaFilePath);
-//        returnTypeImpl.setProjectPath(projectPath);
-//        returnTypeImpl.setIncludePaths(includePaths);
-//        returnTypeImpl.setJavaKeyTxt(typeStr);
-
         ParameterImpl parameter = new ParameterImpl();
-//        if (returnTypeImpl.isBuiltInType()) {
-//            returnTypeImpl.setJavaType(typeStr);
-//        }
         List<String> requestInfos = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()),typeStr,nameStr,docsStrs);
         parameter.setRequestInfos(requestInfos);
-//        parameter.setAnnos(annos);
-//        parameter.setType(returnTypeImpl);
-//        parameter.setName(nameStr);
         return parameter;
     }
 
@@ -81,7 +67,7 @@ public class JSR303Valid implements IValid {
             if(isValid(annoStr)){//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if(null!=imvc){
-                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName,typeStr,nameStr,docsStrs);
+                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName,typeStr,nameStr,docsStrs,new File(javaFilePath));
                     if(StringUtils.isNotBlank(requestInfo)){
                         requestInfos.add(requestInfo);
                     }
@@ -93,13 +79,6 @@ public class JSR303Valid implements IValid {
         return requestInfos;
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
 
     public String getJavaFilePath() {
         return javaFilePath;
@@ -109,11 +88,4 @@ public class JSR303Valid implements IValid {
         this.javaFilePath = javaFilePath;
     }
 
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
-    }
 }

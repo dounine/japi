@@ -4,6 +4,7 @@ import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.valid.IMVC;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,23 +15,13 @@ import java.util.regex.Pattern;
  */
 public class RequestParamValid implements IMVC {
 
-    private String projectPath;
-    private String javaFilePath;
-    private List<String> includePaths = new ArrayList<>();
-
-    public RequestParamValid(String projectPath, String javaFilePath, List<String> includePaths) {
-        this.projectPath = projectPath;
-        this.javaFilePath = javaFilePath;
-        this.includePaths = includePaths;
-    }
-
     @Override
     public String getRequestParamName() {
         return "org.springframework.web.bind.annotation.RequestParam";
     }
 
     @Override
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr, List<String> docsStrs) {
+    public String getRequestInfo(String annoStr, String typeStr, String nameStr, List<String> docsStrs, File javaFile) {
         StringBuffer sb = new StringBuffer("{");
         String newNameStr = nameStr;
         String defaultValue = "";
@@ -86,27 +77,4 @@ public class RequestParamValid implements IMVC {
         return sb.toString();
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
-
-    public String getJavaFilePath() {
-        return javaFilePath;
-    }
-
-    public void setJavaFilePath(String javaFilePath) {
-        this.javaFilePath = javaFilePath;
-    }
-
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
-    }
 }

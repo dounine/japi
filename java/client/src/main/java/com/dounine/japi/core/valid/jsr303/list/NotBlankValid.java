@@ -2,6 +2,7 @@ package com.dounine.japi.core.valid.jsr303.list;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
@@ -23,8 +24,6 @@ import java.util.regex.Pattern;
 public class NotBlankValid implements IMVC {
 
     private String javaFilePath;
-    private String projectPath;
-    private List<String> includePaths = new ArrayList<>();
 
     @Override
     public String getRequestParamName() {
@@ -34,12 +33,8 @@ public class NotBlankValid implements IMVC {
     private List<String> getInterfacePaths(List<String> interfaceGroups) {
         List<String> paths = new ArrayList<>();
         for (String interfaceGroup : interfaceGroups) {
-            JavaFileImpl javaFile = new JavaFileImpl();
-            javaFile.setJavaFilePath(javaFilePath);
-            javaFile.setProjectPath(projectPath);
-            javaFile.setIncludePaths(includePaths);
             String key = interfaceGroup.substring(0, interfaceGroup.lastIndexOf("."));
-            File file = javaFile.searchTxtJavaFileForProjectsPath(key);
+            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key,javaFilePath);
             if (null != file) {
                 paths.add(file.getAbsolutePath());
             }
@@ -129,19 +124,4 @@ public class NotBlankValid implements IMVC {
         this.javaFilePath = javaFilePath;
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
-
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
-    }
 }

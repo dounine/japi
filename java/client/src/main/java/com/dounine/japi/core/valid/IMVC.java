@@ -2,6 +2,7 @@ package com.dounine.japi.core.valid;
 
 import com.dounine.japi.core.IFieldDoc;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +19,7 @@ public interface IMVC {
 //        return null;
 //    }
 
-    default String getRequestInfo(String annoStr, String typeStr, String nameStr,List<String> docs){
+    default String getRequestInfo(String annoStr, String typeStr, String nameStr,List<String> docs,File javaFile){
         return null;
     }
 

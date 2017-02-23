@@ -1,5 +1,8 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.core.impl.response.ActionInfo;
+
+import javax.swing.*;
 import java.util.List;
 
 /**
@@ -7,14 +10,7 @@ import java.util.List;
  */
 public interface IAction {
 
-    interface cc{}
-
-    String readClassInfo();
-
-    String readPackageName();
-
-    List<String> getExcludeTypes();
-
     List<IActionMethod> getMethods();
 
+    List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods);
 }

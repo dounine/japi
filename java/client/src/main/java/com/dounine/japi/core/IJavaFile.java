@@ -12,6 +12,6 @@ public interface IJavaFile {
      * @param javaTxt java内容关键字
      * @return 找到的文件
      */
-    File searchTxtJavaFileForProjectsPath(String javaTxt);
+    File searchTxtJavaFileForProjectsPath(String javaTxt,String javaFilePath);
 
 }

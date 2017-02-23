@@ -9,8 +9,4 @@ public interface IType {
 
     List<IField> getFields();
 
-    boolean isBuiltInType();
-
-    String getJavaType();
-
 }

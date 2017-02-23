@@ -1,6 +1,7 @@
 package com.dounine.japi.core.valid.comm;
 
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.ParameterImpl;
@@ -22,10 +23,7 @@ public class DefaultValid implements IValid {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultValid.class);
 
-    private String projectPath;
     private String javaFilePath;
-    private List<String> includePaths = new ArrayList<>();
-
 
     @Override
     public List<IMVC> getTypes() {
@@ -71,13 +69,6 @@ public class DefaultValid implements IValid {
         return parameter;
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
 
     public String getJavaFilePath() {
         return javaFilePath;
@@ -87,11 +78,4 @@ public class DefaultValid implements IValid {
         this.javaFilePath = javaFilePath;
     }
 
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
-    }
 }

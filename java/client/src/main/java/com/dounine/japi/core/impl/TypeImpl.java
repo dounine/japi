@@ -1,6 +1,7 @@
 package com.dounine.japi.core.impl;
 
 import com.dounine.japi.common.JapiPattern;
+import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IType;
@@ -25,13 +26,11 @@ import java.util.regex.Pattern;
 public class TypeImpl implements IType {
     private static final Logger CONSOLE = LoggerFactory.getLogger(TypeImpl.class);
 
-    private String javaFilePath;
+    private File javaFile;
+    private File searchFile;
     private String javaType;
-    private String projectPath;
-    private List<String> includePaths = new ArrayList<>();
     private String javaKeyTxt;
     private List<IField> returnFields;
-    private File file;
 
     /**
      * 自身引用对象
@@ -52,11 +51,6 @@ public class TypeImpl implements IType {
             returnFields = extractDocAndFieldInfo();//提取属性注释及属性信息
         }
         return returnFields;
-    }
-
-    @Override
-    public boolean isBuiltInType() {
-        return BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt);
     }
 
     private List<List<String>> fieldBodyAndDoc(final List<String> noPackageLines) {
@@ -97,23 +91,18 @@ public class TypeImpl implements IType {
     }
 
     private List<IField> extractDocAndFieldInfo() {
-        JavaFileImpl javaFile = new JavaFileImpl();
-        javaFile.setJavaFilePath(javaFilePath);
-        javaFile.setProjectPath(projectPath);
-        javaFile.getIncludePaths().addAll(includePaths);
-
         if(javaKeyTxt.equals("void")){
             return null;
         }
 
-        file = javaFile.searchTxtJavaFileForProjectsPath(javaKeyTxt);
+        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt,javaFile.getAbsolutePath());
 
-        if(null==file){
+        if(null==searchFile){
             throw new JapiException("找不到相关文件："+javaKeyTxt+".java");
         }
         List<String> javaFileLines = null;
         try {
-            javaFileLines = FileUtils.readLines(file, Charset.forName("utf-8"));
+            javaFileLines = FileUtils.readLines(searchFile, Charset.forName("utf-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -147,15 +136,13 @@ public class TypeImpl implements IType {
             fieldImpl.setType(extractField.getType());
             fieldImpl.setName(extractField.getName());
             if(!BuiltInJavaImpl.getInstance().isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
-                File childTypeFile = javaFile.searchTxtJavaFileForProjectsPath(extractField.getType());
-                if(childTypeFile.getAbsoluteFile().equals(file.getAbsoluteFile())){//自身对象
+                File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(extractField.getType(),searchFile.getAbsolutePath());
+                if(childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())){//自身对象
                     fieldImpl.setName(extractField.getName());
                     fieldImpl.setType(MY_SELF_REF);
                 }else{
                     TypeImpl returnTypeImpl = new TypeImpl();
-                    returnTypeImpl.setJavaFilePath(file.getAbsolutePath());
-                    returnTypeImpl.setProjectPath(projectPath);
-                    returnTypeImpl.setIncludePaths(includePaths);
+                    returnTypeImpl.setJavaFile(searchFile.getAbsoluteFile());
                     returnTypeImpl.setJavaKeyTxt(extractField.getType());
                     fieldImpl.setReturnFields(returnTypeImpl.getFields());
                 }
@@ -275,38 +262,32 @@ public class TypeImpl implements IType {
 
     private IType getFieldType(final String returnTypeStr) {
         TypeImpl returnTypeImpl =  new TypeImpl();
-        returnTypeImpl.setJavaFilePath(javaFilePath);
-        returnTypeImpl.setProjectPath(projectPath);
-        returnTypeImpl.setIncludePaths(includePaths);
+        returnTypeImpl.setJavaFile(javaFile);
         returnTypeImpl.setJavaKeyTxt(returnTypeStr);
         return returnTypeImpl;
-    }
-
-    public void setJavaFilePath(String javaFilePath) {
-        this.javaFilePath = javaFilePath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
     }
 
     public void setJavaKeyTxt(String javaKeyTxt) {
         this.javaKeyTxt = javaKeyTxt;
     }
 
-    public String getJavaType() {
-        return javaType;
-    }
-
     public void setJavaType(String javaType) {
         this.javaType = javaType;
     }
 
-    public File getFile() {
-        return file;
+    public File getJavaFile() {
+        return javaFile;
+    }
+
+    public void setJavaFile(File javaFile) {
+        this.javaFile = javaFile;
+    }
+
+    public File getSearchFile() {
+        return searchFile;
+    }
+
+    public void setSearchFile(File searchFile) {
+        this.searchFile = searchFile;
     }
 }

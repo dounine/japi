@@ -5,6 +5,8 @@ import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.*;
 import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
+import com.dounine.japi.core.impl.response.ActionInfo;
+import com.dounine.japi.core.impl.response.ActionInfoDoc;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.core.type.RequestMethod;
 import com.dounine.japi.core.valid.IMVC;
@@ -38,48 +40,15 @@ import java.util.regex.Pattern;
  */
 public class ActionImpl implements IAction {
 
-    private String projectPath;
-    private String javaFilePath;
-    private List<String> includePaths = new ArrayList<>();
+    private File actionFile;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionImpl.class);
-
-    @Override
-    public String readClassInfo() {
-        return null;
-    }
-
-    public String readClassInfo(@Validated(value = {}) User user) {
-        return null;
-    }
-
-    @Override
-    public String readPackageName() {
-        return null;
-    }
-
-    @Override
-    public List<String> getExcludeTypes() {
-        URL url = this.getClass().getResource("/action-builtIn-types.txt");
-        File file = new File(url.getFile());
-        if (!file.exists()) {
-            throw new JapiException(url.getFile() + " 文件不存在");
-        }
-        try {
-            String str = FileUtils.readFileToString(file, Charset.forName("utf-8"));
-            str = str.replaceAll("\\s", StringUtils.EMPTY);
-            return Arrays.asList(str.split(","));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ArrayList<>();
-    }
 
     @Override
     public List<IActionMethod> getMethods() {
         List<IActionMethod> methods = null;
         try {
-            List<String> javaFileLines = FileUtils.readLines(new File(javaFilePath), Charset.forName("utf-8"));
+            List<String> javaFileLines = FileUtils.readLines(actionFile, Charset.forName("utf-8"));
             List<String> noPackageLines = new ArrayList<>();
             List<String> javaAnnoLines = new ArrayList<>();
             boolean match = false;//true 找到类的开始，开始查找方法
@@ -242,9 +211,7 @@ public class ActionImpl implements IAction {
 
     private IType getType(final String returnTypeStr) {
         TypeImpl returnTypeImpl = new TypeImpl();
-        returnTypeImpl.setJavaFilePath(javaFilePath);
-        returnTypeImpl.setProjectPath(projectPath);
-        returnTypeImpl.setIncludePaths(includePaths);
+        returnTypeImpl.setJavaFile(actionFile);
         returnTypeImpl.setJavaKeyTxt(returnTypeStr);
         return returnTypeImpl;
     }
@@ -346,14 +313,11 @@ public class ActionImpl implements IAction {
     private List<IValid> getImvcs() {
         List<IValid> imvcs = new ArrayList<>();
         MVCValid mvcValid = new MVCValid();
-        mvcValid.setIncludePaths(includePaths);
-        mvcValid.setJavaFilePath(javaFilePath);
-        mvcValid.setProjectPath(projectPath);
+        mvcValid.setJavaFilePath(actionFile.getAbsolutePath());
         imvcs.add(mvcValid);
+
         JSR303Valid jsr303Valid = new JSR303Valid();
-        jsr303Valid.setIncludePaths(includePaths);
-        jsr303Valid.setJavaFilePath(javaFilePath);
-        jsr303Valid.setProjectPath(projectPath);
+        jsr303Valid.setJavaFilePath(actionFile.getAbsolutePath());
         imvcs.add(jsr303Valid);
         return imvcs;
     }
@@ -368,9 +332,7 @@ public class ActionImpl implements IAction {
         List<IValid> imvcs = getImvcs();
         List<IParameter> parameterList = new ArrayList<>();
         DefaultValid defaultValid = new DefaultValid();
-        defaultValid.setJavaFilePath(javaFilePath);
-        defaultValid.setIncludePaths(includePaths);
-        defaultValid.setProjectPath(projectPath);
+        defaultValid.setJavaFilePath(actionFile.getAbsolutePath());
 
         for (String parameterStr : methodParameterStrs) {
             if (checkHasAnno(parameterStr)) {//包含注解 @RequestParam Integer cc
@@ -536,6 +498,42 @@ public class ActionImpl implements IAction {
         return new ActionRequest(newRequests, (null != methodTypeList && methodTypeList.length > 0) ? methodTypeList : new RequestMethod[]{actionRequest.getMethod()});
     }
 
+    public List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods){
+        List<ActionInfo> actionInfos = new ArrayList<>();
+        for (IActionMethod actionMethod : actionMethods) {
+            ActionInfo actionInfo = new ActionInfo();
+            actionInfo.setActionName(actionMethod.getMethodDescription());
+            List<String> requestInfoList = new ArrayList<>();
+            for(IParameter parameter : actionMethod.getParameters()){
+                requestInfoList.add(parameter.getRequestInfo());
+            }
+            actionInfo.setRequestInfoStr("["+StringUtils.join(requestInfoList.toArray(),",")+"]");
+            boolean hasReturnDoc = false;
+            for (IActionMethodDoc doc : actionMethod.getDocs()) {
+                if (doc.getName().equals("return")) {
+                    hasReturnDoc = true;
+                }
+                if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
+                    IType returnType = getType(doc.getValue().split(" ")[1]);
+                    actionInfo.setResponseInfoStr(getReturnInfos(returnType));
+                } else {
+                    if(!"param".equals(doc.getName())){
+                        ActionInfoDoc actionInfoDoc = new ActionInfoDoc();
+                        actionInfoDoc.setTagName(doc.getDocType());
+                        actionInfoDoc.setTagValue(doc.getValue());
+                        actionInfo.getActionInfoDocs().add(actionInfoDoc);
+                    }
+                }
+            }
+            if (!hasReturnDoc) {//use action return default type
+                actionInfo.setResponseInfoStr("["+getReturnInfos(actionMethod.getType())+"]");
+            }
+            actionInfos.add(actionInfo);
+        }
+
+        return actionInfos;
+    }
+
     /**
      * 提取方法信息
      *
@@ -565,31 +563,6 @@ public class ActionImpl implements IAction {
 
             methodImpls.add(methodImpl);
         }
-        if (true) {
-            for (IActionMethod actionMethod : methodImpls) {
-                System.out.println("方法描述：" + actionMethod.getMethodDescription());
-                System.out.println("请求信息：" + JSON.toJSON(actionMethod.getRequest()));
-                System.out.println("参数类型：" + JSON.toJSONString(actionMethod.getParameters()));
-                System.out.println("参数注解：" + JSON.toJSONString(actionMethod.getAnnotations()));
-                boolean hasReturnDoc = false;
-                for (IActionMethodDoc doc : actionMethod.getDocs()) {
-                    if (doc.getName().equals("return")) {
-                        hasReturnDoc = true;
-                    }
-                    if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
-                        IType returnType = getType(doc.getValue().split(" ")[1]);
-                        System.out.println(doc.getDocType() + "：" + getReturnInfos(returnType));
-                    } else {
-                        System.out.println(doc.getDocType() + " : " + doc.getValue() + " " + doc.getDes());
-                    }
-                }
-                if (!hasReturnDoc) {//use action return default type
-                    System.out.println(DocTagImpl.getInstance().getTagDesByName("return.") + "：" + getReturnInfos(actionMethod.getType()));
-                }
-                System.out.println("----------");
-            }
-        }
-
         return methodImpls;
     }
 
@@ -669,27 +642,13 @@ public class ActionImpl implements IAction {
         return c.toString();
     }
 
-    public String getJavaFilePath() {
-        return javaFilePath;
+
+    public File getActionFile() {
+        return actionFile;
     }
 
-    public void setJavaFilePath(String javaFilePath) {
-        this.javaFilePath = javaFilePath;
+    public void setActionFile(File actionFile) {
+        this.actionFile = actionFile;
     }
 
-    public String getProjectPath() {
-        return projectPath;
-    }
-
-    public void setProjectPath(String projectPath) {
-        this.projectPath = projectPath;
-    }
-
-    public List<String> getIncludePaths() {
-        return includePaths;
-    }
-
-    public void setIncludePaths(List<String> includePaths) {
-        this.includePaths = includePaths;
-    }
 }
