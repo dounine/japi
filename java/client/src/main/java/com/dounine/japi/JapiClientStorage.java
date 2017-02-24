@@ -32,19 +32,21 @@ import java.util.*;
  * Created by lake on 17-2-24.
  */
 public class JapiClientStorage {
-    private static String japiPath = null;
+    private String japiPath = null;
+    private IProject project;
     private static final String[] TIPS = new String[]{" name not empty.", " name forbid '/' symbol."};
     private static final Logger LOGGER = LoggerFactory.getLogger(JapiClientStorage.class);
+    private static final JapiClientStorage JAPI_CLIENT_STORAGE = new JapiClientStorage();
 
     static {
-        japiPath = FileUtils.getUserDirectoryPath() + "/.japi-client/";
-        File japiClientDir = new File(japiPath);
+        JAPI_CLIENT_STORAGE.japiPath = FileUtils.getUserDirectoryPath() + "/.japi-client/";
+        File japiClientDir = new File(JAPI_CLIENT_STORAGE.japiPath);
         if (!japiClientDir.exists()) {
             japiClientDir.mkdir();
         }
     }
 
-    public static void createProjectDir(String projectName) {
+    public void createProjectDir(String projectName) {
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("project" + TIPS[0]);
         }
@@ -57,7 +59,7 @@ public class JapiClientStorage {
         }
     }
 
-    public static void createPackageDir(String projectName, String packageName) {
+    public void createPackageDir(String projectName, String packageName) {
         createProjectDir(projectName);
         if (StringUtils.isBlank(packageName)) {
             throw new JapiException("package" + TIPS[0]);
@@ -71,7 +73,7 @@ public class JapiClientStorage {
         }
     }
 
-    public static void createFunDir(String projectName, String packageName, String funName) {
+    public void createFunDir(String projectName, String packageName, String funName) {
         createPackageDir(projectName, packageName);
         if (StringUtils.isBlank(funName)) {
             throw new JapiException("fun" + TIPS[0]);
@@ -85,7 +87,7 @@ public class JapiClientStorage {
         }
     }
 
-    public static void createActionDir(String projectName, String packageName, String funName, String actionName) {
+    public void createActionDir(String projectName, String packageName, String funName, String actionName) {
         createFunDir(projectName, packageName, funName);
         if (StringUtils.isBlank(actionName)) {
             throw new JapiException("action" + TIPS[0]);
@@ -99,7 +101,7 @@ public class JapiClientStorage {
         }
     }
 
-    public static void createVersionDir(String projectName, String packageName, String funName, String actionName, String version) {
+    public void createVersionDir(String projectName, String packageName, String funName, String actionName, String version) {
         createActionDir(projectName, packageName, funName, actionName);
         if (StringUtils.isBlank(actionName)) {
             throw new JapiException("version" + TIPS[0]);
@@ -113,9 +115,44 @@ public class JapiClientStorage {
         }
     }
 
-    public static void autoSaveToDisk(IProject project) {
+    private void saveProjectInfo() {
+        System.out.println(JSON.toJSON(project.getProperties()));
+        String pa = JAPI_CLIENT_STORAGE.japiPath + project.getProperties().get("japi.name");
+        File projectInfoFile = new File(pa + "/project-info.txt");
+        File projectInfoMd5File = new File(pa + "/project-md5.txt");
+        StringBuffer stringBuffer = new StringBuffer();
+        for (String key : project.getProperties().keySet()) {
+            stringBuffer.append(key + "=" + project.getProperties().get(key) + "\n");
+        }
+        if (!projectInfoFile.exists()) {
+            try {
+                projectInfoFile.createNewFile();
+                projectInfoMd5File.createNewFile();
+                FileUtils.writeStringToFile(projectInfoFile, stringBuffer.toString(), Charset.forName("utf-8"), true);
+                FileUtils.writeStringToFile(projectInfoMd5File, DigestUtils.md5Hex(stringBuffer.toString()), Charset.forName("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                if(!DigestUtils.md5Hex(stringBuffer.toString()).equals(FileUtils.readFileToString(projectInfoMd5File,Charset.forName("utf-8")))){
+                    projectInfoFile.delete();
+                    projectInfoMd5File.delete();
+                    projectInfoFile.createNewFile();
+                    projectInfoMd5File.createNewFile();
+                    FileUtils.writeStringToFile(projectInfoFile, stringBuffer.toString(), Charset.forName("utf-8"), true);
+                    FileUtils.writeStringToFile(projectInfoMd5File, DigestUtils.md5Hex(stringBuffer.toString()), Charset.forName("utf-8"));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void autoSaveToDisk() {
         String projectName = project.getProperties().get("japi.name");
         createProjectDir(projectName);
+        saveProjectInfo();
         for (IPackage iPackage : project.getPackages()) {
             List<IAction> actions = iPackage.getActions();
             String packageName = iPackage.getName();
@@ -136,7 +173,7 @@ public class JapiClientStorage {
         }
     }
 
-    public static void saveByTime(String projectName, String packageName, String funName, ActionInfo actionInfo) {
+    public void saveByTime(String projectName, String packageName, String funName, ActionInfo actionInfo) {
         createVersionDir(projectName, packageName, funName, actionInfo.getActionName(), actionInfo.getVersion());
         File dateFold = new File(japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion() + "/date");
         File newDateFold = null;
@@ -196,7 +233,7 @@ public class JapiClientStorage {
         }
     }
 
-    private static Map<String, List<ActionInfo>> getActionVersions(List<ActionInfo> actionInfos) {
+    private Map<String, List<ActionInfo>> getActionVersions(List<ActionInfo> actionInfos) {
         Map<String, List<ActionInfo>> actionInfoMap = new HashMap<>();
         for (ActionInfo actionInfo : actionInfos) {
             if (actionInfoMap.get(actionInfo.getActionName()) == null) {
@@ -209,13 +246,19 @@ public class JapiClientStorage {
         return actionInfoMap;
     }
 
-    public static void main(String[] args) {
-        System.out.println("1234".matches("\\d{4}"));
-        DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        long now = System.currentTimeMillis();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(now);
-        System.out.println(now + " = " + formatter.format(calendar.getTime()));
-//        createActionDir("test-project", "package1", "fun1", "action1");
+    public String getJapiPath() {
+        return japiPath;
+    }
+
+    public void setJapiPath(String japiPath) {
+        this.japiPath = japiPath;
+    }
+
+    public IProject getProject() {
+        return project;
+    }
+
+    public void setProject(IProject project) {
+        this.project = project;
     }
 }

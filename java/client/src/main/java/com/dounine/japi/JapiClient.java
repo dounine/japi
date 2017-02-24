@@ -1,22 +1,12 @@
 package com.dounine.japi;
 
-import com.alibaba.fastjson.JSON;
-import com.dounine.japi.common.JapiPattern;
-import com.dounine.japi.core.*;
+import com.dounine.japi.core.IConfig;
+import com.dounine.japi.core.IProject;
 import com.dounine.japi.core.impl.ConfigImpl;
-import com.dounine.japi.core.impl.DocTagImpl;
 import com.dounine.japi.core.impl.ProjectImpl;
-import com.dounine.japi.core.impl.TypeImpl;
-import com.dounine.japi.core.impl.response.ActionInfo;
-import com.dounine.japi.exception.JapiException;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by lake on 17-2-23.
@@ -34,7 +24,6 @@ public class JapiClient {
     }
 
     public static void main(String[] args) {
-        long beginTime = System.currentTimeMillis();
         JapiClient.setProjectJavaPath("/home/lake/github/japi/java/client/src/main/java");
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
         JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
@@ -42,12 +31,9 @@ public class JapiClient {
 
         IProject project = ProjectImpl.init();
         JapiClientStorage japiClientStorage = new JapiClientStorage();
-        japiClientStorage.autoSaveToDisk(project);
-
-        System.out.println(project.getProperties());
-
-
-        System.out.println(System.currentTimeMillis()-beginTime);
+        japiClientStorage.setProject(project);
+        japiClientStorage.autoSaveToDisk();
+//        new JapiClientTransfer().autoTransfer(japiClientStorage);
     }
 
     public static void setProjectJavaPath(String projectJavaPath) {

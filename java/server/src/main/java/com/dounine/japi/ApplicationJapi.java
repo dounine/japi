@@ -31,11 +31,7 @@ public class ApplicationJapi extends SpringBootServletInitializer {
 
     @PostConstruct
     public void init(){
-        try {
-            ApplicationServer.serverStart(htmlRootPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     @Override

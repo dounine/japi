@@ -34,6 +34,8 @@ dependencies {
 
     compile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.1.0'
 
+    compile group: 'com.alibaba', name: 'fastjson', version: '1.2.23'
+
     compile("org.springframework.boot:spring-boot-starter-web")
 }
 

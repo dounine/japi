@@ -21,22 +21,13 @@ import java.io.IOException;
 @Controller
 public class IndexAct {
 
-
-    @Autowired
-    private Render render;
-
-    @GetMapping({"/",""})
-    public void index(HttpServletResponse response){
+    @GetMapping({"/", ""})
+    public void index(HttpServletResponse response) {
         try {
-            response.sendRedirect("/index.html");
+            response.getWriter().print("welcome to japi server home.");
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @GetMapping("index.html")
-    public void home(HttpServletResponse response){
-        render.show("index");
     }
 
 
