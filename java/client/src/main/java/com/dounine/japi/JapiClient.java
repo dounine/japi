@@ -26,6 +26,7 @@ public class JapiClient {
     private static final JapiClient JAPI_CLIENT = new JapiClient();
 
     private ConfigImpl config = new ConfigImpl();
+    private boolean useCache = false;
     private JapiClient(){}
 
     public static final IConfig getConfig(){
@@ -37,24 +38,15 @@ public class JapiClient {
         JapiClient.setProjectJavaPath("/home/lake/github/japi/java/client/src/main/java");
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
         JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
+        JapiClient.setUseCache(false);//
 
         IProject project = ProjectImpl.init();
+        JapiClientStorage japiClientStorage = new JapiClientStorage();
+        japiClientStorage.autoSaveToDisk(project);
+
         System.out.println(project.getProperties());
-        for(IPackage iPackage : project.getPackages()){
-            List<IAction> actions = iPackage.getActions();
-            System.out.println("package:"+iPackage.getName());
-            for(IAction action : actions){
-                System.out.println("class:"+action.getName());
-                List<IActionMethod> actionMethods = action.getMethods();
-                List<ActionInfo> actionInfos = action.getActionInfos(actionMethods);
-                for(ActionInfo actionInfo : actionInfos){
-                    System.out.println("request版本: "+actionInfo.getVersion());
-                    System.out.println("request信息: "+JSON.toJSONString(actionInfo.getActionInfoRequest()));
-                    System.out.println ("request参数: "+actionInfo.getRequestInfoStr());
-                    System.out.println("response信息: "+actionInfo.getRequestInfoStr());
-                }
-            }
-        }
+
+
         System.out.println(System.currentTimeMillis()-beginTime);
     }
 
@@ -74,5 +66,10 @@ public class JapiClient {
         if(null!=includeProjectJavaPath){
             JAPI_CLIENT.config.setIncludeProjectJavaPath(Arrays.asList(includeProjectJavaPath));
         }
+    }
+
+
+    public static void setUseCache(boolean useCache) {
+        JAPI_CLIENT.useCache = useCache;
     }
 }
