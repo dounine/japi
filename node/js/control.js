@@ -10,16 +10,12 @@ $(document).ready(function(){
                 var mainbav = ("<div class='nav-section' data-index='%{mainInd}'><span class='mainbav open'><a href='javascript:void(0)' >" +
                 " %{mainNav}</a></span><ul>").format({mainInd:item.mainInd,mainNav:item.mainNav});
                 for(var index in item.subNav){
-                    if(item.subNav[index].subsub){
                         mainbav+="<li><span class='mainbav open'><a href='javascript:void(0)'>%{navTwo}</a></span><ul class='nav-section'>".format({navTwo:item.subNav[index].subName})
-                        var navThree = item.subNav[index].subsub;
+                        var navThree = item.subNav[index].navList;
                         for(var ind in navThree){
-                            mainbav+="<li class='acLi'><a href='javascript:void(0)' data-index='%{subInd}'>%{navList}</a></li>".format({subInd:navThree[ind].subInd,navList:navThree[ind].subsubName})
+                            mainbav+="<li class='acLi'><a href='javascript:void(0)' data-index='%{subInd}'>%{navList}</a></li>".format({subInd:navThree[ind].subInd,navList:navThree[ind].navListName})
                         }
                         mainbav+="</ul></li>"
-                    }else {
-                        mainbav+="<li class='acLi'><a href='javascript:void(0)' data-index='%{subInd}'>%{navList}</a></li>".format({subInd:item.subNav[index].subInd,navList:item.subNav[index].subName})
-                    }
                 }
                 mainbav+="</ul></div>";
                 $("#nav .nav-list").append(mainbav);
