@@ -53,7 +53,7 @@ public class JapiClientStorage {
         if (projectName.indexOf("/") != -1) {
             throw new JapiException("project" + TIPS[1]);
         }
-        File file = new File(japiPath + projectName);
+        File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName);
         if (!file.exists()) {
             file.mkdir();
         }
@@ -67,7 +67,7 @@ public class JapiClientStorage {
         if (packageName.indexOf("/") != -1) {
             throw new JapiException("package" + TIPS[1]);
         }
-        File file = new File(japiPath + projectName + "/" + packageName);
+        File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName);
         if (!file.exists()) {
             file.mkdir();
         }
@@ -81,7 +81,7 @@ public class JapiClientStorage {
         if (funName.indexOf("/") != -1) {
             throw new JapiException("fun" + TIPS[1]);
         }
-        File file = new File(japiPath + projectName + "/" + packageName + "/" + funName);
+        File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName);
         if (!file.exists()) {
             file.mkdir();
         }
@@ -95,7 +95,7 @@ public class JapiClientStorage {
         if (actionName.indexOf("/") != -1) {
             throw new JapiException("action" + TIPS[1]);
         }
-        File file = new File(japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionName);
+        File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionName);
         if (!file.exists()) {
             file.mkdir();
         }
@@ -109,14 +109,13 @@ public class JapiClientStorage {
         if (actionName.indexOf("/") != -1) {
             throw new JapiException("version" + TIPS[1]);
         }
-        File file = new File(japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version);
+        File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version);
         if (!file.exists()) {
             file.mkdir();
         }
     }
 
     private void saveProjectInfo() {
-        System.out.println(JSON.toJSON(project.getProperties()));
         String pa = JAPI_CLIENT_STORAGE.japiPath + project.getProperties().get("japi.name");
         File projectInfoFile = new File(pa + "/project-info.txt");
         File projectInfoMd5File = new File(pa + "/project-md5.txt");
@@ -175,7 +174,7 @@ public class JapiClientStorage {
 
     public void saveByTime(String projectName, String packageName, String funName, ActionInfo actionInfo) {
         createVersionDir(projectName, packageName, funName, actionInfo.getActionName(), actionInfo.getVersion());
-        File dateFold = new File(japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion() + "/date");
+        File dateFold = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion() + "/date");
         File newDateFold = null;
         if (!dateFold.exists() || (null != dateFold && dateFold.list().length == 0)) {
             dateFold.mkdir();

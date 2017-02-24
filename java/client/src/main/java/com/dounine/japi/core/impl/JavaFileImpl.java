@@ -150,9 +150,14 @@ public class JavaFileImpl implements IJavaFile {
                 } else if (containFiles.size() == 1) {
                     javaFile = containFiles.get(0);
                 }else{//size = 0
-                    Collection<File> packageChildFiles = FileUtils.listFiles(new File(JapiClient.getConfig().getProjectJavaPath()), javaFileFilter, TrueFileFilter.INSTANCE);//查找所有文件
-                    if (packageChildFiles.size() > 0) {
-                        javaFile = packageChildFiles.iterator().next();
+                    File mySelfFile = new File(javaFilePath);
+                    if((javaTxt+".java").equals(mySelfFile.getName())){
+                        javaFile = mySelfFile;
+                    }else{
+                        Collection<File> packageChildFiles = FileUtils.listFiles(new File(JapiClient.getConfig().getProjectJavaPath()), javaFileFilter, TrueFileFilter.INSTANCE);//查找所有文件
+                        if (packageChildFiles.size() > 0) {
+                            javaFile = packageChildFiles.iterator().next();
+                        }
                     }
                 }
             }

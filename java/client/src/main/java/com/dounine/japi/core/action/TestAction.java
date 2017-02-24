@@ -3,7 +3,6 @@ package com.dounine.japi.core.action;
 import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.User;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,8 +20,9 @@ public class TestAction {
 
     /**
      * 测试例子
+     *
      * @param user 用户信息
-     * @param cc   测试参数
+     * @param cc 测试参数
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "aa")
     @ApiVersion(1)
@@ -34,6 +34,7 @@ public class TestAction {
 
     /**
      * 测试例子
+     *
      * @param user 用户信息
      * @param cc   测试参数
      * @version 2
