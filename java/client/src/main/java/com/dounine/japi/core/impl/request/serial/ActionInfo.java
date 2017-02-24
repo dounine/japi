@@ -1,4 +1,7 @@
-package com.dounine.japi.core.impl.response;
+package com.dounine.japi.core.impl.request.serial;
+
+import com.dounine.japi.core.impl.request.IRequest;
+import com.dounine.japi.core.impl.response.IResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +14,8 @@ public class ActionInfo {
     private String actionName;
     private String version;
     private ActionInfoRequest actionInfoRequest;
-    private String requestInfoStr;
-    private String responseInfoStr;
+    private List<IRequest> requestFields;
+    private List<IResponse> responseFields;
     private List<ActionInfoDoc> actionInfoDocs = new ArrayList<>();
 
     public ActionInfoRequest getActionInfoRequest() {
@@ -21,22 +24,6 @@ public class ActionInfo {
 
     public void setActionInfoRequest(ActionInfoRequest actionInfoRequest) {
         this.actionInfoRequest = actionInfoRequest;
-    }
-
-    public String getRequestInfoStr() {
-        return requestInfoStr;
-    }
-
-    public void setRequestInfoStr(String requestInfoStr) {
-        this.requestInfoStr = requestInfoStr;
-    }
-
-    public String getResponseInfoStr() {
-        return responseInfoStr;
-    }
-
-    public void setResponseInfoStr(String responseInfoStr) {
-        this.responseInfoStr = responseInfoStr;
     }
 
     public List<ActionInfoDoc> getActionInfoDocs() {
@@ -61,5 +48,21 @@ public class ActionInfo {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public List<IRequest> getRequestFields() {
+        return requestFields;
+    }
+
+    public List<IResponse> getResponseFields() {
+        return responseFields;
+    }
+
+    public void setResponseFields(List<IResponse> responseFields) {
+        this.responseFields = responseFields;
+    }
+
+    public void setRequestFields(List<IRequest> requestFields) {
+        this.requestFields = requestFields;
     }
 }

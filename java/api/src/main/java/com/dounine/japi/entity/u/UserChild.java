@@ -17,6 +17,18 @@ public class UserChild {
      * 年龄
      */
     private Integer age;
+    /**
+     * 年龄jj
+     */
+    private JJ jj;
+
+    public JJ getJj() {
+        return jj;
+    }
+
+    public void setJj(JJ jj) {
+        this.jj = jj;
+    }
 
     public String getLove() {
         return love;

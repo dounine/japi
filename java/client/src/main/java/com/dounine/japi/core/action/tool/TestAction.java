@@ -1,4 +1,4 @@
-package com.dounine.japi.core.action;
+package com.dounine.japi.core.action.tool;
 
 import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
@@ -11,38 +11,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 测试类
+ * 普通用户
  * Created by huanghuanlai on 2017/1/18.
  */
 @RestController
-@RequestMapping("{version}/asdf/main")
+@RequestMapping("{version}/user/common")
 public class TestAction {
 
     /**
-     * 测试例子
+     * 获取用户列表
      *
      * @param user 用户信息
      * @param cc 测试参数
      */
-    @org.springframework.web.bind.annotation.GetMapping(value = "aa")
+    @org.springframework.web.bind.annotation.GetMapping(value = "list")
     @ApiVersion(1)
     @ResponseBody
     public User testUser(@Validated(value = {AddInterface.class}) User user, @RequestParam String cc, BindingResult bindingResult) {
 
-        return null;
-    }
-
-    /**
-     * 测试例子
-     *
-     * @param user 用户信息
-     * @param cc   测试参数
-     * @version 2
-     */
-    @org.springframework.web.bind.annotation.GetMapping(value = "aa")
-    @ApiVersion(2)
-    @ResponseBody
-    public User testUser2(@Validated(value = {AddInterface.class}) User user, @RequestParam String cc, BindingResult bindingResult) {
         return null;
     }
 

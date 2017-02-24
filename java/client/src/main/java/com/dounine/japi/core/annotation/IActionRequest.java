@@ -9,8 +9,6 @@ import java.util.List;
  */
 public interface IActionRequest {
 
-    boolean defaultValue();
-
     String valueField();
 
     String methodField();

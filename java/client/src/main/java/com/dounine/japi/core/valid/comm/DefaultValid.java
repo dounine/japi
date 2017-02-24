@@ -1,10 +1,10 @@
 package com.dounine.japi.core.valid.comm;
 
 import com.dounine.japi.common.JapiPattern;
-import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.ParameterImpl;
+import com.dounine.japi.core.impl.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.IValid;
 import org.apache.commons.lang3.StringUtils;
@@ -35,14 +35,10 @@ public class DefaultValid implements IValid {
         ParameterImpl parameter = new ParameterImpl();
         String[] typeAndName = parameterStr.split(StringUtils.SPACE);
         if (BuiltInJavaImpl.getInstance().isBuiltInType(typeAndName[0])) {
-            List<String> objs = new ArrayList<>();
-            StringBuffer sb = new StringBuffer("{");
-            sb.append("\"name\":\"");
-            sb.append(typeAndName[1]);
-            sb.append("\",");
-            sb.append("\"required\":");
-            sb.append("false,");
-            sb.append("\"description\":\"");
+            List<RequestImpl> requestFields = new ArrayList<>();
+            RequestImpl requestField = new RequestImpl();
+            requestField.setName(typeAndName[1]);
+            requestField.setRequired(false);
             String description = "";
             if (null != docsStrs && docsStrs.size() > 0) {
                 for (String doc : docsStrs) {
@@ -54,15 +50,11 @@ public class DefaultValid implements IValid {
                     }
                 }
             }
-            sb.append(description);
-            sb.append("\",");
-            sb.append("\"defaultValue\":\"\",");
-            sb.append("\"type\":\"");
-            sb.append(typeAndName[0]);
-            sb.append("\"");
-            sb.append("}");
-            objs.add(sb.toString());
-            parameter.setRequestInfos(objs);
+            requestField.setDescription(description);
+            requestField.setDefaultValue("");
+            requestField.setType(typeAndName[0]);
+            requestFields.add(requestField);
+            parameter.setRequestFields(requestFields);
         } else {
             LOGGER.warn("对象类型宝宝表示还没有开始支持呢");
         }

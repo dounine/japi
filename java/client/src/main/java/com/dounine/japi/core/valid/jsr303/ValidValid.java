@@ -2,20 +2,16 @@ package com.dounine.japi.core.valid.jsr303;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
-import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IField;
-import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
-import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.core.impl.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.jsr303.list.NotBlankValid;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Valid;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,11 +45,9 @@ public class ValidValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs, File javaFile) {
-        StringBuffer sb = new StringBuffer("{");
-        sb.append("name:\"");
-        sb.append(nameStr);
-        sb.append(",");
+    public RequestImpl getRequestField(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs, File javaFile) {
+        RequestImpl requestField = new RequestImpl();
+        requestField.setName(nameStr);
         String description = "";
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             TypeImpl typeImpl = new TypeImpl();
@@ -62,11 +56,9 @@ public class ValidValid implements IMVC {
 
             List<IField> fields = typeImpl.getFields();
             List<IMVC> imvcs = getJsr303List();
-            sb.append("type:\"object\"");
-            sb.append(",");
-            List<String> fieldBuffer = new ArrayList<>();
+            requestField.setType("object");
+            List<RequestImpl> requestFields = new ArrayList<>();
             if (fields.size() > 0) {
-                sb.append("fields:[");
                 for (IField iField : fields) {
                     IMVC mvc = null;
                     String anno = null;
@@ -87,7 +79,7 @@ public class ValidValid implements IMVC {
                         }
                     }
                     if (null != mvc) {//找到对应jsr303注解
-                        fieldBuffer.add(mvc.getRequestInfoForField(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
+                        requestFields.add(mvc.getRequestFieldForField(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
                     } else {//其它注没有注解
                         if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
                             System.out.println(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");
@@ -95,39 +87,28 @@ public class ValidValid implements IMVC {
                             if (!"$this".equals(iField.getType())) {
                                 List<String> _docs = new ArrayList<>();
                                 _docs.add("* @param "+iField.getName()+" "+iField.getDocs().get(0).getName());
-                                String requestInfo = getRequestInfo(null,iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
-                                if (StringUtils.isNotBlank(requestInfo)) {
-                                    fieldBuffer.add(requestInfo);
+                                RequestImpl _requestField = getRequestField(null,iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
+                                if(null!=_requestField){
+                                    requestFields.add(_requestField);
                                 }
                             } else {
-                                StringBuffer mySelf = new StringBuffer("{");
-                                mySelf.append("name:\"");
-                                mySelf.append(iField.getName());
-                                mySelf.append("\",");
-                                mySelf.append("type:");
-                                mySelf.append("\"$this\",");
-                                mySelf.append("description:\"");
-                                mySelf.append("\"自身对象\",");
-                                mySelf.append("required:");
-                                mySelf.append("false,");
-                                mySelf.append("defaultValue:");
-                                mySelf.append("\"\"");
-                                mySelf.append("}");
-                                fieldBuffer.add(mySelf.toString());
+                                RequestImpl _requestField = new RequestImpl();
+                                _requestField.setName(iField.getName());
+                                _requestField.setType("$this");
+                                _requestField.setDescription("自身对象");
+                                _requestField.setRequired(false);
+                                _requestField.setDefaultValue("");
+                                requestFields.add(_requestField);
                             }
                         }
                     }
                 }
-                String childStr = StringUtils.join(fieldBuffer.toArray(), ",");
-                sb.append(childStr);
-                sb.append("]");
+                requestField.setFields(requestFields);
             }
-            if (StringUtils.join(fieldBuffer.toArray(), ",").contains("required:true")) {
-                sb.append(",required:true");
-            }
-
-            sb.append(",defaultValue:\"\"");
-            sb.append(",description:\"");
+//            if (StringUtils.join(fieldBuffer.toArray(), ",").contains("required:true")) {
+//                sb.append(",required:true");
+//            }
+            requestField.setDefaultValue("");
             if (null != docs && docs.size() > 0) {
                 for (String doc : docs) {
                     Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr);//找到action传进来的注解信息
@@ -138,15 +119,11 @@ public class ValidValid implements IMVC {
                     }
                 }
             }
-            sb.append(description);
-            sb.append("\"");
+            requestField.setDescription(description);
         }else{
-            sb.append("type:\"");
-            sb.append(TypeConvert.getHtmlType(typeStr));
-            sb.append("\"");
-            sb.append(",defaultValue:\"\"");
-            sb.append(",required:false");
-            sb.append(",description:\"");
+            requestField.setType(TypeConvert.getHtmlType(typeStr));
+            requestField.setDefaultValue("");
+            requestField.setRequired(false);
             if (null != docs && docs.size() > 0) {
                 for (String doc : docs) {
                     Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr);//找到action传进来的注解信息
@@ -157,11 +134,9 @@ public class ValidValid implements IMVC {
                     }
                 }
             }
-            sb.append(description);
-            sb.append("\"");
+            requestField.setDescription(description);
         }
-        sb.append("}");
-        return sb.toString();
+        return requestField;
     }
 
     public String getJavaFilePath() {

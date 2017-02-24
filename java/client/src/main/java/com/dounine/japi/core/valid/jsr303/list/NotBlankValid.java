@@ -1,17 +1,14 @@
 package com.dounine.japi.core.valid.jsr303.list;
 
-import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
-import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
+import com.dounine.japi.core.impl.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.File;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -43,17 +40,16 @@ public class NotBlankValid implements IMVC {
     }
 
     @Override
-    @NotBlank(message = "", groups = {IMVC.class})
-    public String getRequestInfoForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<String> interfaceGroups) {
-        StringBuffer sb = new StringBuffer("{");
+    public RequestImpl getRequestFieldForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<String> interfaceGroups) {
+        RequestImpl requestField = new RequestImpl();
         String newNameStr = nameStr;
         String defaultValue = "";
         String description = "";
-        String required = "true";
+        boolean required = true;
 
         List<String> myGroupInterfaces = new ArrayList<>();
         if (null != interfaceGroups) {
-            required = "false";
+            required = false;
             Pattern pattern = JapiPattern.getPattern("groups\\s*[=]\\s*");
             Matcher matcher = pattern.matcher(annoStr);
             if (matcher.find()) {
@@ -86,7 +82,7 @@ public class NotBlankValid implements IMVC {
             }
         }
         if (hasGroup) {
-            required = "true";
+            required = true;
         }
 
         for (IFieldDoc fieldDoc : docs) {
@@ -96,24 +92,12 @@ public class NotBlankValid implements IMVC {
             }
         }
 
-        sb.append("type:\"");
-        sb.append(TypeConvert.getHtmlType(typeStr));
-        sb.append("\",");
-        sb.append("description:\"");
-        sb.append(description);
-        sb.append("\",");
-        sb.append("required:");
-        sb.append(required);
-        sb.append(",");
-        sb.append("defaultValue:");
-        sb.append("\"");
-        sb.append(defaultValue);
-        sb.append("\",");
-        sb.append("name:\"");
-        sb.append(newNameStr);
-        sb.append("\"");
-        sb.append("}");
-        return sb.toString();
+        requestField.setType(TypeConvert.getHtmlType(typeStr));
+        requestField.setDescription(description);
+        requestField.setRequired(required);
+        requestField.setDefaultValue(defaultValue);
+        requestField.setName(newNameStr);
+        return requestField;
     }
 
     public String getJavaFilePath() {

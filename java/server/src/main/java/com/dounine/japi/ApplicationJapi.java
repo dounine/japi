@@ -24,11 +24,6 @@ import java.io.IOException;
 @PropertySource({"classpath:config.properties"})
 public class ApplicationJapi extends SpringBootServletInitializer {
 
-    @Value("${htmlRootPath}")
-    private String htmlRootPath;
-    @Value("${listenerPort}")
-    private Integer port;
-
     @PostConstruct
     public void init(){
 

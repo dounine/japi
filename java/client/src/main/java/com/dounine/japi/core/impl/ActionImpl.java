@@ -1,33 +1,29 @@
 package com.dounine.japi.core.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.*;
 import com.dounine.japi.core.annotation.IActionRequest;
 import com.dounine.japi.core.annotation.impl.ActionRequest;
-import com.dounine.japi.core.impl.response.ActionInfo;
-import com.dounine.japi.core.impl.response.ActionInfoDoc;
-import com.dounine.japi.core.impl.response.ActionInfoRequest;
+import com.dounine.japi.core.impl.request.IRequest;
+import com.dounine.japi.core.impl.request.serial.ActionInfo;
+import com.dounine.japi.core.impl.request.serial.ActionInfoDoc;
+import com.dounine.japi.core.impl.request.serial.ActionInfoRequest;
+import com.dounine.japi.core.impl.response.IResponse;
+import com.dounine.japi.core.impl.response.ResponseImpl;
 import com.dounine.japi.core.type.DocType;
 import com.dounine.japi.core.type.RequestMethod;
-import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.IValid;
 import com.dounine.japi.core.valid.JSR303Valid;
 import com.dounine.japi.core.valid.MVCValid;
 import com.dounine.japi.core.valid.comm.DefaultValid;
-import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.validation.annotation.Validated;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -499,13 +495,13 @@ public class ActionImpl implements IAction {
         return new ActionRequest(newRequests, (null != methodTypeList && methodTypeList.length > 0) ? Arrays.asList(methodTypeList) : Arrays.asList(new RequestMethod[]{actionRequest.getMethod()}));
     }
 
-    private String getAnnosVersion(List<String> annotations){
+    private String getAnnosVersion(List<String> annotations) {
         String version = null;
         Pattern pattern = JapiPattern.getPattern("ApiVersion\\s*[(]\\s*\\d+\\s*[)]$");
-        for(String annoLine : annotations){
+        for (String annoLine : annotations) {
             Matcher apiVersionMatcher = pattern.matcher(annoLine);
-            if(apiVersionMatcher.find()){
-                version = "v"+annoLine.substring(annoLine.indexOf("(")+1,annoLine.lastIndexOf(")")).trim();
+            if (apiVersionMatcher.find()) {
+                version = "v" + annoLine.substring(annoLine.indexOf("(") + 1, annoLine.lastIndexOf(")")).trim();
                 break;
             }
         }
@@ -518,32 +514,32 @@ public class ActionImpl implements IAction {
         for (IActionMethod actionMethod : actionMethods) {
             ActionInfo actionInfo = new ActionInfo();
             String version = getAnnosVersion(actionMethod.getAnnotations());
-            if(null!=version){
+            if (null != version) {
                 actionInfo.setVersion(version);
             }
             actionInfo.setActionName(actionMethod.getMethodDescription());
-            List<String> requestInfoList = new ArrayList<>();
+            List<IRequest> requestFields = new ArrayList<>();//TODO
             for (IParameter parameter : actionMethod.getParameters()) {
-                requestInfoList.add(parameter.getRequestInfo());
+                requestFields.addAll(parameter.getRequestFields());//TODO
             }
             ActionInfoRequest actionInfoRequest = new ActionInfoRequest();
             actionInfoRequest.setUrls(actionMethod.getRequest().getUrls());
             actionInfoRequest.setMethods(actionMethod.getRequest().getMethods());
             actionInfo.setActionInfoRequest(actionInfoRequest);
-            actionInfo.setRequestInfoStr("[" + StringUtils.join(requestInfoList.toArray(), ",") + "]");
+            actionInfo.setRequestFields(requestFields);//TODO
             boolean hasReturnDoc = false;
             for (IActionMethodDoc doc : actionMethod.getDocs()) {
                 if (doc.getName().equals("return")) {
                     hasReturnDoc = true;
                 }
-                if(doc.getName().equals("version")){
-                    if(null==version){
-                        actionInfo.setVersion("v"+doc.getValue());
+                if (doc.getName().equals("version")) {
+                    if (null == version) {
+                        actionInfo.setVersion("v" + doc.getValue());
                     }
                 }
                 if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
                     IType returnType = getType(doc.getValue().split(" ")[1]);
-                    actionInfo.setResponseInfoStr(getReturnInfos(returnType));
+                    actionInfo.setResponseFields(getChildFields(returnType.getFields()));
                 } else {
                     if (!"param".equals(doc.getName())) {
                         ActionInfoDoc actionInfoDoc = new ActionInfoDoc();
@@ -554,13 +550,13 @@ public class ActionImpl implements IAction {
                 }
             }
             if (!hasReturnDoc) {//use action return default type
-                actionInfo.setResponseInfoStr("[" + getReturnInfos(actionMethod.getType()) + "]");
+                actionInfo.setResponseFields(getChildFields(actionMethod.getType().getFields()));
             }
             List<String> versionUrls = new ArrayList<>(actionInfo.getActionInfoRequest().getUrls().size());
-            for(String url : actionInfo.getActionInfoRequest().getUrls()){
-                if(verstionPattern.matcher(url).find()){
-                    versionUrls.add(url.replace("{version}",actionInfo.getVersion()));
-                }else{
+            for (String url : actionInfo.getActionInfoRequest().getUrls()) {
+                if (verstionPattern.matcher(url).find()) {
+                    versionUrls.add(url.replace("{version}", actionInfo.getVersion()));
+                } else {
                     versionUrls.add(url);
                 }
             }
@@ -587,22 +583,22 @@ public class ActionImpl implements IAction {
                 if (docBegin && !classBegin) {
                     docsAndAnnos.add(line);
                 }
-                if(classBeginPattern.matcher(line).find()){
+                if (classBeginPattern.matcher(line).find()) {
                     classBegin = true;
                 }
             }
-            if(docsAndAnnos.size()>0){
+            if (docsAndAnnos.size() > 0) {
                 Pattern docEndPattern = JapiPattern.getPattern("[*][/]$");
                 List<String> docs = new ArrayList<>();
-                for(String line : docsAndAnnos){
+                for (String line : docsAndAnnos) {
                     docs.add(line);
-                    if(docEndPattern.matcher(line).find()){
+                    if (docEndPattern.matcher(line).find()) {
                         break;
                     }
                 }
                 String name = "";
-                for(String line : docs){
-                    if(line.length()>3){
+                for (String line : docs) {
+                    if (line.length() > 3) {
                         name = line.substring(3).trim();
                         break;
                     }
@@ -647,80 +643,61 @@ public class ActionImpl implements IAction {
         return methodImpls;
     }
 
-    private String getReturnInfos(IType type) {
-        List<String> types = new ArrayList<>();
-        for (IField iField : type.getFields()) {
-            String typeStr = getChildField(iField);
-            if (StringUtils.isNotBlank(typeStr)) {
-                types.add(typeStr);
+    private List<IResponse> getChildFields(List<IField> iFields) {
+        List<IResponse> responses = new ArrayList<>();
+        for (IField iField : iFields) {
+            ResponseImpl response = new ResponseImpl();
+            String description = "";
+            response.setName(iField.getName());
+            if (!"$this".equals(iField.getType())) {
+                response.setType(TypeConvert.getHtmlType(iField.getType()));
+            } else {
+                response.setType("$this");
             }
+            for (IFieldDoc fieldDoc : iField.getDocs()) {
+                if (StringUtils.isBlank(fieldDoc.getValue())) {
+                    description = fieldDoc.getName();
+                    break;
+                }
+            }
+            response.setDescription(description);
+            response.setDefaultValue("");
+            if (iField.getFields() != null) {
+                response.setFields(getChildFields(iField.getFields()));
+            }
+            responses.add(response);
         }
-        return StringUtils.join(types.toArray(), ",");
-    }
 
-    private String getChildField(IField iField) {
-        List<String> fields = new ArrayList<>();
-        String description = "";
-        StringBuffer c = new StringBuffer("{");
-        c.append("name:\"");
-        c.append(iField.getName());
-        c.append("\",");
-        c.append("type:\"");
-        if (!"$this".equals(iField.getType())) {
-            c.append(TypeConvert.getHtmlType(iField.getType()));
-        } else {
-            c.append("$this");
-        }
-        c.append("\",");
-        c.append("description:\"");
-        for (IFieldDoc fieldDoc : iField.getDocs()) {
-            if (StringUtils.isBlank(fieldDoc.getValue())) {
-                description = fieldDoc.getName();
-                break;
-            }
-        }
-        c.append(description);
-        c.append("\"");
-        if (null != iField.getReturnFields()) {
-            c.append("\",");
-            c.append("fields:[");
-            for (IField childiField : iField.getReturnFields()) {
-                StringBuffer fieldSb = new StringBuffer("{");
-                description = "";
-                fieldSb.append("name:\"");
-                fieldSb.append(childiField.getName());
-                fieldSb.append("\",");
-                fieldSb.append("type:\"");
-                if (!"$this".equals(childiField.getType())) {
-                    fieldSb.append(TypeConvert.getHtmlType(childiField.getType()));
-                } else {
-                    fieldSb.append("$this");
-                }
-                fieldSb.append("\",");
-                fieldSb.append("description:\"");
-                for (IFieldDoc fieldDoc : childiField.getDocs()) {
-                    if (StringUtils.isBlank(fieldDoc.getValue())) {
-                        description = fieldDoc.getName();
-                        break;
-                    }
-                }
-                fieldSb.append(description);
-                fieldSb.append("\",");
-                fieldSb.append("defaultValue:\"\"");
-                if (null != childiField.getReturnFields()) {
-                    fieldSb.append("\",");
-                    fieldSb.append("fields:[");
-                    fieldSb.append(getChildField(childiField));
-                    fieldSb.append("]");
-                }
-                fieldSb.append("}");
-                fields.add(fieldSb.toString());
-            }
-            c.append(StringUtils.join(fields.toArray(), ","));
-            c.append("]");
-        }
-        c.append("}");
-        return c.toString();
+//        List<IResponse> fields = new ArrayList<>();
+//
+//
+//        if (null != iField.getReturnFields()) {
+//            for (IField childiField : iField.getReturnFields()) {
+//                ResponseImpl _response = new ResponseImpl();
+//                _response.setName(childiField.getName());
+//                if (!"$this".equals(childiField.getType())) {
+//                    _response.setType(TypeConvert.getHtmlType(childiField.getType()));
+//                } else {
+//                    _response.setType("$this");
+//                }
+//                for (IFieldDoc fieldDoc : childiField.getDocs()) {
+//                    if (StringUtils.isBlank(fieldDoc.getValue())) {
+//                        description = fieldDoc.getName();
+//                        break;
+//                    }
+//                }
+//                _response.setDescription(description);
+//                _response.setDefaultValue("");
+//                if (null != childiField.getReturnFields()) {
+//                    List<IResponse> childResponses = new ArrayList<>();
+//                    childResponses.add(getChildField(childiField));
+//                    _response.setFields(childResponses);
+//                }
+//                fields.add(_response);
+//            }
+//            response.setFields(fields);
+//        }
+        return responses;
     }
 
 

@@ -1,4 +1,4 @@
-package com.dounine.japi.core.impl.response;
+package com.dounine.japi.core.impl.request.serial;
 
 import com.dounine.japi.core.type.RequestMethod;
 

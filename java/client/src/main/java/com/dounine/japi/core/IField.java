@@ -9,7 +9,7 @@ public interface IField {
 
     List<String> getAnnotations();
 
-    List<IField> getReturnFields();
+    List<IField> getFields();
 
     String getName();
 

@@ -1,4 +1,4 @@
-package com.dounine.japi.core.impl.response;
+package com.dounine.japi.core.impl.request.serial;
 
 /**
  * Created by lake on 17-2-23.

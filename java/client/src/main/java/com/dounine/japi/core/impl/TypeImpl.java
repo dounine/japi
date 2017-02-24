@@ -144,7 +144,7 @@ public class TypeImpl implements IType {
                     TypeImpl returnTypeImpl = new TypeImpl();
                     returnTypeImpl.setJavaFile(searchFile.getAbsoluteFile());
                     returnTypeImpl.setJavaKeyTxt(extractField.getType());
-                    fieldImpl.setReturnFields(returnTypeImpl.getFields());
+                    fieldImpl.setFields(returnTypeImpl.getFields());
                 }
             }
 

@@ -1,5 +1,7 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.core.impl.request.RequestImpl;
+
 import java.util.List;
 
 /**
@@ -7,6 +9,6 @@ import java.util.List;
  */
 public interface IParameter {
 
-    String getRequestInfo();
+    List<RequestImpl> getRequestFields();
 
 }

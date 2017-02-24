@@ -1,8 +1,7 @@
 package com.dounine.japi.core;
 
-import com.dounine.japi.core.impl.response.ActionInfo;
+import com.dounine.japi.core.impl.request.serial.ActionInfo;
 
-import javax.swing.*;
 import java.util.List;
 
 /**

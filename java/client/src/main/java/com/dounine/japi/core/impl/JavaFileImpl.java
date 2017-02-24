@@ -2,7 +2,6 @@ package com.dounine.japi.core.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.JapiClient;
-import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IJavaFile;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
@@ -33,9 +32,13 @@ public class JavaFileImpl implements IJavaFile {
     private static final String CHECK_FILE_SUFFIX = ".java";
     private static final String PACKAGE_PREFIX = "import ";
     private static final String RELATIVE_PATH = "src/main/java/";
-    private JavaFileImpl(){}
+
+    private JavaFileImpl() {
+    }
+
     private static final JavaFileImpl JAVA_FILE = new JavaFileImpl();
-    public static final JavaFileImpl getInstance(){
+
+    public static final JavaFileImpl getInstance() {
         return JAVA_FILE;
     }
 
@@ -51,7 +54,7 @@ public class JavaFileImpl implements IJavaFile {
     }
 
     @Override
-    public File searchTxtJavaFileForProjectsPath(String javaTxt,String javaFilePath) {
+    public File searchTxtJavaFileForProjectsPath(String javaTxt, String javaFilePath) {
         if (StringUtils.isBlank(javaTxt)) {
             throw new JapiException("javaTxt 关键字不能为空");
         }
@@ -149,11 +152,14 @@ public class JavaFileImpl implements IJavaFile {
                     LOGGER.warn("找到多个文件,默认取路径最短一个 " + JSON.toJSONString(containFiles));
                 } else if (containFiles.size() == 1) {
                     javaFile = containFiles.get(0);
-                }else{//size = 0
+                } else {//size = 0
                     File mySelfFile = new File(javaFilePath);
-                    if((javaTxt+".java").equals(mySelfFile.getName())){
+                    File myReletivePath = new File(mySelfFile.getParentFile().getAbsoluteFile() + "/" + javaTxt + ".java");
+                    if(myReletivePath.exists()){
+                        javaFile = myReletivePath;
+                    }else if ((javaTxt + ".java").equals(mySelfFile.getName())) {
                         javaFile = mySelfFile;
-                    }else{
+                    } else {
                         Collection<File> packageChildFiles = FileUtils.listFiles(new File(JapiClient.getConfig().getProjectJavaPath()), javaFileFilter, TrueFileFilter.INSTANCE);//查找所有文件
                         if (packageChildFiles.size() > 0) {
                             javaFile = packageChildFiles.iterator().next();

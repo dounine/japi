@@ -5,28 +5,24 @@ import com.dounine.japi.core.IAction;
 import com.dounine.japi.core.IActionMethod;
 import com.dounine.japi.core.IPackage;
 import com.dounine.japi.core.IProject;
-import com.dounine.japi.core.impl.response.ActionInfo;
+import com.dounine.japi.core.impl.request.serial.ActionInfo;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.format.datetime.joda.LocalDateParser;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by lake on 17-2-24.
@@ -134,7 +130,7 @@ public class JapiClientStorage {
             }
         } else {
             try {
-                if(!DigestUtils.md5Hex(stringBuffer.toString()).equals(FileUtils.readFileToString(projectInfoMd5File,Charset.forName("utf-8")))){
+                if (!DigestUtils.md5Hex(stringBuffer.toString()).equals(FileUtils.readFileToString(projectInfoMd5File, Charset.forName("utf-8")))) {
                     projectInfoFile.delete();
                     projectInfoMd5File.delete();
                     projectInfoFile.createNewFile();
@@ -149,6 +145,16 @@ public class JapiClientStorage {
     }
 
     public void autoSaveToDisk() {
+        if (!JapiClient.isUseCache()) {
+            File file = new File(JAPI_CLIENT_STORAGE.japiPath + project.getProperties().get("japi.name"));
+            if (file.exists()) {
+                try {
+                    FileUtils.deleteDirectory(file);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         String projectName = project.getProperties().get("japi.name");
         createProjectDir(projectName);
         saveProjectInfo();

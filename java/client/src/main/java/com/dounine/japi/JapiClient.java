@@ -24,9 +24,9 @@ public class JapiClient {
     }
 
     public static void main(String[] args) {
-        JapiClient.setProjectJavaPath("/home/lake/github/japi/java/client/src/main/java");
+        JapiClient.setProjectJavaPath("/Users/huanghuanlai/dounine/github/japi/java/client/src/main/java");
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
-        JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
+        JapiClient.setIncludeProjectJavaPath(new String[]{"/Users/huanghuanlai/dounine/github/japi/java/api/src/main/java"});
         JapiClient.setUseCache(false);//
 
         IProject project = ProjectImpl.init();
@@ -57,5 +57,8 @@ public class JapiClient {
 
     public static void setUseCache(boolean useCache) {
         JAPI_CLIENT.useCache = useCache;
+    }
+    public static boolean isUseCache(){
+        return JAPI_CLIENT.useCache;
     }
 }

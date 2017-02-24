@@ -11,18 +11,18 @@ import java.util.List;
  */
 public class FieldImpl implements IField {
     private List<String> annotations = new ArrayList<>();
-    private List<IField> returnFields;
+    private List<IField> fields;
     private String name;
     private String type;
     private List<IFieldDoc> docs = new ArrayList<>();
 
     @Override
-    public List<IField> getReturnFields() {
-        return returnFields;
+    public List<IField> getFields() {
+        return fields;
     }
 
-    public void setReturnFields(List<IField> returnFields) {
-        this.returnFields = returnFields;
+    public void setFields(List<IField> fields) {
+        this.fields = fields;
     }
 
     @Override

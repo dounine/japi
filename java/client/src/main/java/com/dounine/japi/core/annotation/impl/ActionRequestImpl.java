@@ -37,11 +37,6 @@ public class ActionRequestImpl implements IActionRequest {
     }
 
     @Override
-    public boolean defaultValue() {
-        return defaultValue;
-    }
-
-    @Override
     public String valueField() {
         return valueField;
     }

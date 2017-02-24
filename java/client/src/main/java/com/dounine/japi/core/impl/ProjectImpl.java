@@ -83,9 +83,11 @@ public class ProjectImpl implements IProject {
         Collection<File> folds = FileUtils.listFilesAndDirs(actionFold, dirFilter, TrueFileFilter.INSTANCE);
         List<IPackage> packages = new ArrayList<>(folds.size());
         for (File fold : folds) {
-            PackageImpl packageImpl = new PackageImpl();
-            packageImpl.setPackageFold(fold);
-            packages.add(packageImpl);
+            if(!fold.getAbsolutePath().equals(actionFold.getAbsolutePath())){
+                PackageImpl packageImpl = new PackageImpl();
+                packageImpl.setPackageFold(fold);
+                packages.add(packageImpl);
+            }
         }
         return packages;
     }

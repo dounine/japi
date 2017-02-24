@@ -1,9 +1,9 @@
 package com.dounine.japi.core.valid;
 
 import com.dounine.japi.common.JapiPattern;
-import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
+import com.dounine.japi.core.impl.request.RequestImpl;
 import com.dounine.japi.core.valid.mvc.RequestParamValid;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -38,12 +38,13 @@ public class MVCValid implements IValid {
         String typeStr = typeAndName.substring(0, typeAndName.indexOf(" "));
         String nameStr = typeAndName.substring(typeStr.length() + 1).trim();
         ParameterImpl parameter = new ParameterImpl();
-        List<String> requestInfos = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()), typeStr, nameStr, docsStrs);
-        parameter.setRequestInfos(requestInfos);
+        List<RequestImpl> requestFields = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()), typeStr, nameStr, docsStrs);
+//        parameter.setRequestInfos(requestInfos);
+        parameter.setRequestFields(requestFields);
         return parameter;
     }
 
-    private List<String> getRequestInfos(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
+    private List<RequestImpl> getRequestInfos(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
         Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
         List<String> annos = new ArrayList<>();
         int preIndex = -1, nextIndex = -1;
@@ -59,22 +60,60 @@ public class MVCValid implements IValid {
         if (nextIndex != -1) {
             annos.add(parameterStrExcTypeAndName.substring(nextIndex).trim());
         }
-        List<String> requestInfos = new ArrayList<>();
+//        List<String> requestInfos = new ArrayList<>();
+        List<RequestImpl> requestFields = new ArrayList<>();
         for (String annoStr : annos) {
             if (isValid(annoStr)) {//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if (null != imvc) {
-                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
-                    if (StringUtils.isNotBlank(requestInfo)) {
-                        requestInfos.add(requestInfo);
+//                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
+                    RequestImpl requestField = imvc.getRequestField(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
+                    if(null!=requestField){
+                        requestFields.add(requestField);
                     }
+//                    if (StringUtils.isNotBlank(requestInfo)) {
+//                        requestInfos.add(requestInfo);
+//                    }
                 }
             } else {
                 LOGGER.warn(annoStr + " 不在MVCValid识别范围内.");
             }
         }
-        return requestInfos;
+        return requestFields;
     }
+
+//    private List<String> getRequestInfos(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
+//        Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
+//        List<String> annos = new ArrayList<>();
+//        int preIndex = -1, nextIndex = -1;
+//        while (singleAnnoMatcher.find()) {
+//            nextIndex = singleAnnoMatcher.start();
+//            if (-1 != preIndex) {
+//                annos.add(parameterStrExcTypeAndName.substring(preIndex, nextIndex).trim());
+//                preIndex = nextIndex;
+//            } else {
+//                preIndex = 0;
+//            }
+//        }
+//        if (nextIndex != -1) {
+//            annos.add(parameterStrExcTypeAndName.substring(nextIndex).trim());
+//        }
+//        List<String> requestInfos = new ArrayList<>();
+//        for (String annoStr : annos) {
+//            if (isValid(annoStr)) {//全部使用默认值
+//                IMVC imvc = getValid(annoStr.substring(1));
+//                if (null != imvc) {
+//                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
+//                    if (StringUtils.isNotBlank(requestInfo)) {
+//                        requestInfos.add(requestInfo);
+//                    }
+//                }
+//            } else {
+//                LOGGER.warn(annoStr + " 不在MVCValid识别范围内.");
+//            }
+//        }
+//        return requestInfos;
+//    }
 
     public String getJavaFilePath() {
         return javaFilePath;

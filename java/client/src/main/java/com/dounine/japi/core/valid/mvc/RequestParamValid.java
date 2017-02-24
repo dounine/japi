@@ -2,10 +2,10 @@ package com.dounine.japi.core.valid.mvc;
 
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.impl.TypeConvert;
+import com.dounine.japi.core.impl.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,15 +21,13 @@ public class RequestParamValid implements IMVC {
     }
 
     @Override
-    public String getRequestInfo(String annoStr, String typeStr, String nameStr, List<String> docsStrs, File javaFile) {
-        StringBuffer sb = new StringBuffer("{");
+    public RequestImpl getRequestField(String annoStr, String typeStr, String nameStr, List<String> docs, File javaFile) {
+        RequestImpl requestField = new RequestImpl();
         String newNameStr = nameStr;
         String defaultValue = "";
         String description = "";
-        String required = "true";
-        sb.append("type:\"");
-        sb.append(TypeConvert.getHtmlType(typeStr));
-        sb.append("\",");
+        boolean required = true;
+        requestField.setType(TypeConvert.getHtmlType(typeStr));
         if (annoStr.trim().endsWith(")")) {//可能带参数
             Pattern namePattern = JapiPattern.getPattern("name(\\s)*=(\\s)*[\"]\\S*[\"]");
             Pattern defaultValuePattern = JapiPattern.getPattern("defaultValue(\\s)*=(\\s)*[\"]\\S*[\"]");
@@ -47,12 +45,11 @@ public class RequestParamValid implements IMVC {
             }
             if (requiredMatcher.find()) {
                 String requiredMatcherStr = requiredMatcher.group();
-                required = requiredMatcherStr.split("=")[1].trim();
+                required = Boolean.parseBoolean(requiredMatcherStr.split("=")[1].trim());
             }
         }
-        sb.append("description:\"");
-        if (null != docsStrs && docsStrs.size() > 0) {
-            for (String doc : docsStrs) {
+        if (null != docs && docs.size() > 0) {
+            for (String doc : docs) {
                 Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr + "\\s+");//找到action传进来的注解信息
                 Matcher matcher = pattern.matcher(doc);
                 if (matcher.find()) {
@@ -61,20 +58,11 @@ public class RequestParamValid implements IMVC {
                 }
             }
         }
-        sb.append(description);
-        sb.append("\",");
-        sb.append("required:");
-        sb.append(required);
-        sb.append(",");
-        sb.append("defaultValue:");
-        sb.append("\"");
-        sb.append(defaultValue);
-        sb.append("\",");
-        sb.append("name:\"");
-        sb.append(newNameStr);
-        sb.append("\"");
-        sb.append("}");
-        return sb.toString();
+        requestField.setDescription(description);
+        requestField.setRequired(required);
+        requestField.setDefaultValue(defaultValue);
+        requestField.setName(newNameStr);
+        return requestField;
     }
 
 }
