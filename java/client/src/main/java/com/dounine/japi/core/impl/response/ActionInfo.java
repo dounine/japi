@@ -9,6 +9,7 @@ import java.util.List;
 public class ActionInfo {
 
     private String actionName;
+    private String version;
     private ActionInfoRequest actionInfoRequest;
     private String requestInfoStr;
     private String responseInfoStr;
@@ -52,5 +53,13 @@ public class ActionInfo {
 
     public void setActionName(String actionName) {
         this.actionName = actionName;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
     }
 }

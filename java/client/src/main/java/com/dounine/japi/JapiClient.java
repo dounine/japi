@@ -33,6 +33,7 @@ public class JapiClient {
     }
 
     public static void main(String[] args) {
+        long beginTime = System.currentTimeMillis();
         JapiClient.setProjectJavaPath("/home/lake/github/japi/java/client/src/main/java");
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
         JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
@@ -47,13 +48,14 @@ public class JapiClient {
                 List<IActionMethod> actionMethods = action.getMethods();
                 List<ActionInfo> actionInfos = action.getActionInfos(actionMethods);
                 for(ActionInfo actionInfo : actionInfos){
-                    System.out.println(JSON.toJSONString(actionInfo));
-                    System.out.println("request信息:"+JSON.toJSONString(actionInfo.getActionInfoRequest()));
-                    System.out.println("request参数:"+actionInfo.getRequestInfoStr());
-                    System.out.println("response信息:"+actionInfo.getRequestInfoStr());
+                    System.out.println("request版本: "+actionInfo.getVersion());
+                    System.out.println("request信息: "+JSON.toJSONString(actionInfo.getActionInfoRequest()));
+                    System.out.println ("request参数: "+actionInfo.getRequestInfoStr());
+                    System.out.println("response信息: "+actionInfo.getRequestInfoStr());
                 }
             }
         }
+        System.out.println(System.currentTimeMillis()-beginTime);
     }
 
     public static void setProjectJavaPath(String projectJavaPath) {
