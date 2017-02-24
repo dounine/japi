@@ -1,7 +1,7 @@
 package com.dounine.japi.core.impl;
 
 import com.dounine.japi.core.IParameter;
-import com.dounine.japi.core.impl.request.RequestImpl;
+import com.dounine.japi.serial.request.RequestImpl;
 
 import java.util.ArrayList;
 import java.util.List;

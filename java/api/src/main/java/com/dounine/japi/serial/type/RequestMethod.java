@@ -1,4 +1,4 @@
-package com.dounine.japi.core.type;
+package com.dounine.japi.serial.type;
 
 /**
  * Created by lake on 17-2-8.

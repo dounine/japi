@@ -2,7 +2,7 @@ package com.dounine.japi.core.valid.mvc;
 
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.impl.TypeConvert;
-import com.dounine.japi.core.impl.request.RequestImpl;
+import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 
 import java.io.File;

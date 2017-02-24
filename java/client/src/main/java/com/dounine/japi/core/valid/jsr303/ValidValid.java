@@ -6,7 +6,7 @@ import com.dounine.japi.core.IField;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
-import com.dounine.japi.core.impl.request.RequestImpl;
+import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.jsr303.list.NotBlankValid;
 import org.slf4j.Logger;

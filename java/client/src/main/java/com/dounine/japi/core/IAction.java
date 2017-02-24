@@ -1,6 +1,7 @@
 package com.dounine.japi.core;
 
-import com.dounine.japi.core.impl.request.serial.ActionInfo;
+
+import com.dounine.japi.serial.ActionInfo;
 
 import java.util.List;
 

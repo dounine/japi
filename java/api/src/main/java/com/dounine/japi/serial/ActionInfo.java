@@ -1,7 +1,8 @@
-package com.dounine.japi.core.impl.request.serial;
+package com.dounine.japi.serial;
 
-import com.dounine.japi.core.impl.request.IRequest;
-import com.dounine.japi.core.impl.response.IResponse;
+
+import com.dounine.japi.serial.request.IRequest;
+import com.dounine.japi.serial.response.IResponse;
 
 import java.util.ArrayList;
 import java.util.List;

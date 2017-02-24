@@ -1,4 +1,4 @@
-package com.dounine.japi.core.impl.request;
+package com.dounine.japi.serial.request;
 
 import java.util.List;
 

@@ -1,9 +1,8 @@
 package com.dounine.japi.core.annotation.impl;
 
 import com.dounine.japi.core.annotation.IActionRequest;
-import com.dounine.japi.core.type.RequestMethod;
+import com.dounine.japi.serial.type.RequestMethod;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

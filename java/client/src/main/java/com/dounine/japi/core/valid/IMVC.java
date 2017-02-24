@@ -1,7 +1,7 @@
 package com.dounine.japi.core.valid;
 
 import com.dounine.japi.core.IFieldDoc;
-import com.dounine.japi.core.impl.request.RequestImpl;
+import com.dounine.japi.serial.request.RequestImpl;
 
 import java.io.File;
 import java.util.List;

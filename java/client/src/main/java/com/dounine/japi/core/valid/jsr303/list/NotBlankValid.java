@@ -4,7 +4,7 @@ import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
-import com.dounine.japi.core.impl.request.RequestImpl;
+import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import org.apache.commons.lang3.StringUtils;
 

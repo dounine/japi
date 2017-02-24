@@ -1,7 +1,6 @@
 package com.dounine.japi.core.impl;
 
 import com.dounine.japi.core.IActionMethodDoc;
-import com.dounine.japi.core.type.DocType;
 
 /**
  * Created by huanghuanlai on 2017/1/19.

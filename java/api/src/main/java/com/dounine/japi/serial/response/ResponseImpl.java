@@ -1,4 +1,4 @@
-package com.dounine.japi.core.impl.response;
+package com.dounine.japi.serial.response;
 
 import java.util.List;
 

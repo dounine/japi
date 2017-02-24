@@ -3,6 +3,7 @@ package com.dounine.japi;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.entity.*;
 import com.dounine.japi.exception.JapiException;
+import com.dounine.japi.serial.ActionInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -161,12 +162,12 @@ public class JapiServer {
         return null;
     }
 
-    public static String getAction(String projectName, String packageName, String funName, String actionName, String version, String date) {
+    public static ActionInfo getAction(String projectName, String packageName, String funName, String actionName, String version, String date) {
         try {
             String millDate = "" + formatter.parse(date).getTime();
             File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/date/" + millDate + "/info.txt");
             if (actionFile.exists()) {
-                return FileUtils.readFileToString(actionFile, Charset.forName("utf-8"));
+                return JSON.parseObject(FileUtils.readFileToString(actionFile, Charset.forName("utf-8")),ActionInfo.class);
             }
         } catch (ParseException e) {
             e.printStackTrace();

@@ -3,7 +3,7 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
-import com.dounine.japi.core.impl.request.RequestImpl;
+import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.jsr303.ValidValid;
 import com.dounine.japi.core.valid.jsr303.ValidatedValid;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,6 @@
-package com.dounine.japi.core.impl.request.serial;
+package com.dounine.japi.serial;
 
-import com.dounine.japi.core.type.RequestMethod;
+import com.dounine.japi.serial.type.RequestMethod;
 
 import java.util.ArrayList;
 import java.util.List;

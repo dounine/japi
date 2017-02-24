@@ -1,6 +1,6 @@
 package com.dounine.japi.core.annotation;
 
-import com.dounine.japi.core.type.RequestMethod;
+import com.dounine.japi.serial.type.RequestMethod;
 
 import java.util.List;
 
