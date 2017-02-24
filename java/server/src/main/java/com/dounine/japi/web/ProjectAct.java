@@ -31,6 +31,7 @@ public class ProjectAct {
 
     @GetMapping("{projectName}/logo")
     public void logo(HttpServletResponse response, @PathVariable String projectName) throws Exception {
+        response.setHeader("Content-Type","image/png");
         InputStream fis = JapiServer.getIconInputStream(projectName);//new FileInputStream("/home/lake/github/japi/html/img/logo.png");
         OutputStream os = response.getOutputStream();
         byte[] bytes = new byte[1024];
