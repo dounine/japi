@@ -3,14 +3,10 @@ package com.dounine.japi.web;
 import com.dounine.japi.JapiServer;
 import com.dounine.japi.entity.JapiProject;
 import com.dounine.japi.exception.JapiException;
-import jdk.internal.util.xml.impl.Input;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -28,7 +24,7 @@ public class ProjectAct {
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("projectName"+NOT_EMPTY_TIP);
         }
-        RestImpl rest = new RestImpl();
+        ResultImpl rest = new ResultImpl();
         rest.setData(JapiServer.getProjectNav(projectName));
         return rest;
     }
@@ -60,7 +56,7 @@ public class ProjectAct {
         if (StringUtils.isBlank(actionName)) {
             throw new JapiException("actionName"+NOT_EMPTY_TIP);
         }
-        RestImpl rest = new RestImpl();
+        ResultImpl rest = new ResultImpl();
         rest.setData(JapiServer.getActionVersions(projectName,packageName,funName,actionName));
         return rest;
     }
@@ -82,13 +78,13 @@ public class ProjectAct {
         if (StringUtils.isBlank(versionName)) {
             throw new JapiException("versionName"+NOT_EMPTY_TIP);
         }
-        RestImpl rest = new RestImpl();
+        ResultImpl rest = new ResultImpl();
         rest.setData(JapiServer.getActionVerDates(projectName,packageName,funName,actionName,versionName));
         return rest;
     }
 
     @PostMapping("action")
-    public Result action(String projectName,String packageName,String funName,String actionName,String versionName,String dateName) throws Exception {
+    public Result action(HttpServletResponse response,String projectName,String packageName,String funName,String actionName,String versionName,String dateName) throws Exception {
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("projectName"+NOT_EMPTY_TIP);
         }
@@ -107,15 +103,15 @@ public class ProjectAct {
         if (StringUtils.isBlank(dateName)) {
             throw new JapiException("dateName"+NOT_EMPTY_TIP);
         }
-        RestImpl rest = new RestImpl();
-        rest.setData(JapiServer.getAction(projectName,packageName,funName,actionName,versionName,dateName));
-        return rest;
+        ResultImpl result = new ResultImpl();
+        result.setData(JapiServer.getAction(projectName,packageName,funName,actionName,versionName,dateName));
+        return result;
     }
 
     @GetMapping("size")
     public Result size() {
         List<JapiProject> projects = JapiServer.getAllProjects();
-        RestImpl rest = new RestImpl();
+        ResultImpl rest = new ResultImpl();
         rest.setData(projects.size());
         return rest;
     }
@@ -130,7 +126,7 @@ public class ProjectAct {
         }
         List<JapiProject> projects = JapiServer.getAllProjects();
 
-        RestImpl rest = new RestImpl();
+        ResultImpl rest = new ResultImpl();
         int beginIndex = size * (page-1);
         if (beginIndex > projects.size()) {
             beginIndex = 0;

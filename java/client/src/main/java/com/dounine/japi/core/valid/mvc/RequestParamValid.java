@@ -27,7 +27,7 @@ public class RequestParamValid implements IMVC {
         String defaultValue = "";
         String description = "";
         String required = "true";
-        sb.append("\"type\":\"");
+        sb.append("type:\"");
         sb.append(TypeConvert.getHtmlType(typeStr));
         sb.append("\",");
         if (annoStr.trim().endsWith(")")) {//可能带参数
@@ -50,7 +50,7 @@ public class RequestParamValid implements IMVC {
                 required = requiredMatcherStr.split("=")[1].trim();
             }
         }
-        sb.append("\"description\":\"");
+        sb.append("description:\"");
         if (null != docsStrs && docsStrs.size() > 0) {
             for (String doc : docsStrs) {
                 Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr + "\\s+");//找到action传进来的注解信息
@@ -63,14 +63,14 @@ public class RequestParamValid implements IMVC {
         }
         sb.append(description);
         sb.append("\",");
-        sb.append("\"required\":");
+        sb.append("required:");
         sb.append(required);
         sb.append(",");
-        sb.append("\"defaultValue\":");
+        sb.append("defaultValue:");
         sb.append("\"");
         sb.append(defaultValue);
         sb.append("\",");
-        sb.append("\"name\":\"");
+        sb.append("name:\"");
         sb.append(newNameStr);
         sb.append("\"");
         sb.append("}");

@@ -3,7 +3,7 @@ package com.dounine.japi.web;
 /**
  * Created by lake on 17-2-24.
  */
-public class RestImpl implements Result {
+public class ResultImpl implements Result {
     private int code;
     private String msg;
     private Object data;

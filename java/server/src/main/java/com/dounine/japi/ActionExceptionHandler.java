@@ -2,7 +2,7 @@ package com.dounine.japi;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.exception.JapiException;
-import com.dounine.japi.web.RestImpl;
+import com.dounine.japi.web.ResultImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ public class ActionExceptionHandler extends AbstractHandlerExceptionResolver {
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
-        RestImpl actResult = new RestImpl();
+        ResultImpl actResult = new ResultImpl();
         httpServletResponse.setContentType(JSON_CONTEXT);
         if (e instanceof JapiException) {
             httpServletResponse.setStatus(SUCCESS_STATUS);

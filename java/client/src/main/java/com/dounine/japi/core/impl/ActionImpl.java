@@ -662,17 +662,17 @@ public class ActionImpl implements IAction {
         List<String> fields = new ArrayList<>();
         String description = "";
         StringBuffer c = new StringBuffer("{");
-        c.append("\"name\":\"");
+        c.append("name:\"");
         c.append(iField.getName());
         c.append("\",");
-        c.append("\"type\":\"");
+        c.append("type:\"");
         if (!"$this".equals(iField.getType())) {
             c.append(TypeConvert.getHtmlType(iField.getType()));
         } else {
             c.append("$this");
         }
         c.append("\",");
-        c.append("\"description\":\"");
+        c.append("description:\"");
         for (IFieldDoc fieldDoc : iField.getDocs()) {
             if (StringUtils.isBlank(fieldDoc.getValue())) {
                 description = fieldDoc.getName();
@@ -683,21 +683,21 @@ public class ActionImpl implements IAction {
         c.append("\"");
         if (null != iField.getReturnFields()) {
             c.append("\",");
-            c.append("\"fields\":[");
+            c.append("fields:[");
             for (IField childiField : iField.getReturnFields()) {
                 StringBuffer fieldSb = new StringBuffer("{");
                 description = "";
-                fieldSb.append("\"name\":\"");
+                fieldSb.append("name:\"");
                 fieldSb.append(childiField.getName());
                 fieldSb.append("\",");
-                fieldSb.append("\"type\":\"");
+                fieldSb.append("type:\"");
                 if (!"$this".equals(childiField.getType())) {
                     fieldSb.append(TypeConvert.getHtmlType(childiField.getType()));
                 } else {
                     fieldSb.append("$this");
                 }
                 fieldSb.append("\",");
-                fieldSb.append("\"description\":\"");
+                fieldSb.append("description:\"");
                 for (IFieldDoc fieldDoc : childiField.getDocs()) {
                     if (StringUtils.isBlank(fieldDoc.getValue())) {
                         description = fieldDoc.getName();
@@ -706,10 +706,10 @@ public class ActionImpl implements IAction {
                 }
                 fieldSb.append(description);
                 fieldSb.append("\",");
-                fieldSb.append("\"defaultValue\":\"\"");
+                fieldSb.append("defaultValue:\"\"");
                 if (null != childiField.getReturnFields()) {
                     fieldSb.append("\",");
-                    fieldSb.append("\"fields\":[");
+                    fieldSb.append("fields:[");
                     fieldSb.append(getChildField(childiField));
                     fieldSb.append("]");
                 }

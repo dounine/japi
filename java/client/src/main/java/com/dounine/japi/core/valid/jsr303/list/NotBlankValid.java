@@ -96,20 +96,20 @@ public class NotBlankValid implements IMVC {
             }
         }
 
-        sb.append("\"type\":\"");
+        sb.append("type:\"");
         sb.append(TypeConvert.getHtmlType(typeStr));
         sb.append("\",");
-        sb.append("\"description\":\"");
+        sb.append("description:\"");
         sb.append(description);
         sb.append("\",");
-        sb.append("\"required\":");
+        sb.append("required:");
         sb.append(required);
         sb.append(",");
-        sb.append("\"defaultValue\":");
+        sb.append("defaultValue:");
         sb.append("\"");
         sb.append(defaultValue);
         sb.append("\",");
-        sb.append("\"name\":\"");
+        sb.append("name:\"");
         sb.append(newNameStr);
         sb.append("\"");
         sb.append("}");

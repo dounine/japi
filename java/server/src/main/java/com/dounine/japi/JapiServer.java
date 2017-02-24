@@ -182,7 +182,7 @@ public class JapiServer {
         System.out.println(JSON.toJSONString(getProjectNav("test")));
         System.out.println(JSON.toJSON(getActionVersions("test", "测试类集合", "测试类", "测试例子")));
         System.out.println(JSON.toJSON(getActionVerDates("test", "测试类集合", "测试类", "测试例子", "v1")));
-        System.out.println(getAction("test", "测试类集合", "测试类", "测试例子", "v1", "2017-02-24 13:46:09:805"));
+        System.out.println(getAction("test", "测试类集合", "测试类", "测试例子", "v1", "2017-02-24 18:25:14:22"));
     }
 
 

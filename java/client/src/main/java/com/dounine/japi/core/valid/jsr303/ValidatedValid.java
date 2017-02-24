@@ -83,9 +83,9 @@ public class ValidatedValid implements IMVC {
         List<String> interfaceGroupPaths = getInterfacePaths(interfaceGroups);
 
         StringBuffer sb = new StringBuffer("{");
-        sb.append("\"name\":\"");
+        sb.append("name:\"");
         sb.append(nameStr);
-        sb.append(",");
+        sb.append("\",");
         String description = "";
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             TypeImpl typeImpl = new TypeImpl();
@@ -94,11 +94,11 @@ public class ValidatedValid implements IMVC {
 
             List<IField> fields = typeImpl.getFields();
             List<IMVC> imvcs = getJsr303List();
-            sb.append("\"type\":\"object\"");
+            sb.append("type:\"object\"");
             sb.append(",");
             List<String> fieldBuffer = new ArrayList<>();
             if (fields.size() > 0) {
-                sb.append("\"fields\":[");
+                sb.append("fields:[");
                 for (IField iField : fields) {
                     IMVC mvc = null;
                     String anno = null;
@@ -133,16 +133,16 @@ public class ValidatedValid implements IMVC {
                                 }
                             } else {
                                 StringBuffer mySelf = new StringBuffer("{");
-                                mySelf.append("\"name\":\"");
+                                mySelf.append("name:\"");
                                 mySelf.append(iField.getName());
                                 mySelf.append("\",");
-                                mySelf.append("\"type\":");
+                                mySelf.append("type:");
                                 mySelf.append("\"$this\",");
-                                mySelf.append("\"description\":\"");
+                                mySelf.append("description:\"");
                                 mySelf.append("\"自身对象\",");
-                                mySelf.append("\"required\":");
+                                mySelf.append("required:");
                                 mySelf.append("false,");
-                                mySelf.append("\"defaultValue\":");
+                                mySelf.append("defaultValue:");
                                 mySelf.append("\"\"");
                                 mySelf.append("}");
                                 fieldBuffer.add(mySelf.toString());
@@ -154,12 +154,12 @@ public class ValidatedValid implements IMVC {
                 sb.append(childStr);
                 sb.append("]");
             }
-            if (StringUtils.join(fieldBuffer.toArray(), ",").contains("\"required\":true")) {
-                sb.append(",\"required\":true");
+            if (StringUtils.join(fieldBuffer.toArray(), ",").contains("required:true")) {
+                sb.append(",required:true");
             }
 
-            sb.append(",\"defaultValue\":\"\"");
-            sb.append(",\"description\":\"");
+            sb.append(",defaultValue:\"\"");
+            sb.append(",description:\"");
             if (null != docs && docs.size() > 0) {
                 for (String doc : docs) {
                     Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr + "\\s+");//找到action传进来的注解信息
@@ -173,12 +173,12 @@ public class ValidatedValid implements IMVC {
             sb.append(description);
             sb.append("\"");
         } else {
-            sb.append("\"type\":\"");
+            sb.append("type:\"");
             sb.append(TypeConvert.getHtmlType(typeStr));
             sb.append("\"");
-            sb.append(",\"defaultValue\":\"\"");
-            sb.append(",\"required\":false");
-            sb.append(",\"description\":\"");
+            sb.append(",defaultValue:\"\"");
+            sb.append(",required:false");
+            sb.append(",description:\"");
             if (null != docs && docs.size() > 0) {
                 for (String doc : docs) {
                     Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr + "\\s+");//找到action传进来的注解信息
