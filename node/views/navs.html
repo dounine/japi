@@ -1,0 +1,20 @@
+    <div class="nav-head active">
+        <a href="javascript:void(0)" class="text">文档说明</a>
+        <i class="icon ac"></i>
+    </div>
+    <div class="nav-list">
+        <% navs.forEach(function(nav){ %>
+        <div class="nav-section" data-index="json">
+                <span class="mainbav open">
+                    <a href="javascript:void(0)" data-index="<%= nav.mainInd %>" > <%= nav.mainNav %></a>
+                </span>
+            <ul>
+                <% nav.subNav.forEach(function(subnav){ %>
+                <li>
+                    <a href="javascript:void(0)" data-index="<%= subnav.subInd %>"><%=subnav.subName%></a>
+                </li>
+                <% }) %>
+            </ul>
+        </div>
+        <% }) %>
+    </div>

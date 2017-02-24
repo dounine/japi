@@ -69,22 +69,22 @@ header{
     align-items:center;
     display:flex;
     justify-content:space-between;
-    max-width:1300px;
+    max-width:1200px;
+    padding:0 30px;
     .head-l{
       a{
         color:#fff;
-        margin:0 10px;
+        margin:0 5px;
         &:hover{
-          color:#6c6c6c;
+          color:#000;
+
         }
       }
     }
     .head-r{
-      margin-right:30px;
       .search{
         display:flex;
         position:relative;
-        border:1px solid transparent;
         &:hover{
           border:1px solid #fff;
         }
@@ -102,21 +102,20 @@ header{
         .secrchList{
           position:absolute;
           width:120px;
-          max-height:100px;
-          overflow-y:auto;
+          max-height:60px;
           background:#ccc;
           top:40px;
           left:10px;
           padding:10px;
-          display:none;
           li{
             height:20px;
-            border:1px solid #999;
+            border:1px solid #fff;
             line-height:20px;
           }
         }
       }
     }
+
   }
 
 }
@@ -176,15 +175,25 @@ header{
             background-size:12px 12px;
           }
         }
-        li{
-          &:hover{
-            background:rgba(221,236,244,1);
-          }
-          a{
-            font-size:14px;
-            text-indent:30px;
+        ul{
+          text-indent:20px;
+          li{
+
+            &.acLi{
+              border-left:2px solid transparent;
+              &:hover{
+                background:rgba(221,236,244,1);
+              }
+            }
+            a{
+              font-size:14px;
+            }
+            ul.nav-section{
+              text-indent:25px;
+            }
           }
         }
+
       }
     }
     .active{

@@ -1,14 +1,48 @@
 import React from 'react';
 import ReactDOM from "react-dom";
 import "./sass/index.scss";
-
+import $ from "./js/jquery-2.1.1.min";
 let App = React.createClass({
+    getInitialState:function(){
+        return{
+            navs:[],
+            active:'',
+            mainNav:true,
+        }
+    },
+
+    componentDidMount:function(){
+        var _this = this;
+
+        $.get("./src/data/data.json",function(data){
+            var jsonNav = data.nav.map(function(nav){
+                return{
+                    main:nav.mainNav,
+                    sub:nav.subNav,
+                    open:nav.open,
+                    index:nav.index
+                }
+            })
+            _this.setState({navs:jsonNav})
+
+        })
+    },
+    onToggle:function(name,event){
+        let mainNavs = this.state.navs;
+        mainNavs.map(function(mainNav,ind){
+            if(name==mainNav.index){
+                mainNav.open=!mainNav.open;
+            }
+        });
+        this.setState(this.state)
+    },
     render:function(){
+        var navs = this.state.navs;
+
         return <div>
             <header>
-                <div className="logo"><a href="/list"> <img src="./images/logo.png" alt=""/></a></div>
+                <div className="logo"><a href="/list"> <img src="./src/images/logo.png" alt=""/></a></div>
                 <section>
-
                     <p className="head-l">
                         <a href="javascript:void(0)">接口测试</a>
                         <a href="javascript:void(0)">第三方接口测试</a>
@@ -28,9 +62,34 @@ let App = React.createClass({
                 <nav id="nav">
                     <div className="nav-head active">
                         <a href="javascript:void(0)" className="text">文档说明</a>
-                        <i className="icon ac"></i>
+                        <i className="icon ac" ></i>
                     </div>
                     <div className="nav-list">
+                        {
+                            navs.map(function(nav,ind){
+                                var open={display:nav.open?"block":"none"}
+                                var icon = nav.open?"mainbav open":"mainbav"
+                                return <div key={ind} data-index={ind} className="nav-section" >
+                                    <span className={icon}>
+                                        <a href="javascript:void(0)" onClick={this.onToggle.bind(this,ind)}>
+                                            {nav.main}
+                                        </a>
+                                    </span>
+                                    {
+                                        nav.sub.map(function(sub,i){
+
+                                            return <ul key={i} style={open}>
+                                                <li>
+                                                    <a href="javascript:void(0)" data-key="json" className={this.state.active}>
+                                                        {sub}
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }.bind(this))
+                                    }
+                                </div>
+                            }.bind(this))
+                        }
                     </div>
                 </nav>
                 <div id="content">

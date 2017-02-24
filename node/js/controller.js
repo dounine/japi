@@ -35,7 +35,6 @@ $(document).ready(function(){
                         cont += "<option value=%{verVal}>%{verMsg}</option>".format({verVal:t.name,verMsg:t.msg});
                     });
                     cont+="</select></p><p>更新时间：<span class='time'>"+newtime+"</span></p>";
-
                 }
             })
             cont+="</div><section class='section'><div class='basic-info'><div class='item urls'></div><div class='item extype'></div></div></section>" +
@@ -94,7 +93,6 @@ function verSel(){
     $.each(newDatas,function(i,t){
         if(t.name==versionSelect){
             $('.time').html(t.datetime);
-
             console.info(t.urls[0].method);
             if(t.urls.length=="1"){
                 urls=(" <span class='urls-select' data-value='%{urlVal}' data-method=%{dataMethod}>%{urlVal}</span><span class='method'>请求方式：<strong>%{dataMethod}</strong></span><button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span>").format({urlVal:t.urls[0].url,dataMethod:t.urls[0].method})
@@ -106,10 +104,6 @@ function verSel(){
                 urls+="</select><span class='method'>请求方式：<strong></strong></span>" +
                     "<button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span> ";
             }
-
-
-
-
 
             for(var idx in t.ex){
                 extype+="<p>%{exName}:<span>%{exVal}</span></p>".format({exName:t.ex[idx].name,exVal:t.ex[idx].value})
