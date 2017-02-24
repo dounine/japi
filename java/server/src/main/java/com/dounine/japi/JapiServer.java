@@ -177,13 +177,13 @@ public class JapiServer {
     }
 
 
-    public static void main(String[] args) {
-        System.out.println(JSON.toJSONString(getAllProjects()));
-        System.out.println(JSON.toJSONString(getProjectNav("test")));
-        System.out.println(JSON.toJSON(getActionVersions("test", "测试类集合", "测试类", "测试例子")));
-        System.out.println(JSON.toJSON(getActionVerDates("test", "测试类集合", "测试类", "测试例子", "v1")));
-        System.out.println(getAction("test", "测试类集合", "测试类", "测试例子", "v1", "2017-02-24 18:25:14:22"));
-    }
+//    public static void main(String[] args) {
+//        System.out.println(JSON.toJSONString(getAllProjects()));
+//        System.out.println(JSON.toJSONString(getProjectNav("test")));
+//        System.out.println(JSON.toJSON(getActionVersions("test", "测试类集合", "测试类", "测试例子")));
+//        System.out.println(JSON.toJSON(getActionVerDates("test", "测试类集合", "测试类", "测试例子", "v1")));
+//        System.out.println(getAction("test", "测试类集合", "测试类", "测试例子", "v1", "2017-02-24 18:25:14:22"));
+//    }
 
 
 }
