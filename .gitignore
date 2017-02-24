@@ -6,4 +6,4 @@ bower_components
 **/.idea
 **/build
 **/node_modules
-
+**/nohup.out

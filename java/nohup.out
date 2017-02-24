@@ -1,0 +1,63 @@
+:api:compileJava UP-TO-DATE
+:api:processResources UP-TO-DATE
+:api:classes UP-TO-DATE
+:api:jar UP-TO-DATE
+:server:compileJava UP-TO-DATE
+:server:processResources UP-TO-DATE
+:server:classes UP-TO-DATE
+:server:findMainClass
+:server:bootRun
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.4.3.RELEASE)
+
+2017-02-24 23:25:10.326  INFO 21196 --- [           main] com.dounine.japi.ApplicationJapi         : Starting ApplicationJapi on localhost.localdomain with PID 21196 (/home/lake/github/japi/java/server/build/classes/main started by lake in /home/lake/github/japi/java/server)
+2017-02-24 23:25:10.328  INFO 21196 --- [           main] com.dounine.japi.ApplicationJapi         : No active profile set, falling back to default profiles: default
+2017-02-24 23:25:10.367  INFO 21196 --- [           main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1ddf84b8: startup date [Fri Feb 24 23:25:10 CST 2017]; root of context hierarchy
+2017-02-24 23:25:11.300  INFO 21196 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8080 (http)
+2017-02-24 23:25:11.312  INFO 21196 --- [           main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2017-02-24 23:25:11.313  INFO 21196 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.6
+2017-02-24 23:25:11.377  INFO 21196 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2017-02-24 23:25:11.378  INFO 21196 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 1014 ms
+2017-02-24 23:25:11.454  INFO 21196 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2017-02-24 23:25:11.457  INFO 21196 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2017-02-24 23:25:11.458  INFO 21196 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2017-02-24 23:25:11.458  INFO 21196 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2017-02-24 23:25:11.458  INFO 21196 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2017-02-24 23:25:11.679  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@1ddf84b8: startup date [Fri Feb 24 23:25:10 CST 2017]; root of context hierarchy
+2017-02-24 23:25:11.729  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/ || ],methods=[GET]}" onto public void com.dounine.japi.web.IndexAct.index(javax.servlet.http.HttpServletResponse)
+2017-02-24 23:25:11.733  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/action],methods=[POST]}" onto public com.dounine.japi.web.Result com.dounine.japi.web.ProjectAct.action(javax.servlet.http.HttpServletResponse,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.lang.Exception
+2017-02-24 23:25:11.733  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/nav],methods=[POST]}" onto public com.dounine.japi.web.Result com.dounine.japi.web.ProjectAct.findProject(java.lang.String) throws java.lang.Exception
+2017-02-24 23:25:11.733  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/list/{page}/{size}],methods=[GET]}" onto public com.dounine.japi.web.Result com.dounine.japi.web.ProjectAct.findProject(java.lang.Integer,java.lang.Integer)
+2017-02-24 23:25:11.733  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/{projectName}/logo],methods=[GET]}" onto public void com.dounine.japi.web.ProjectAct.logo(javax.servlet.http.HttpServletResponse,java.lang.String) throws java.lang.Exception
+2017-02-24 23:25:11.733  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/dates],methods=[POST]}" onto public com.dounine.japi.web.Result com.dounine.japi.web.ProjectAct.dates(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.lang.Exception
+2017-02-24 23:25:11.734  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/size],methods=[GET]}" onto public com.dounine.japi.web.Result com.dounine.japi.web.ProjectAct.size()
+2017-02-24 23:25:11.734  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/project/versions],methods=[POST]}" onto public com.dounine.japi.web.Result com.dounine.japi.web.ProjectAct.version(java.lang.String,java.lang.String,java.lang.String,java.lang.String) throws java.lang.Exception
+2017-02-24 23:25:11.735  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2017-02-24 23:25:11.736  INFO 21196 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2017-02-24 23:25:11.757  INFO 21196 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-02-24 23:25:11.758  INFO 21196 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-02-24 23:25:11.797  INFO 21196 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2017-02-24 23:25:11.910  INFO 21196 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2017-02-24 23:25:11.941  INFO 21196 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8080 (http)
+2017-02-24 23:25:11.944  INFO 21196 --- [           main] com.dounine.japi.ApplicationJapi         : Started ApplicationJapi in 1.888 seconds (JVM running for 2.098)
+2017-02-24 23:25:12.086  INFO 21196 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2017-02-24 23:25:12.087  INFO 21196 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization started
+2017-02-24 23:25:12.094  INFO 21196 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : FrameworkServlet 'dispatcherServlet': initialization completed in 7 ms
+Could not read standard output of: command '/home/lake/soft/jdk1.8/bin/java'.
+java.io.IOException: Stream closed
+	at java.io.BufferedInputStream.getBufIfOpen(BufferedInputStream.java:170)
+	at java.io.BufferedInputStream.read1(BufferedInputStream.java:291)
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:345)
+	at java.io.FilterInputStream.read(FilterInputStream.java:107)
+	at org.gradle.process.internal.streams.ExecOutputHandleRunner.run(ExecOutputHandleRunner.java:51)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54)
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at java.lang.Thread.run(Thread.java:745)
