@@ -190,6 +190,7 @@ public class JapiClientTransfer {
         }
     }
 
+    private static final FileFilter FILE_FILTER = DirectoryFileFilter.DIRECTORY;
     public void autoTransfer(JapiClientStorage japiClientStorage) {
         String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
@@ -206,20 +207,35 @@ public class JapiClientTransfer {
         JapiNavRoot japiNavRoot = new JapiNavRoot();
         String projectPath = japiClientStorage.getJapiPath() + projectName;
         File projectFile = new File(projectPath);
-        FileFilter directoryFilter = DirectoryFileFilter.DIRECTORY;
-        for (File packageFile : projectFile.listFiles(directoryFilter)) {
+
+        for (File packageFile : projectFile.listFiles(FILE_FILTER)) {
+            if(packageFile.isHidden()){
+                continue;
+            }
             JapiNavPackage japiNavPackage = new JapiNavPackage();
             japiNavPackage.setName(packageFile.getName());
-            for (File funFile : packageFile.listFiles(directoryFilter)) {
+            for (File funFile : packageFile.listFiles(FILE_FILTER)) {
+                if(funFile.isHidden()){
+                    continue;
+                }
                 JapiNavFun japiNavFun = new JapiNavFun();
                 japiNavFun.setName(funFile.getName());
-                for (File actionFile : funFile.listFiles(directoryFilter)) {
+                for (File actionFile : funFile.listFiles(FILE_FILTER)) {
+                    if(actionFile.isHidden()){
+                        continue;
+                    }
                     JapiNavAction japiNavAction = new JapiNavAction();
                     japiNavAction.setName(actionFile.getName());
-                    for (File versionFile : actionFile.listFiles(directoryFilter)) {
+                    for (File versionFile : actionFile.listFiles(FILE_FILTER)) {
+                        if(versionFile.isHidden()){
+                            continue;
+                        }
                         JapiNavVersion japiNavVersion = new JapiNavVersion();
                         japiNavVersion.setName(versionFile.getName());
-                        for (File dateFile : versionFile.listFiles(directoryFilter)) {
+                        for (File dateFile : versionFile.listFiles(FILE_FILTER)) {
+                            if(dateFile.isHidden()){
+                                continue;
+                            }
                             JapiNavDate japiNavDate = new JapiNavDate();
                             japiNavDate.setName(dateFile.getName());
                             japiNavVersion.getDates().add(japiNavDate);
@@ -252,7 +268,7 @@ public class JapiClientTransfer {
                                 Result md5Result = postValues(serverUrl + "/project/md5", das);
                                 if (md5Result.getData() == null) {
                                     File infoFile = new File(projectPath + "/" + japiNavPackage.getName() + "/" + japiNavFun.getName() + "/" + japiNavAction.getName() + "/" + japiNavVersion.getName() + "/" + japiNavDate.getName() + "/info.txt");
-                                    Result actionResult = postFile(serverUrl + "/transfer/actionInfo", das, infoFile);
+                                    postFile(serverUrl + "/transfer/actionInfo", das, infoFile);
                                 }
                             }
                         }

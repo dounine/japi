@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 
 /**
+ * 子用户的信息
  * Created by huanghuanlai on 2017/1/18.
  */
 public class UserChild {

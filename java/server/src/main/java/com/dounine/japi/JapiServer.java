@@ -5,6 +5,7 @@ import com.dounine.japi.transfer.*;
 import com.dounine.japi.web.TransferInfo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -34,10 +35,15 @@ public class JapiServer {
         }
     }
 
+    private static final FileFilter FILE_FILTER = DirectoryFileFilter.DIRECTORY;
+
     public List<JapiProject> getAllProjects() {
         List<JapiProject> projects = new ArrayList<>();
         File serverFold = new File(serverPath);
-        for (File file : serverFold.listFiles()) {
+        for (File file : serverFold.listFiles(FILE_FILTER)) {
+            if (file.isHidden()) {
+                continue;
+            }
             JapiProject japiProject = new JapiProject();
             japiProject.setName(file.getName());
             File fileInfo = new File(file.getAbsolutePath() + "/project-info.txt");
@@ -87,30 +93,38 @@ public class JapiServer {
                 throw new JapiException(projectName + " project not exists.");
             }
             List<JapiNavPackage> japiNavPackages = new ArrayList<>();
-            for (File file : projectFold.listFiles()) {
-                if (file.isDirectory()) {
-                    JapiNavPackage japiNavPackage = new JapiNavPackage();
-                    japiNavPackage.setName(file.getName());
-                    File packageFold = new File(serverPath + "/" + projectName + "/" + file.getName());
-                    if (!packageFold.exists()) {
-                        throw new JapiException(file.getName() + " package not exists.");
-                    }
-                    for (File packageFile : packageFold.listFiles()) {
-                        JapiNavFun japiNavFun = new JapiNavFun();
-                        japiNavFun.setName(packageFile.getName());
-                        File funFold = new File(serverPath + "/" + projectName + "/" + file.getName() + "/" + packageFile.getName());
-                        if (!funFold.exists()) {
-                            throw new JapiException(packageFile.getName() + " fun not exists.");
-                        }
-                        for (File actionFile : funFold.listFiles()) {
-                            JapiNavAction japiNavAction = new JapiNavAction();
-                            japiNavAction.setName(actionFile.getName());
-                            japiNavFun.getActions().add(japiNavAction);
-                        }
-                        japiNavPackage.getFuns().add(japiNavFun);
-                    }
-                    japiNavPackages.add(japiNavPackage);
+            for (File file : projectFold.listFiles(FILE_FILTER)) {
+                if(file.isHidden()){
+                    continue;
                 }
+                JapiNavPackage japiNavPackage = new JapiNavPackage();
+                japiNavPackage.setName(file.getName());
+                File packageFold = new File(serverPath + "/" + projectName + "/" + file.getName());
+                if (!packageFold.exists()) {
+                    throw new JapiException(file.getName() + " package not exists.");
+                }
+                for (File packageFile : packageFold.listFiles(FILE_FILTER)) {
+                    if(packageFile.isHidden()){
+                        continue;
+                    }
+                    JapiNavFun japiNavFun = new JapiNavFun();
+                    japiNavFun.setName(packageFile.getName());
+                    File funFold = new File(serverPath + "/" + projectName + "/" + file.getName() + "/" + packageFile.getName());
+                    if (!funFold.exists()) {
+                        throw new JapiException(packageFile.getName() + " fun not exists.");
+                    }
+                    for (File actionFile : funFold.listFiles(FILE_FILTER)) {
+                        if(actionFile.isHidden()){
+                            continue;
+                        }
+                        JapiNavAction japiNavAction = new JapiNavAction();
+                        japiNavAction.setName(actionFile.getName());
+                        japiNavAction.setVersions(null);
+                        japiNavFun.getActions().add(japiNavAction);
+                    }
+                    japiNavPackage.getFuns().add(japiNavFun);
+                }
+                japiNavPackages.add(japiNavPackage);
             }
             japiNavRoot.setPackages(japiNavPackages);
             return japiNavRoot;
@@ -121,18 +135,23 @@ public class JapiServer {
     public List<String> getActionVersions(String projectName, String packageName, String funName, String actionName) {
         File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName);
         List<String> versions = new ArrayList<>();
-        for (File vFile : actionFile.listFiles()) {
+        for (File vFile : actionFile.listFiles(FILE_FILTER)) {
+            if(vFile.isHidden()){
+                continue;
+            }
             versions.add(vFile.getName());
         }
         return versions;
     }
 
     public List<String> getActionVerDates(String projectName, String packageName, String funName, String actionName, String version) {
-        File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/date");
+        File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version);
         List<String> versions = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
-
-        for (File vFile : actionFile.listFiles()) {
+        for (File vFile : actionFile.listFiles(FILE_FILTER)) {
+            if(vFile.isHidden()){
+                continue;
+            }
             calendar.setTimeInMillis(Long.parseLong(vFile.getName()));
             versions.add(formatter.format(calendar.getTime()));
         }
@@ -160,7 +179,7 @@ public class JapiServer {
     public String getAction(String projectName, String packageName, String funName, String actionName, String version, String date) {
         try {
             String millDate = "" + formatter.parse(date).getTime();
-            File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/date/" + millDate + "/info.txt");
+            File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/" + millDate + "/info.txt");
             if (actionFile.exists()) {
                 return FileUtils.readFileToString(actionFile, Charset.forName("utf-8"));
             }
@@ -175,7 +194,7 @@ public class JapiServer {
     public void saveProjectInfo(String projectName, String fileName, InputStream is) {
         File file = new File(serverPath + "/" + projectName + "/" + fileName);
         try {
-            FileUtils.copyInputStreamToFile(is,file);
+            FileUtils.copyInputStreamToFile(is, file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -192,6 +211,9 @@ public class JapiServer {
 
 
     public String getLogoMd5(String projectName) {
+        if(StringUtils.isBlank(projectName)){
+            throw new JapiException("projectName not empty.");
+        }
         File file = new File(serverPath + "/" + projectName + "/logo-md5.txt");
         if (file.exists()) {
             try {
@@ -204,6 +226,9 @@ public class JapiServer {
     }
 
     public String getProjectMd5(String projectName) {
+        if(StringUtils.isBlank(projectName)){
+            throw new JapiException("projectName not empty.");
+        }
         File file = new File(serverPath + "/" + projectName + "/project-md5.txt");
         if (file.exists()) {
             try {
@@ -216,6 +241,27 @@ public class JapiServer {
     }
 
     public String getActionMd5(TransferInfo transferInfo) {
+        if(null==transferInfo){
+            throw new JapiException("projectName packageName funName actionName versionName dateName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getProjectName())){
+            throw new JapiException("projectName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getPackageName())){
+            throw new JapiException("packageName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getFunName())){
+            throw new JapiException("funName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getActionName())){
+            throw new JapiException("actionName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getVersionName())){
+            throw new JapiException("versionName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getDateName())){
+            throw new JapiException("dateName not empty.");
+        }
         File file = new File(serverPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName() + "/" + transferInfo.getDateName() + "/md5.txt");
         if (file.exists()) {
             try {
@@ -228,6 +274,12 @@ public class JapiServer {
     }
 
     public void createNavs(TransferInfo transferInfo, JapiNavRoot japiNavRoot) {
+        if(null==transferInfo){
+            throw new JapiException("projectName not empty.");
+        }
+        if(StringUtils.isBlank(transferInfo.getProjectName())){
+            throw new JapiException("projectName not empty.");
+        }
         createProjectFold(transferInfo.getProjectName());
         String projectPath = serverPath + "/" + transferInfo.getProjectName();
         for (JapiNavPackage japiNavPackage : japiNavRoot.getPackages()) {
@@ -264,14 +316,14 @@ public class JapiServer {
     }
 
     public void saveActionInfo(TransferInfo transferInfo, String originalFilename, InputStream is) {
-        File file = new File(serverPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName() + "/" + transferInfo.getDateName() + "/"+originalFilename);
+        File file = new File(serverPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName() + "/" + transferInfo.getDateName() + "/" + originalFilename);
         try {
-            if(!file.getParentFile().exists()){
-                throw new JapiException(file.getParent()+" fold not exists.");
+            if (!file.getParentFile().exists()) {
+                throw new JapiException(file.getParent() + " fold not exists.");
             }
-            FileUtils.copyInputStreamToFile(is,file);
-            String md5Str = DigestUtils.md5Hex(FileUtils.readFileToString(file,Charset.forName("utf-8")));
-            FileUtils.writeStringToFile(new File(file.getParentFile()+"/md5.txt"),md5Str,Charset.forName("utf-8"));
+            FileUtils.copyInputStreamToFile(is, file);
+            String md5Str = DigestUtils.md5Hex(FileUtils.readFileToString(file, Charset.forName("utf-8")));
+            FileUtils.writeStringToFile(new File(file.getParentFile() + "/md5.txt"), md5Str, Charset.forName("utf-8"));
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -10,14 +10,11 @@ import com.dounine.japi.serial.ActionInfo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -234,11 +231,11 @@ public class JapiClientStorage {
 
     public void saveByTime(String projectName, String packageName, String funName, ActionInfo actionInfo) {
         createVersionDir(projectName, packageName, funName, actionInfo.getActionName(), actionInfo.getVersion());
-        File dateFold = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion());
+        File versionFold = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion());
         File newDateFold = null;
-        if (!dateFold.exists() || (null != dateFold && dateFold.list().length == 0)) {
-            dateFold.mkdir();
-            newDateFold = new File(dateFold.getAbsolutePath() + "/" + System.currentTimeMillis());
+        if (!versionFold.exists() || (null != versionFold && versionFold.list().length == 0)) {
+            versionFold.mkdir();
+            newDateFold = new File(versionFold.getAbsolutePath() + "/" + System.currentTimeMillis());
             newDateFold.mkdir();
             File infoFile = new File(newDateFold.getAbsolutePath() + "/info.txt");
             File md5File = new File(newDateFold.getAbsolutePath() + "/md5.txt");
@@ -253,8 +250,10 @@ public class JapiClientStorage {
             }
         } else {
             List<File> dateFolds = new ArrayList<>();
-            for (File file : dateFold.listFiles()) {
-                dateFolds.add(file);
+            for (File file : versionFold.listFiles()) {
+                if(file.isDirectory()&&!file.isHidden()){
+                    dateFolds.add(file);
+                }
             }
             dateFolds.sort((b, a) -> a.getName().compareTo(b.getName()));
             File millFold = dateFolds.get(0);
@@ -264,7 +263,7 @@ public class JapiClientStorage {
                     String newMd5 = DigestUtils.md5Hex(JSON.toJSONString(actionInfo));
                     if (!newMd5.equals(oldMd5)) {
                         LOGGER.info(packageName + "/" + funName + "/" + actionInfo.getActionName() + " has modified.");
-                        newDateFold = new File(dateFold.getAbsolutePath() + "/" + System.currentTimeMillis());
+                        newDateFold = new File(versionFold.getAbsolutePath() + "/" + System.currentTimeMillis());
                         newDateFold.mkdir();
                         File infoFile = new File(newDateFold.getAbsolutePath() + "/info.txt");
                         File md5File = new File(newDateFold.getAbsolutePath() + "/md5.txt");

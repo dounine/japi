@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * xxxxxxxxxxxxxxxxxxxx
+ * 用户类信息
  */
 @RequestMapping
 public class User {

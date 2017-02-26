@@ -1,6 +1,7 @@
 package com.dounine.japi.entity.u;
 
 /**
+ * jj 的信息
  * Created by huanghuanlai on 2017/2/24.
  */
 public class JJ {
