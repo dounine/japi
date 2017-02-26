@@ -1,12 +1,17 @@
 package com.dounine.japi.web;
 
 import com.dounine.japi.JapiServer;
+import com.dounine.japi.act.Result;
+import com.dounine.japi.act.ResultImpl;
+import com.dounine.japi.entity.JapiNavRoot;
 import com.dounine.japi.entity.JapiProject;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -19,115 +24,170 @@ import java.util.List;
 public class ProjectAct {
     private static final String NOT_EMPTY_TIP = " 不能为空.";
 
-    @PostMapping("nav")
-    public Result findProject(String projectName) throws Exception {
-        if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName"+NOT_EMPTY_TIP);
+    private JapiServer japiServer = new JapiServer();
+
+    @PostMapping("upload")
+    public Result upload(@RequestParam("file") MultipartFile file) throws JapiException {
+        if (!file.isEmpty()) {
+            try {
+
+                return new ResultImpl("success");
+            } catch (Exception e) {
+                ResultImpl result = new ResultImpl("传输错误 " + e.getMessage());
+                result.setCode(1);
+                return result;
+            }
+
+        } else {
+            ResultImpl result = new ResultImpl("上传文件不能为空");
+            result.setCode(1);
+            return result;
         }
-        ResultImpl rest = new ResultImpl();
-        rest.setData(JapiServer.getProjectNav(projectName));
+    }
+
+    @PostMapping("md5")
+    public Result md5(String type,TransferInfo transferInfo) throws JapiException {
+        ResultImpl result = new ResultImpl();
+        if (StringUtils.isBlank(type)) {
+            throw new JapiException("type not empty[logo,action,project].");
+        }
+        String md5 = null;
+        switch (type) {
+            case "logo":
+                md5 = japiServer.getLogoMd5(transferInfo.getProjectName());
+                break;
+            case "action":
+                md5 = japiServer.getActionMd5(transferInfo);
+                break;
+            case "project":
+                md5 = japiServer.getProjectMd5(transferInfo.getProjectName());
+                break;
+            default:
+                throw new JapiException(type + " not find.");
+        }
+        result.setData(md5);
+        return result;
+    }
+
+    @PostMapping("navs")
+    public Result navs(String projectName) throws JapiException {
+        if (StringUtils.isBlank(projectName)) {
+            throw new JapiException("projectName" + NOT_EMPTY_TIP);
+        }
+        ResultImpl<JapiNavRoot> rest = new ResultImpl<JapiNavRoot>();
+        rest.setData(japiServer.getProjectNav(projectName));
         return rest;
     }
 
     @GetMapping("{projectName}/logo")
-    public void logo(HttpServletResponse response, @PathVariable String projectName) throws Exception {
-        response.setHeader("Content-Type","image/png");
-        InputStream fis = JapiServer.getIconInputStream(projectName);//new FileInputStream("/home/lake/github/japi/html/img/logo.png");
-        OutputStream os = response.getOutputStream();
-        byte[] bytes = new byte[1024];
-        int len = -1;
-        while ((len = fis.read(bytes))!=-1){
-            os.write(bytes,0,len);
+    public void logo(HttpServletResponse response, @PathVariable String projectName) throws JapiException {
+        response.setHeader("Content-Type", "image/png");
+        InputStream fis = japiServer.getIconInputStream(projectName);//new FileInputStream("/home/lake/github/japi/html/img/logo.png");
+        OutputStream os = null;
+        try {
+            os = response.getOutputStream();
+            byte[] bytes = new byte[1024];
+            int len = -1;
+            while ((len = fis.read(bytes)) != -1) {
+                os.write(bytes, 0, len);
+            }
+            os.flush();
+            fis.close();
+        } catch (IOException e) {
+            throw new JapiException(e.getMessage());
         }
-        os.flush();
-        fis.close();
+
     }
 
     @PostMapping("versions")
-    public Result version(String projectName,String packageName,String funName,String actionName) throws Exception {
+    public Result versions(String projectName, String packageName, String funName, String actionName) throws JapiException {
         if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName"+NOT_EMPTY_TIP);
+            throw new JapiException("projectName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(packageName)) {
-            throw new JapiException("packageName"+NOT_EMPTY_TIP);
+            throw new JapiException("packageName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(funName)) {
-            throw new JapiException("funName"+NOT_EMPTY_TIP);
+            throw new JapiException("funName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(actionName)) {
-            throw new JapiException("actionName"+NOT_EMPTY_TIP);
+            throw new JapiException("actionName" + NOT_EMPTY_TIP);
         }
         ResultImpl rest = new ResultImpl();
-        rest.setData(JapiServer.getActionVersions(projectName,packageName,funName,actionName));
+        rest.setData(japiServer.getActionVersions(projectName, packageName, funName, actionName));
         return rest;
     }
 
     @PostMapping("dates")
-    public Result dates(String projectName,String packageName,String funName,String actionName,String versionName) throws Exception {
+    public Result dates(String projectName, String packageName, String funName, String actionName, String versionName) throws JapiException {
         if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName"+NOT_EMPTY_TIP);
+            throw new JapiException("projectName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(packageName)) {
-            throw new JapiException("packageName"+NOT_EMPTY_TIP);
+            throw new JapiException("packageName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(funName)) {
-            throw new JapiException("funName"+NOT_EMPTY_TIP);
+            throw new JapiException("funName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(actionName)) {
-            throw new JapiException("actionName"+NOT_EMPTY_TIP);
+            throw new JapiException("actionName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(versionName)) {
-            throw new JapiException("versionName"+NOT_EMPTY_TIP);
+            throw new JapiException("versionName" + NOT_EMPTY_TIP);
         }
         ResultImpl rest = new ResultImpl();
-        rest.setData(JapiServer.getActionVerDates(projectName,packageName,funName,actionName,versionName));
+        rest.setData(japiServer.getActionVerDates(projectName, packageName, funName, actionName, versionName));
         return rest;
     }
 
     @PostMapping("action")
-    public void action(HttpServletResponse response,String projectName,String packageName,String funName,String actionName,String versionName,String dateName) throws Exception {
-        response.setHeader("Content-Type","application/json;charset=UTF-8");
+    public void action(HttpServletResponse response, String projectName, String packageName, String funName, String actionName, String versionName, String dateName) throws JapiException {
+        response.setHeader("Content-Type", "application/json;charset=UTF-8");
         if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName"+NOT_EMPTY_TIP);
+            throw new JapiException("projectName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(packageName)) {
-            throw new JapiException("packageName"+NOT_EMPTY_TIP);
+            throw new JapiException("packageName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(funName)) {
-            throw new JapiException("funName"+NOT_EMPTY_TIP);
+            throw new JapiException("funName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(actionName)) {
-            throw new JapiException("actionName"+NOT_EMPTY_TIP);
+            throw new JapiException("actionName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(versionName)) {
-            throw new JapiException("versionName"+NOT_EMPTY_TIP);
+            throw new JapiException("versionName" + NOT_EMPTY_TIP);
         }
         if (StringUtils.isBlank(dateName)) {
-            throw new JapiException("dateName"+NOT_EMPTY_TIP);
+            throw new JapiException("dateName" + NOT_EMPTY_TIP);
         }
-        response.getWriter().print("{\"code\":0,\"msg\":null,\"data\":"+JapiServer.getAction(projectName,packageName,funName,actionName,versionName,dateName)+"}");
+        try {
+            response.getWriter().print("{\"code\":0,\"msg\":null,\"data\":" + japiServer.getAction(projectName, packageName, funName, actionName, versionName, dateName) + "}");
+        } catch (IOException e) {
+            throw new JapiException(e.getMessage());
+        }
     }
 
     @GetMapping("size")
-    public Result size() {
-        List<JapiProject> projects = JapiServer.getAllProjects();
+    public Result size() throws JapiException {
+        List<JapiProject> projects = japiServer.getAllProjects();
         ResultImpl rest = new ResultImpl();
         rest.setData(projects.size());
         return rest;
     }
 
-    @GetMapping("list/{page}/{size}")
-    public Result findProject(@PathVariable Integer page, @PathVariable Integer size) {
+    @GetMapping("lists/{page}/{size}")
+    public Result lists(@PathVariable Integer page, @PathVariable Integer size) throws JapiException {
         if (page == 0) {
             page = 1;
         }
         if (size == 0) {
             size = 6;
         }
-        List<JapiProject> projects = JapiServer.getAllProjects();
+        List<JapiProject> projects = japiServer.getAllProjects();
 
         ResultImpl rest = new ResultImpl();
-        int beginIndex = size * (page-1);
+        int beginIndex = size * (page - 1);
         if (beginIndex > projects.size()) {
             beginIndex = 0;
         }
@@ -137,6 +197,17 @@ public class ProjectAct {
         }
         rest.setData(projects.subList(beginIndex, endIndex));
         return rest;
+    }
+
+    @PostMapping("exists")
+    public Result exists(String projectName) throws JapiException {
+        if (StringUtils.isBlank(projectName)) {
+            throw new JapiException("projectName" + NOT_EMPTY_TIP);
+        }
+        List<JapiProject> projects = japiServer.getAllProjects();
+        ResultImpl<Boolean> result = new ResultImpl<>();
+        result.setData(projects.stream().filter(p -> p.getName().equals(projectName)).findAny().isPresent());
+        return result;
     }
 
 }

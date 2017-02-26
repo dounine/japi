@@ -1,24 +1,39 @@
 package com.dounine.japi;
 
+import com.alibaba.fastjson.JSON;
+import com.dounine.japi.act.Result;
+import com.dounine.japi.act.ResultImpl;
+import com.dounine.japi.core.IPackage;
+import com.sun.org.apache.xpath.internal.operations.Bool;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -32,37 +47,165 @@ public class JapiClientTransfer {
      * seconds
      */
     private static final int tryTime = 3;
+    private static final HttpClient HTTP_CLIENT = HttpClients.createMinimal();
 
-    public void autoTransfer(JapiClientStorage japiClientStorage) {
-        String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
-        HttpClient httpClient = HttpClients.createMinimal();
-        HttpPost findProject = new HttpPost(serverUrl + "/project");
-        List<NameValuePair> datas = new ArrayList<>();
-        datas.add(new BasicNameValuePair("name", japiClientStorage.getProject().getProperties().get("japi.name")));
-        try {
-            findProject.setEntity(new UrlEncodedFormEntity(datas, "utf-8"));
-            Integer tryCount = 0;
-            while (reties > tryCount) {
-                try {
-                    HttpResponse response = httpClient.execute(findProject);
-                    System.out.println(EntityUtils.toString(response.getEntity()));
-                } catch (IOException e) {
-                    if (e instanceof HttpHostConnectException) {
-                        tryCount++;
-                        LOGGER.warn("try connect server "+tryCount+" count.");
-                        try {
-                            TimeUnit.SECONDS.sleep(tryTime);
-                        } catch (InterruptedException e1) {
-                            e1.printStackTrace();
-                        }
+    private Result postValues(String url, List<String[]> datas) {
+        HttpPost httpPost = new HttpPost(url);
+        List<NameValuePair> valuePairs = new ArrayList<>();
+        for (String[] keyValue : datas) {
+            valuePairs.add(new BasicNameValuePair(keyValue[0], keyValue[1]));
+        }
+        Integer tryCount = 0;
+        while (reties > tryCount) {
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(valuePairs));
+                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity());
+                System.out.println(result);
+                return JSON.parseObject(result, ResultImpl.class);
+            } catch (IOException e) {
+                if (e instanceof HttpHostConnectException) {
+                    tryCount++;
+                    LOGGER.warn("try connect server " + tryCount + " count.");
+                    try {
+                        TimeUnit.SECONDS.sleep(tryTime);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
                     }
                 }
             }
-            if (tryCount <= reties) {
-                LOGGER.error("server connect failed.");
+        }
+        if (tryCount <= reties) {
+            LOGGER.error("server connect failed.");
+        }
+        return null;
+    }
+
+    private Result postFile(String url, List<String[]> datas, File file) {
+        HttpPost httpPost = new HttpPost(url);
+        Integer tryCount = 0;
+        while (reties > tryCount) {
+            try {
+                final MultipartEntityBuilder multipartEntity = MultipartEntityBuilder.create();
+                multipartEntity.setCharset(Charset.forName("utf-8"));
+                multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+                for (String[] nameValue : datas) {
+                    multipartEntity.addPart(nameValue[0], new StringBody(nameValue[1], ContentType.DEFAULT_BINARY));
+                }
+                multipartEntity.addBinaryBody("file", file);
+                httpPost.setEntity(multipartEntity.build());
+                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity());
+                System.out.println(result);
+                return JSON.parseObject(result, ResultImpl.class);
+            } catch (IOException e) {
+                if (e instanceof HttpHostConnectException) {
+                    tryCount++;
+                    LOGGER.warn("try connect server " + tryCount + " count.");
+                    try {
+                        TimeUnit.SECONDS.sleep(tryTime);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
             }
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        }
+        if (tryCount <= reties) {
+            LOGGER.error("server connect failed.");
+        }
+        return null;
+    }
+
+    private File getLogoFile(JapiClientStorage japiClientStorage) {
+        String prePath = japiClientStorage.getJapiPath() + japiClientStorage.getProject().getProperties().get("japi.name");
+        File logoFile = new File(prePath + "/logo.png");
+        if (!logoFile.exists()) {
+            logoFile = new File(prePath + "/logo.jpg");
+        }
+        if (!logoFile.exists()) {
+            logoFile = new File(prePath + "/logo.gif");
+            ;
+        }
+        return logoFile;
+    }
+
+    private File getLogoMd5File(JapiClientStorage japiClientStorage) {
+        String prePath = japiClientStorage.getJapiPath() + japiClientStorage.getProject().getProperties().get("japi.name");
+        return new File(prePath + "/logo-md5.txt");
+    }
+
+    public void transferProjectLogo(JapiClientStorage japiClientStorage){
+        List<String[]> datas = new ArrayList<>();
+        String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
+        datas.add(new String[]{"projectName", projectName});
+        String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
+        File logoFile = getLogoFile(japiClientStorage);
+        if (logoFile.exists()) {
+            datas.add(new String[]{"type", "logo"});
+            Result md5Result = postValues(serverUrl + "/project/md5", datas);
+            if (md5Result.getData() == null) {
+                postFile(serverUrl + "/transfer/projectInfo", datas, logoFile);
+                postFile(serverUrl + "/transfer/projectInfo", datas, getLogoMd5File(japiClientStorage));
+            }else{
+                try {
+                    String logoFileMd5Str = FileUtils.readFileToString(getLogoMd5File(japiClientStorage),Charset.forName("utf-8"));
+                    if(!logoFileMd5Str.equals(md5Result.getData().toString())){
+                        postFile(serverUrl + "/transfer/projectInfo", datas, logoFile);
+                        postFile(serverUrl + "/transfer/projectInfo", datas, getLogoMd5File(japiClientStorage));
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            postFile(serverUrl + "/transfer/projectInfo", datas, logoFile);
+            postFile(serverUrl + "/transfer/projectInfo", datas, getLogoMd5File(japiClientStorage));
+        }
+    }
+
+    public void transferProjectInfo(JapiClientStorage japiClientStorage){
+        String prePath = japiClientStorage.getJapiPath() + japiClientStorage.getProject().getProperties().get("japi.name");
+        List<String[]> datas = new ArrayList<>();
+        String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
+        datas.add(new String[]{"projectName", projectName});
+        String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
+        File projectFile = new File(prePath+"/project-info.txt");
+        File projectMd5File = new File(prePath+"/project-md5.txt");
+        if (projectFile.exists()) {
+            datas.add(new String[]{"type", "project"});
+            Result md5Result = postValues(serverUrl + "/project/md5", datas);
+            if (md5Result.getData() == null) {
+                postFile(serverUrl + "/transfer/projectInfo", datas, projectFile);
+                postFile(serverUrl + "/transfer/projectInfo", datas, projectMd5File);
+            }else{
+                try {
+                    String logoFileMd5Str = FileUtils.readFileToString(projectMd5File,Charset.forName("utf-8"));
+                    if(!logoFileMd5Str.equals(md5Result.getData().toString())){
+                        postFile(serverUrl + "/transfer/projectInfo", datas, projectFile);
+                        postFile(serverUrl + "/transfer/projectInfo", datas, projectMd5File);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            postFile(serverUrl + "/transfer/projectInfo", datas, projectFile);
+            postFile(serverUrl + "/transfer/projectInfo", datas, projectMd5File);
+        }
+    }
+
+    public void autoTransfer(JapiClientStorage japiClientStorage) {
+        String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
+        String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
+        List<String[]> datas = new ArrayList<>();
+        datas.add(new String[]{"projectName", projectName});
+        Result result = postValues(serverUrl + "/project/exists", datas);
+        if (result.getData().equals(Boolean.TRUE)) {//project exist
+            transferProjectLogo(japiClientStorage);//project logo
+            transferProjectInfo(japiClientStorage);//project info
+            for(IPackage iPackage : japiClientStorage.getProject().getPackages()){
+
+            }
+        } else {
+            postValues(serverUrl + "/transfer/project", datas);
         }
     }
 }

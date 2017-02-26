@@ -3,6 +3,7 @@ package com.dounine.japi;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.entity.*;
 import com.dounine.japi.exception.JapiException;
+import com.dounine.japi.web.TransferInfo;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,7 +36,7 @@ public class JapiServer {
         }
     }
 
-    public static List<JapiProject> getAllProjects() {
+    public List<JapiProject> getAllProjects() {
         List<JapiProject> projects = new ArrayList<>();
         File serverFold = new File(serverPath);
         for (File file : serverFold.listFiles()) {
@@ -66,13 +67,13 @@ public class JapiServer {
                 }
             }
             File logoFile = new File(file.getAbsolutePath() + "/logo.png");
-            if(!logoFile.exists()){
+            if (!logoFile.exists()) {
                 logoFile = new File(file.getAbsolutePath() + "/logo.jpg");
             }
-            if(!logoFile.exists()){
+            if (!logoFile.exists()) {
                 logoFile = new File(file.getAbsolutePath() + "/logo.gif");
             }
-            if(logoFile.exists()){
+            if (logoFile.exists()) {
                 japiProject.setIcon(true);
             }
             projects.add(japiProject);
@@ -80,7 +81,7 @@ public class JapiServer {
         return projects;
     }
 
-    public static JapiNavRoot getProjectNav(String projectName) {
+    public JapiNavRoot getProjectNav(String projectName) {
         JapiNavRoot japiNavRoot = new JapiNavRoot();
         if (StringUtils.isNotBlank(projectName)) {
             File projectFold = new File(serverPath + "/" + projectName);
@@ -119,7 +120,7 @@ public class JapiServer {
         throw new JapiException("projectName not empty.");
     }
 
-    public static List<String> getActionVersions(String projectName, String packageName, String funName, String actionName) {
+    public List<String> getActionVersions(String projectName, String packageName, String funName, String actionName) {
         File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName);
         List<String> versions = new ArrayList<>();
         for (File vFile : actionFile.listFiles()) {
@@ -128,10 +129,7 @@ public class JapiServer {
         return versions;
     }
 
-
-
-
-    public static List<String> getActionVerDates(String projectName, String packageName, String funName, String actionName, String version) {
+    public List<String> getActionVerDates(String projectName, String packageName, String funName, String actionName, String version) {
         File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/date");
         List<String> versions = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
@@ -143,15 +141,15 @@ public class JapiServer {
         return versions;
     }
 
-    public static InputStream getIconInputStream(String projectName) {
+    public InputStream getIconInputStream(String projectName) {
         File iconFile = new File(serverPath + "/" + projectName + "/logo.png");
-        if(!iconFile.exists()){
+        if (!iconFile.exists()) {
             iconFile = new File(serverPath + "/" + projectName + "/logo.jpg");
         }
-        if(!iconFile.exists()){
+        if (!iconFile.exists()) {
             iconFile = new File(serverPath + "/" + projectName + "/logo.gif");
         }
-        if(iconFile.exists()){
+        if (iconFile.exists()) {
             try {
                 return new FileInputStream(iconFile.getAbsoluteFile());
             } catch (FileNotFoundException e) {
@@ -161,7 +159,7 @@ public class JapiServer {
         return null;
     }
 
-    public static String getAction(String projectName, String packageName, String funName, String actionName, String version, String date) {
+    public String getAction(String projectName, String packageName, String funName, String actionName, String version, String date) {
         try {
             String millDate = "" + formatter.parse(date).getTime();
             File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/date/" + millDate + "/info.txt");
@@ -176,14 +174,58 @@ public class JapiServer {
         return null;
     }
 
+    public void saveProjectInfo(String projectName, String fileName, InputStream is) {
+        File file = new File(serverPath + "/" + projectName + "/" + fileName);
+        try {
+            FileUtils.copyInputStreamToFile(is, file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-//    public static void main(String[] args) {
-//        System.out.println(JSON.toJSONString(getAllProjects()));
-//        System.out.println(JSON.toJSONString(getProjectNav("test")));
-//        System.out.println(JSON.toJSON(getActionVersions("test", "测试类集合", "测试类", "测试例子")));
-//        System.out.println(JSON.toJSON(getActionVerDates("test", "测试类集合", "测试类", "测试例子", "v1")));
-//        System.out.println(getAction("test", "测试类集合", "测试类", "测试例子", "v1", "2017-02-24 18:25:14:22"));
-//    }
+    public void createProjectFold(String projectName) {
+        File file = new File(serverPath + "/" + projectName);
+        if (!file.exists()) {
+            file.mkdir();
+        }
+    }
 
 
+    public String getLogoMd5(String projectName) {
+        File file = new File(serverPath + "/" + projectName + "/logo-md5.txt");
+        if (file.exists()) {
+            try {
+                return FileUtils.readFileToString(file, Charset.forName("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public String getProjectMd5(String projectName) {
+        File file = new File(serverPath + "/" + projectName + "/project-md5.txt");
+        if (file.exists()) {
+            try {
+                return FileUtils.readFileToString(file, Charset.forName("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public String getActionMd5(TransferInfo transferInfo) {
+        File file = new File(serverPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName() + "/" + transferInfo.getDateName() + "/md5.txt");
+        if (file.exists()) {
+            try {
+                return FileUtils.readFileToString(file, Charset.forName("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
 }

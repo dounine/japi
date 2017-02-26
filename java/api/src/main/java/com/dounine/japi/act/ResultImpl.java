@@ -1,12 +1,22 @@
-package com.dounine.japi.web;
+package com.dounine.japi.act;
 
 /**
  * Created by lake on 17-2-24.
  */
-public class ResultImpl implements Result {
+public class ResultImpl<T> implements Result<T> {
     private int code;
     private String msg;
-    private Object data;
+    private T data;
+
+    public ResultImpl(){}
+
+    public ResultImpl(String msg){
+        this.msg = msg;
+    }
+    public ResultImpl(String msg,T data){
+        this.msg = msg;
+        this.data = data;
+    }
 
     @Override
     public int getCode() {
@@ -27,11 +37,11 @@ public class ResultImpl implements Result {
     }
 
     @Override
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 }

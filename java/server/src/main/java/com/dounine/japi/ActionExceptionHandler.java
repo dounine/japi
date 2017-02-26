@@ -2,7 +2,7 @@ package com.dounine.japi;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.exception.JapiException;
-import com.dounine.japi.web.ResultImpl;
+import com.dounine.japi.act.ResultImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

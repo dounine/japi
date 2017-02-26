@@ -36,6 +36,12 @@ public class JapiClientStorage {
     private static final Logger LOGGER = LoggerFactory.getLogger(JapiClientStorage.class);
     private static final JapiClientStorage JAPI_CLIENT_STORAGE = new JapiClientStorage();
 
+    private JapiClientStorage(){}
+
+    public static final JapiClientStorage getInstance(){
+        return JAPI_CLIENT_STORAGE;
+    }
+
     static {
         JAPI_CLIENT_STORAGE.japiPath = FileUtils.getUserDirectoryPath() + "/.japi-client/";
         File japiClientDir = new File(JAPI_CLIENT_STORAGE.japiPath);
@@ -292,11 +298,11 @@ public class JapiClientStorage {
     }
 
     public String getJapiPath() {
-        return japiPath;
+        return JAPI_CLIENT_STORAGE.japiPath;
     }
 
     public void setJapiPath(String japiPath) {
-        this.japiPath = japiPath;
+        JAPI_CLIENT_STORAGE.japiPath = japiPath;
     }
 
     public IProject getProject() {

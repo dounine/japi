@@ -30,10 +30,10 @@ public class JapiClient {
         JapiClient.setUseCache(false);//
 
         IProject project = ProjectImpl.init();
-        JapiClientStorage japiClientStorage = new JapiClientStorage();
+        JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
         japiClientStorage.setProject(project);
         japiClientStorage.autoSaveToDisk();
-//        new JapiClientTransfer().autoTransfer(japiClientStorage);
+        new JapiClientTransfer().autoTransfer(japiClientStorage);
     }
 
     public static void setProjectJavaPath(String projectJavaPath) {
