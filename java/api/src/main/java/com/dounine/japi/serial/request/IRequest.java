@@ -9,7 +9,7 @@ public interface IRequest {
 
     String getName();
     String getType();
-    List<RequestImpl> getFields();
+    List<IRequest> getFields();
     boolean getRequired();
     String getDefaultValue();
     String getDescription();

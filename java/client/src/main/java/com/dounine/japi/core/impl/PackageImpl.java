@@ -67,6 +67,7 @@ public class PackageImpl implements IPackage {
                     }
                     if(classBeginPattern.matcher(line).find()){
                         classBegin = true;
+                        break;
                     }
                 }
                 if(docsAndAnnos.size()>0){

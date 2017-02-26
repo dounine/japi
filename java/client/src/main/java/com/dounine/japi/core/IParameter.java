@@ -1,5 +1,6 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 
 import java.util.List;
@@ -9,6 +10,6 @@ import java.util.List;
  */
 public interface IParameter {
 
-    List<RequestImpl> getRequestFields();
+    List<IRequest> getRequestFields();
 
 }

@@ -20,13 +20,12 @@ public class TestAction {
 
     /**
      * 获取热闹新闻
-     *
      * @param user 用户信息
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "list")
     @ApiVersion(1)
     @ResponseBody
-    public User testUser(@Validated(value = {AddInterface.class}) User user, BindingResult bindingResult) {
+    public User testUser(@Validated(value = {AddInterface.class}) User user,User mm, BindingResult bindingResult) {
 
         return null;
     }

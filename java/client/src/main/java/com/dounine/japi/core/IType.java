@@ -9,4 +9,5 @@ public interface IType {
 
     List<IField> getFields();
 
+    String getName();
 }

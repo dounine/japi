@@ -1,6 +1,7 @@
 package com.dounine.japi.core.valid;
 
 import com.dounine.japi.core.IFieldDoc;
+import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 
 import java.io.File;
@@ -17,7 +18,7 @@ public interface IMVC {
 //        return null;
 //    }
 
-    default RequestImpl getRequestField(String annoStr, String typeStr, String nameStr, List<String> docs, File javaFile){
+    default IRequest getRequestField(String annoStr, String typeStr, String nameStr, List<String> docs, File javaFile){
         return null;
     }
 
@@ -29,7 +30,7 @@ public interface IMVC {
 //        return null;
 //    }
 
-    default RequestImpl getRequestFieldForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<String> interfaceGroups){
+    default IRequest getRequestFieldForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<String> interfaceGroups){
         return null;
     }
 }

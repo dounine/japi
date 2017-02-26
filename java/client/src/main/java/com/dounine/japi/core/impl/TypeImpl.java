@@ -28,7 +28,6 @@ public class TypeImpl implements IType {
 
     private File javaFile;
     private File searchFile;
-    private String javaType;
     private String javaKeyTxt;
     private List<IField> returnFields;
 
@@ -51,6 +50,58 @@ public class TypeImpl implements IType {
             returnFields = extractDocAndFieldInfo();//提取属性注释及属性信息
         }
         return returnFields;
+    }
+
+    @Override
+    public String getName() {
+        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt,javaFile.getAbsolutePath());
+
+        if(null==searchFile){
+            throw new JapiException("找不到相关文件："+javaKeyTxt+".java");
+        }
+        List<String> javaFileLines = null;
+        try {
+            javaFileLines = FileUtils.readLines(searchFile, Charset.forName("utf-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(null!=javaFileLines){
+            Pattern docBeginPattern = JapiPattern.getPattern("[/][*][*]");
+            Pattern classBeginPattern = JapiPattern.getPattern("[a-zA-Z0-9_]+\\s*[{]$");
+            List<String> docsAndAnnos = new ArrayList<>();
+            boolean docBegin = false;
+            boolean classBegin = false;
+            for (String line : javaFileLines) {
+                if (false == docBegin && docBeginPattern.matcher(line).find()) {
+                    docBegin = true;
+                }
+                if (docBegin && !classBegin) {
+                    docsAndAnnos.add(line);
+                }
+                if(classBeginPattern.matcher(line).find()){
+                    classBegin = true;
+                }
+            }
+            if(docsAndAnnos.size()>0){
+                Pattern docEndPattern = JapiPattern.getPattern("[*][/]$");
+                List<String> docs = new ArrayList<>();
+                for(String line : docsAndAnnos){
+                    docs.add(line);
+                    if(docEndPattern.matcher(line).find()){
+                        break;
+                    }
+                }
+                String name = "";
+                for(String line : docs){
+                    if(line.length()>3){
+                        name = line.substring(3).trim();
+                        break;
+                    }
+                }
+                return name;
+            }
+        }
+        return null;
     }
 
     private List<List<String>> fieldBodyAndDoc(final List<String> noPackageLines) {
@@ -269,10 +320,6 @@ public class TypeImpl implements IType {
 
     public void setJavaKeyTxt(String javaKeyTxt) {
         this.javaKeyTxt = javaKeyTxt;
-    }
-
-    public void setJavaType(String javaType) {
-        this.javaType = javaType;
     }
 
     public File getJavaFile() {

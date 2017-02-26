@@ -3,6 +3,7 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
+import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.jsr303.ValidValid;
 import com.dounine.japi.core.valid.jsr303.ValidatedValid;
@@ -43,7 +44,7 @@ public class JSR303Valid implements IValid {
         return parameter;
     }
 
-    private List<RequestImpl> getRequestFields(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docsStrs) {
+    private List<IRequest> getRequestFields(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docsStrs) {
         Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
         List<String> annos = new ArrayList<>();
         int preIndex = -1, nextIndex = -1;
@@ -59,12 +60,12 @@ public class JSR303Valid implements IValid {
         if (nextIndex != -1) {
             annos.add(parameterStrExcTypeAndName.substring(nextIndex).trim());
         }
-        List<RequestImpl> requestFields = new ArrayList<>();
+        List<IRequest> requestFields = new ArrayList<>();
         for (String annoStr : annos) {
             if(isValid(annoStr)){//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if(null!=imvc){
-                    RequestImpl requestField = imvc.getRequestField(parameterStrExcTypeAndName,typeStr,nameStr,docsStrs,new File(javaFilePath));
+                    IRequest requestField = imvc.getRequestField(parameterStrExcTypeAndName,typeStr,nameStr,docsStrs,new File(javaFilePath));
                     if(null!=requestField){
                         requestFields.add(requestField);
                     }

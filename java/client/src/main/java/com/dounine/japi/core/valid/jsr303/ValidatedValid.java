@@ -7,6 +7,7 @@ import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.jsr303.list.NotBlankValid;
@@ -78,7 +79,7 @@ public class ValidatedValid implements IMVC {
     }
 
     @Override
-    public RequestImpl getRequestField(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs, File javaFile) {
+    public IRequest getRequestField(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs, File javaFile) {
         List<String> interfaceGroups = getValidatedGroups(parameterStrExcTypeAndName);
         List<String> interfaceGroupPaths = getInterfacePaths(interfaceGroups);
 
@@ -93,7 +94,7 @@ public class ValidatedValid implements IMVC {
             List<IField> fields = typeImpl.getFields();
             List<IMVC> imvcs = getJsr303List();
             requestField.setType("object");
-            List<RequestImpl> requestFields = new ArrayList<>();
+            List<IRequest> requestFields = new ArrayList<>();
             if (fields.size() > 0) {
                 for (IField iField : fields) {
                     IMVC mvc = null;
@@ -123,7 +124,7 @@ public class ValidatedValid implements IMVC {
                             if (!"$this".equals(iField.getType())) {
                                 List<String> _docs = new ArrayList<>();
                                 _docs.add("* @param " + iField.getName() + " " + iField.getDocs().get(0).getName());
-                                RequestImpl _requestField = getRequestField(null, iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
+                                IRequest _requestField = getRequestField(null, iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
                                 if(null==_requestField){
                                     requestFields.add(_requestField);
                                 }
@@ -155,7 +156,9 @@ public class ValidatedValid implements IMVC {
                     }
                 }
             }
-            requestField.setDescription(description);
+            if(StringUtils.isBlank(description)){
+                description = typeImpl.getName();
+            }
         } else {
             requestField.setType(TypeConvert.getHtmlType(typeStr));
             requestField.setDefaultValue("");
@@ -170,8 +173,8 @@ public class ValidatedValid implements IMVC {
                     }
                 }
             }
-            requestField.setDescription(description);
         }
+        requestField.setDescription(description);
         return requestField;
     }
 

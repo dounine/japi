@@ -6,9 +6,11 @@ import com.dounine.japi.core.IField;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.core.valid.jsr303.list.NotBlankValid;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +59,7 @@ public class ValidValid implements IMVC {
             List<IField> fields = typeImpl.getFields();
             List<IMVC> imvcs = getJsr303List();
             requestField.setType("object");
-            List<RequestImpl> requestFields = new ArrayList<>();
+            List<IRequest> requestFields = new ArrayList<>();
             if (fields.size() > 0) {
                 for (IField iField : fields) {
                     IMVC mvc = null;
@@ -119,7 +121,9 @@ public class ValidValid implements IMVC {
                     }
                 }
             }
-            requestField.setDescription(description);
+            if(StringUtils.isBlank(description)){
+                description = typeImpl.getName();
+            }
         }else{
             requestField.setType(TypeConvert.getHtmlType(typeStr));
             requestField.setDefaultValue("");
@@ -134,8 +138,8 @@ public class ValidValid implements IMVC {
                     }
                 }
             }
-            requestField.setDescription(description);
         }
+        requestField.setDescription(description);
         return requestField;
     }
 

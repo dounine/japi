@@ -3,6 +3,7 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
+import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.mvc.RequestParamValid;
 import org.apache.commons.lang3.StringUtils;
@@ -38,13 +39,12 @@ public class MVCValid implements IValid {
         String typeStr = typeAndName.substring(0, typeAndName.indexOf(" "));
         String nameStr = typeAndName.substring(typeStr.length() + 1).trim();
         ParameterImpl parameter = new ParameterImpl();
-        List<RequestImpl> requestFields = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()), typeStr, nameStr, docsStrs);
-//        parameter.setRequestInfos(requestInfos);
+        List<IRequest> requestFields = getRequestInfos(StringUtils.substring(parameterStr, 0, -typeAndName.length()), typeStr, nameStr, docsStrs);
         parameter.setRequestFields(requestFields);
         return parameter;
     }
 
-    private List<RequestImpl> getRequestInfos(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
+    private List<IRequest> getRequestInfos(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
         Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
         List<String> annos = new ArrayList<>();
         int preIndex = -1, nextIndex = -1;
@@ -60,20 +60,15 @@ public class MVCValid implements IValid {
         if (nextIndex != -1) {
             annos.add(parameterStrExcTypeAndName.substring(nextIndex).trim());
         }
-//        List<String> requestInfos = new ArrayList<>();
-        List<RequestImpl> requestFields = new ArrayList<>();
+        List<IRequest> requestFields = new ArrayList<>();
         for (String annoStr : annos) {
             if (isValid(annoStr)) {//全部使用默认值
                 IMVC imvc = getValid(annoStr.substring(1));
                 if (null != imvc) {
-//                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
-                    RequestImpl requestField = imvc.getRequestField(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
+                    IRequest requestField = imvc.getRequestField(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
                     if(null!=requestField){
                         requestFields.add(requestField);
                     }
-//                    if (StringUtils.isNotBlank(requestInfo)) {
-//                        requestInfos.add(requestInfo);
-//                    }
                 }
             } else {
                 LOGGER.warn(annoStr + " 不在MVCValid识别范围内.");

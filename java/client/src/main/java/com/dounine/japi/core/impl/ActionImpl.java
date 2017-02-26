@@ -585,6 +585,7 @@ public class ActionImpl implements IAction {
                 }
                 if (classBeginPattern.matcher(line).find()) {
                     classBegin = true;
+                    break;
                 }
             }
             if (docsAndAnnos.size() > 0) {
@@ -667,36 +668,6 @@ public class ActionImpl implements IAction {
             }
             responses.add(response);
         }
-
-//        List<IResponse> fields = new ArrayList<>();
-//
-//
-//        if (null != iField.getReturnFields()) {
-//            for (IField childiField : iField.getReturnFields()) {
-//                ResponseImpl _response = new ResponseImpl();
-//                _response.setName(childiField.getName());
-//                if (!"$this".equals(childiField.getType())) {
-//                    _response.setType(TypeConvert.getHtmlType(childiField.getType()));
-//                } else {
-//                    _response.setType("$this");
-//                }
-//                for (IFieldDoc fieldDoc : childiField.getDocs()) {
-//                    if (StringUtils.isBlank(fieldDoc.getValue())) {
-//                        description = fieldDoc.getName();
-//                        break;
-//                    }
-//                }
-//                _response.setDescription(description);
-//                _response.setDefaultValue("");
-//                if (null != childiField.getReturnFields()) {
-//                    List<IResponse> childResponses = new ArrayList<>();
-//                    childResponses.add(getChildField(childiField));
-//                    _response.setFields(childResponses);
-//                }
-//                fields.add(_response);
-//            }
-//            response.setFields(fields);
-//        }
         return responses;
     }
 

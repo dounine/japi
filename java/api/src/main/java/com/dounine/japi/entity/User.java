@@ -4,10 +4,13 @@ import com.dounine.japi.entity.u.UserChild;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Created by huanghuanlai on 2017/1/18.
+ * xxxxxxxxxxxxxxxxxxxx
  */
+@RequestMapping
 public class User {
 
     /**
@@ -16,7 +19,7 @@ public class User {
      * @des 这是描述信息
      */
     @NotBlank(message = "用户用户名不能为空",groups = {AddInterface.class})
-    String username;
+    protected String username;
     /**
      * 用户密码
      */
@@ -62,4 +65,5 @@ public class User {
     public void setUser(User user) {
         this.user = user;
     }
+
 }

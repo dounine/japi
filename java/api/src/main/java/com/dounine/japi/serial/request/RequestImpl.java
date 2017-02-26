@@ -8,7 +8,7 @@ import java.util.List;
 public class RequestImpl implements IRequest{
     private String name;
     private String type;
-    private List<RequestImpl> fields;
+    private List<IRequest> fields;
     private boolean required = false;
     private String defaultValue;
     private String description;
@@ -29,7 +29,7 @@ public class RequestImpl implements IRequest{
         this.type = type;
     }
 
-    public List<RequestImpl> getFields() {
+    public List<IRequest> getFields() {
         return fields;
     }
 
@@ -38,7 +38,7 @@ public class RequestImpl implements IRequest{
         return required;
     }
 
-    public void setFields(List<RequestImpl> fields) {
+    public void setFields(List<IRequest> fields) {
         this.fields = fields;
     }
 
