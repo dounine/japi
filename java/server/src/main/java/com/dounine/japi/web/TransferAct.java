@@ -24,14 +24,14 @@ public class TransferAct {
     @PostMapping("project")
     public Result createProject(TransferInfo transferInfo) throws JapiException {
         japiServer.createProjectFold(transferInfo.getProjectName());
-        return new ResultImpl<Boolean>(null, true);
+        return new ResultImpl<Boolean>(null, Boolean.TRUE);
     }
 
     @PostMapping("navs")
     public Result navs(TransferInfo transferInfo, String data) throws JapiException {
         JapiNavRoot japiNavRoot = JSON.parseObject(data, JapiNavRoot.class);
         japiServer.createNavs(transferInfo, japiNavRoot);
-        return new ResultImpl<Boolean>(null, true);
+        return new ResultImpl<Boolean>(null, Boolean.TRUE);
     }
 
     @PostMapping("projectInfo")
@@ -39,15 +39,15 @@ public class TransferAct {
         if (!file.isEmpty()) {
             try {
                 japiServer.saveProjectInfo(transferInfo.getProjectName(), file.getOriginalFilename(), file.getInputStream());
-                return new ResultImpl(null, "success");
+                return new ResultImpl<String>(null, "success");
             } catch (Exception e) {
-                ResultImpl result = new ResultImpl("传输错误 " + e.getMessage());
+                ResultImpl<String> result = new ResultImpl("传输错误 " + e.getMessage());
                 result.setCode(1);
                 return result;
             }
 
         } else {
-            ResultImpl result = new ResultImpl("上传文件不能为空");
+            ResultImpl<String> result = new ResultImpl("上传文件不能为空");
             result.setCode(1);
             return result;
         }
@@ -58,14 +58,14 @@ public class TransferAct {
         if (!file.isEmpty()) {
             try {
                 japiServer.saveActionInfo(transferInfo, file.getOriginalFilename(), file.getInputStream());
-                return new ResultImpl(null, "success");
+                return new ResultImpl<String>(null, "success");
             } catch (Exception e) {
-                ResultImpl result = new ResultImpl("传输错误 " + e.getMessage());
+                ResultImpl<String> result = new ResultImpl("传输错误 " + e.getMessage());
                 result.setCode(1);
                 return result;
             }
         } else {
-            ResultImpl result = new ResultImpl("上传文件不能为空");
+            ResultImpl<String> result = new ResultImpl("上传文件不能为空");
             result.setCode(1);
             return result;
         }
