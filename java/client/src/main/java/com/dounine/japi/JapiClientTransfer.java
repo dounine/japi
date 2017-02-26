@@ -3,21 +3,16 @@ package com.dounine.japi;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
-import com.dounine.japi.core.IPackage;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import org.apache.commons.codec.digest.DigestUtils;
+import com.dounine.japi.exception.JapiException;
+import com.dounine.japi.transfer.*;
 import org.apache.commons.io.FileUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpResponse;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -29,11 +24,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -47,7 +41,13 @@ public class JapiClientTransfer {
      * seconds
      */
     private static final int tryTime = 3;
-    private static final HttpClient HTTP_CLIENT = HttpClients.createMinimal();
+    private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
+
+    private Result postValues(String url, String[] datas) {
+        List<String[]> da = new ArrayList<>(1);
+        da.add(datas);
+        return postValues(url, datas);
+    }
 
     private Result postValues(String url, List<String[]> datas) {
         HttpPost httpPost = new HttpPost(url);
@@ -58,9 +58,8 @@ public class JapiClientTransfer {
         Integer tryCount = 0;
         while (reties > tryCount) {
             try {
-                httpPost.setEntity(new UrlEncodedFormEntity(valuePairs));
-                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity());
-                System.out.println(result);
+                httpPost.setEntity(new UrlEncodedFormEntity(valuePairs, "utf-8"));
+                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity(), Consts.UTF_8);
                 return JSON.parseObject(result, ResultImpl.class);
             } catch (IOException e) {
                 if (e instanceof HttpHostConnectException) {
@@ -81,6 +80,9 @@ public class JapiClientTransfer {
     }
 
     private Result postFile(String url, List<String[]> datas, File file) {
+        if (!file.exists()) {
+            throw new JapiException(file.getAbsolutePath() + " file not exist.");
+        }
         HttpPost httpPost = new HttpPost(url);
         Integer tryCount = 0;
         while (reties > tryCount) {
@@ -89,12 +91,11 @@ public class JapiClientTransfer {
                 multipartEntity.setCharset(Charset.forName("utf-8"));
                 multipartEntity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
                 for (String[] nameValue : datas) {
-                    multipartEntity.addPart(nameValue[0], new StringBody(nameValue[1], ContentType.DEFAULT_BINARY));
+                    multipartEntity.addPart(nameValue[0], new StringBody(nameValue[1], ContentType.APPLICATION_JSON));
                 }
                 multipartEntity.addBinaryBody("file", file);
                 httpPost.setEntity(multipartEntity.build());
                 String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity());
-                System.out.println(result);
                 return JSON.parseObject(result, ResultImpl.class);
             } catch (IOException e) {
                 if (e instanceof HttpHostConnectException) {
@@ -132,7 +133,7 @@ public class JapiClientTransfer {
         return new File(prePath + "/logo-md5.txt");
     }
 
-    public void transferProjectLogo(JapiClientStorage japiClientStorage){
+    public void transferProjectLogo(JapiClientStorage japiClientStorage) {
         List<String[]> datas = new ArrayList<>();
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         datas.add(new String[]{"projectName", projectName});
@@ -144,10 +145,10 @@ public class JapiClientTransfer {
             if (md5Result.getData() == null) {
                 postFile(serverUrl + "/transfer/projectInfo", datas, logoFile);
                 postFile(serverUrl + "/transfer/projectInfo", datas, getLogoMd5File(japiClientStorage));
-            }else{
+            } else {
                 try {
-                    String logoFileMd5Str = FileUtils.readFileToString(getLogoMd5File(japiClientStorage),Charset.forName("utf-8"));
-                    if(!logoFileMd5Str.equals(md5Result.getData().toString())){
+                    String logoFileMd5Str = FileUtils.readFileToString(getLogoMd5File(japiClientStorage), Charset.forName("utf-8"));
+                    if (!logoFileMd5Str.equals(md5Result.getData().toString())) {
                         postFile(serverUrl + "/transfer/projectInfo", datas, logoFile);
                         postFile(serverUrl + "/transfer/projectInfo", datas, getLogoMd5File(japiClientStorage));
                     }
@@ -155,30 +156,27 @@ public class JapiClientTransfer {
                     e.printStackTrace();
                 }
             }
-        } else {
-            postFile(serverUrl + "/transfer/projectInfo", datas, logoFile);
-            postFile(serverUrl + "/transfer/projectInfo", datas, getLogoMd5File(japiClientStorage));
         }
     }
 
-    public void transferProjectInfo(JapiClientStorage japiClientStorage){
+    public void transferProjectInfo(JapiClientStorage japiClientStorage) {
         String prePath = japiClientStorage.getJapiPath() + japiClientStorage.getProject().getProperties().get("japi.name");
         List<String[]> datas = new ArrayList<>();
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         datas.add(new String[]{"projectName", projectName});
         String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
-        File projectFile = new File(prePath+"/project-info.txt");
-        File projectMd5File = new File(prePath+"/project-md5.txt");
+        File projectFile = new File(prePath + "/project-info.txt");
+        File projectMd5File = new File(prePath + "/project-md5.txt");
         if (projectFile.exists()) {
             datas.add(new String[]{"type", "project"});
             Result md5Result = postValues(serverUrl + "/project/md5", datas);
             if (md5Result.getData() == null) {
                 postFile(serverUrl + "/transfer/projectInfo", datas, projectFile);
                 postFile(serverUrl + "/transfer/projectInfo", datas, projectMd5File);
-            }else{
+            } else {
                 try {
-                    String logoFileMd5Str = FileUtils.readFileToString(projectMd5File,Charset.forName("utf-8"));
-                    if(!logoFileMd5Str.equals(md5Result.getData().toString())){
+                    String logoFileMd5Str = FileUtils.readFileToString(projectMd5File, Charset.forName("utf-8"));
+                    if (!logoFileMd5Str.equals(md5Result.getData().toString())) {
                         postFile(serverUrl + "/transfer/projectInfo", datas, projectFile);
                         postFile(serverUrl + "/transfer/projectInfo", datas, projectMd5File);
                     }
@@ -198,14 +196,70 @@ public class JapiClientTransfer {
         List<String[]> datas = new ArrayList<>();
         datas.add(new String[]{"projectName", projectName});
         Result result = postValues(serverUrl + "/project/exists", datas);
-        if (result.getData().equals(Boolean.TRUE)) {//project exist
-            transferProjectLogo(japiClientStorage);//project logo
-            transferProjectInfo(japiClientStorage);//project info
-            for(IPackage iPackage : japiClientStorage.getProject().getPackages()){
-
-            }
-        } else {
+        if (!result.getData().equals(Boolean.TRUE)) {//project exist
             postValues(serverUrl + "/transfer/project", datas);
+        }
+
+        transferProjectLogo(japiClientStorage);//project logo
+        transferProjectInfo(japiClientStorage);//project info
+
+        JapiNavRoot japiNavRoot = new JapiNavRoot();
+        String projectPath = japiClientStorage.getJapiPath() + projectName;
+        File projectFile = new File(projectPath);
+        FileFilter directoryFilter = DirectoryFileFilter.DIRECTORY;
+        for (File packageFile : projectFile.listFiles(directoryFilter)) {
+            JapiNavPackage japiNavPackage = new JapiNavPackage();
+            japiNavPackage.setName(packageFile.getName());
+            for (File funFile : packageFile.listFiles(directoryFilter)) {
+                JapiNavFun japiNavFun = new JapiNavFun();
+                japiNavFun.setName(funFile.getName());
+                for (File actionFile : funFile.listFiles(directoryFilter)) {
+                    JapiNavAction japiNavAction = new JapiNavAction();
+                    japiNavAction.setName(actionFile.getName());
+                    for (File versionFile : actionFile.listFiles(directoryFilter)) {
+                        JapiNavVersion japiNavVersion = new JapiNavVersion();
+                        japiNavVersion.setName(versionFile.getName());
+                        for (File dateFile : versionFile.listFiles(directoryFilter)) {
+                            JapiNavDate japiNavDate = new JapiNavDate();
+                            japiNavDate.setName(dateFile.getName());
+                            japiNavVersion.getDates().add(japiNavDate);
+                        }
+                        japiNavAction.getVersions().add(japiNavVersion);
+                    }
+                    japiNavFun.getActions().add(japiNavAction);
+                }
+                japiNavPackage.getFuns().add(japiNavFun);
+            }
+            japiNavRoot.getPackages().add(japiNavPackage);
+        }
+        if (japiNavRoot.getPackages().size() > 0) {
+            datas.add(new String[]{"data", JSON.toJSONString(japiNavRoot)});
+            postValues(serverUrl + "/transfer/navs", datas);
+
+            for (JapiNavPackage japiNavPackage : japiNavRoot.getPackages()) {
+                for (JapiNavFun japiNavFun : japiNavPackage.getFuns()) {
+                    for (JapiNavAction japiNavAction : japiNavFun.getActions()) {
+                        for (JapiNavVersion japiNavVersion : japiNavAction.getVersions()) {
+                            for (JapiNavDate japiNavDate : japiNavVersion.getDates()) {
+                                List<String[]> das = new ArrayList<>();
+                                das.add(new String[]{"projectName", projectName});
+                                das.add(new String[]{"packageName", japiNavPackage.getName()});
+                                das.add(new String[]{"funName", japiNavFun.getName()});
+                                das.add(new String[]{"actionName", japiNavAction.getName()});
+                                das.add(new String[]{"versionName", japiNavVersion.getName()});
+                                das.add(new String[]{"dateName", japiNavDate.getName()});
+                                das.add(new String[]{"type", "action"});
+                                Result md5Result = postValues(serverUrl + "/project/md5", das);
+                                if (md5Result.getData() == null) {
+                                    File infoFile = new File(projectPath + "/" + japiNavPackage.getName() + "/" + japiNavFun.getName() + "/" + japiNavAction.getName() + "/" + japiNavVersion.getName() + "/" + japiNavDate.getName() + "/info.txt");
+                                    Result actionResult = postFile(serverUrl + "/transfer/actionInfo", das, infoFile);
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
         }
     }
 }

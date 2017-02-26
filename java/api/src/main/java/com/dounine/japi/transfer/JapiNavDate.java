@@ -1,9 +1,9 @@
-package com.dounine.japi.entity;
+package com.dounine.japi.transfer;
 
 /**
- * Created by lake on 17-2-24.
+ * Created by huanghuanlai on 2017/2/26.
  */
-public class JapiNavAction {
+public class JapiNavDate {
     private String name;
 
     public String getName() {

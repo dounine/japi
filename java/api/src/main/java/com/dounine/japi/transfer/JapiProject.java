@@ -1,4 +1,4 @@
-package com.dounine.japi.entity;
+package com.dounine.japi.transfer;
 
 /**
  * Created by lake on 17-2-24.

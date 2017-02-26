@@ -1,4 +1,4 @@
-package com.dounine.japi.entity;
+package com.dounine.japi.transfer;
 
 import java.util.ArrayList;
 import java.util.List;

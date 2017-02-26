@@ -20,7 +20,7 @@ import java.io.IOException;
 public class ActionExceptionHandler extends AbstractHandlerExceptionResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActionExceptionHandler.class);
-    private static final String JSON_CONTEXT = "text/html;charset=utf-8";
+    private static final String JSON_CONTEXT = "application/json;charset=utf-8";
     private static final int SUCCESS_STATUS = 200;
     private static final int EXCEPTION_STATUS = 500;
     private static final int EXCEPTION_CODE = 1;
@@ -34,13 +34,13 @@ public class ActionExceptionHandler extends AbstractHandlerExceptionResolver {
         } else {
             httpServletResponse.setStatus(EXCEPTION_STATUS);
             actResult.setCode(EXCEPTION_CODE);
-            LOGGER.error(e.getMessage());
+            e.printStackTrace();
         }
         actResult.setMsg(e.getMessage());
         try {
             httpServletResponse.getWriter().print(JSON.toJSON(actResult));
         } catch (IOException e1) {
-            LOGGER.error(e1.getMessage());
+            e1.printStackTrace();
             return new ModelAndView();
         }
         return new ModelAndView();

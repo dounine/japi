@@ -3,8 +3,8 @@ package com.dounine.japi.web;
 import com.dounine.japi.JapiServer;
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
-import com.dounine.japi.entity.JapiNavRoot;
-import com.dounine.japi.entity.JapiProject;
+import com.dounine.japi.transfer.JapiNavRoot;
+import com.dounine.japi.transfer.JapiProject;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -25,25 +25,6 @@ public class ProjectAct {
     private static final String NOT_EMPTY_TIP = " 不能为空.";
 
     private JapiServer japiServer = new JapiServer();
-
-    @PostMapping("upload")
-    public Result upload(@RequestParam("file") MultipartFile file) throws JapiException {
-        if (!file.isEmpty()) {
-            try {
-
-                return new ResultImpl("success");
-            } catch (Exception e) {
-                ResultImpl result = new ResultImpl("传输错误 " + e.getMessage());
-                result.setCode(1);
-                return result;
-            }
-
-        } else {
-            ResultImpl result = new ResultImpl("上传文件不能为空");
-            result.setCode(1);
-            return result;
-        }
-    }
 
     @PostMapping("md5")
     public Result md5(String type,TransferInfo transferInfo) throws JapiException {

@@ -4,6 +4,7 @@ package com.dounine.japi.web;
  * Created by lake on 17-2-26.
  */
 public class TransferInfo {
+
     private String projectName;
     private String packageName;
     private String funName;

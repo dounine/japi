@@ -1,9 +1,9 @@
 package com.dounine.japi;
 
-import com.alibaba.fastjson.JSON;
-import com.dounine.japi.entity.*;
 import com.dounine.japi.exception.JapiException;
+import com.dounine.japi.transfer.*;
 import com.dounine.japi.web.TransferInfo;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -12,8 +12,6 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -177,7 +175,7 @@ public class JapiServer {
     public void saveProjectInfo(String projectName, String fileName, InputStream is) {
         File file = new File(serverPath + "/" + projectName + "/" + fileName);
         try {
-            FileUtils.copyInputStreamToFile(is, file);
+            FileUtils.copyInputStreamToFile(is,file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -227,5 +225,55 @@ public class JapiServer {
             }
         }
         return null;
+    }
+
+    public void createNavs(TransferInfo transferInfo, JapiNavRoot japiNavRoot) {
+        createProjectFold(transferInfo.getProjectName());
+        String projectPath = serverPath + "/" + transferInfo.getProjectName();
+        for (JapiNavPackage japiNavPackage : japiNavRoot.getPackages()) {
+            File packageFile = new File(projectPath + "/" + japiNavPackage.getName());
+            if (!packageFile.exists()) {
+                packageFile.mkdir();
+            }
+            for (JapiNavFun japiNavFun : japiNavPackage.getFuns()) {
+                File funFile = new File(packageFile.getAbsoluteFile() + "/" + japiNavFun.getName());
+                if (!funFile.exists()) {
+                    funFile.mkdir();
+                }
+                for (JapiNavAction japiNavAction : japiNavFun.getActions()) {
+                    File actionFile = new File(funFile.getAbsoluteFile() + "/" + japiNavAction.getName());
+                    if (!actionFile.exists()) {
+                        actionFile.mkdir();
+                    }
+                    for (JapiNavVersion japiNavVersion : japiNavAction.getVersions()) {
+                        File versionFile = new File(actionFile.getAbsoluteFile() + "/" + japiNavVersion.getName());
+                        if (!versionFile.exists()) {
+                            versionFile.mkdir();
+                        }
+                        for (JapiNavDate japiNavDate : japiNavVersion.getDates()) {
+                            File dataFile = new File(versionFile.getAbsoluteFile() + "/" + japiNavDate.getName());
+                            if (!dataFile.exists()) {
+                                dataFile.mkdir();
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+    }
+
+    public void saveActionInfo(TransferInfo transferInfo, String originalFilename, InputStream is) {
+        File file = new File(serverPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName() + "/" + transferInfo.getDateName() + "/"+originalFilename);
+        try {
+            if(!file.getParentFile().exists()){
+                throw new JapiException(file.getParent()+" fold not exists.");
+            }
+            FileUtils.copyInputStreamToFile(is,file);
+            String md5Str = DigestUtils.md5Hex(FileUtils.readFileToString(file,Charset.forName("utf-8")));
+            FileUtils.writeStringToFile(new File(file.getParentFile()+"/md5.txt"),md5Str,Charset.forName("utf-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
