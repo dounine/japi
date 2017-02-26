@@ -21,7 +21,6 @@ import java.io.IOException;
  * Created by huanghuanlai on 2017/1/15.
  */
 @SpringBootApplication
-@PropertySource({"classpath:config.properties"})
 public class ApplicationJapi extends SpringBootServletInitializer {
 
     @Override
