@@ -24,6 +24,8 @@ import java.util.regex.Pattern;
  */
 public class JapiServer {
     private static String serverPath = null;
+    private final static DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS");
+    private static final Pattern JAPI_TAG_NAME = Pattern.compile("japi[.][a-zA-Z0-9_]*\\s*[=]\\s*");
 
     static {
         serverPath = FileUtils.getUserDirectoryPath() + "/.japi-server/";
@@ -32,8 +34,6 @@ public class JapiServer {
             japiClientDir.mkdir();
         }
     }
-
-    private static final Pattern JAPI_TAG_NAME = Pattern.compile("japi[.][a-zA-Z0-9_]*\\s*[=]\\s*");
 
     public static List<JapiProject> getAllProjects() {
         List<JapiProject> projects = new ArrayList<>();
@@ -129,7 +129,7 @@ public class JapiServer {
     }
 
 
-    static DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS");
+
 
     public static List<String> getActionVerDates(String projectName, String packageName, String funName, String actionName, String version) {
         File actionFile = new File(serverPath + "/" + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version + "/date");

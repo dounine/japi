@@ -85,7 +85,8 @@ public class ProjectAct {
     }
 
     @PostMapping("action")
-    public Result action(HttpServletResponse response,String projectName,String packageName,String funName,String actionName,String versionName,String dateName) throws Exception {
+    public void action(HttpServletResponse response,String projectName,String packageName,String funName,String actionName,String versionName,String dateName) throws Exception {
+        response.setHeader("Content-Type","application/json;charset=UTF-8");
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("projectName"+NOT_EMPTY_TIP);
         }
@@ -104,9 +105,7 @@ public class ProjectAct {
         if (StringUtils.isBlank(dateName)) {
             throw new JapiException("dateName"+NOT_EMPTY_TIP);
         }
-        ResultImpl result = new ResultImpl();
-        result.setData(JapiServer.getAction(projectName,packageName,funName,actionName,versionName,dateName));
-        return result;
+        response.getWriter().print("{\"code\":0,\"msg\":null,\"data\":"+JapiServer.getAction(projectName,packageName,funName,actionName,versionName,dateName)+"}");
     }
 
     @GetMapping("size")

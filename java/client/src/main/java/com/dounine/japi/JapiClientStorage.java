@@ -9,6 +9,7 @@ import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.ActionInfo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -144,6 +146,51 @@ public class JapiClientStorage {
         }
     }
 
+    private void saveLogo() {
+        String projectName = project.getProperties().get("japi.name");
+        String projectPath = JAPI_CLIENT_STORAGE.japiPath + projectName;
+        File userLogoFile = new File(project.getProperties().get("japi.icon"));
+        File logoFile = new File(projectPath + "/logo.png");
+        File logoMd5File = new File(projectPath + "/logo-md5.txt");
+        if (!logoFile.exists()) {
+            logoFile = new File(projectPath + "/logo.jpg");
+        }
+        if (!logoFile.exists()) {
+            logoFile = new File(projectPath + "/logo.gif");
+        }
+        if (logoFile.exists() && !logoMd5File.exists()) {
+            FileUtils.deleteQuietly(logoFile);
+        } else if (!logoFile.exists() && logoMd5File.exists()) {
+            FileUtils.deleteQuietly(logoMd5File);
+        }
+        if (logoFile.exists() && userLogoFile.exists()) {
+            if (logoMd5File.exists()) {
+                try {
+                    String md5Str = FileUtils.readFileToString(logoMd5File, Charset.forName("utf-8"));
+                    String userLogoFileMd5 = DigestUtils.md5Hex(new FileInputStream(userLogoFile));
+                    if (!userLogoFileMd5.equals(md5Str)) {
+                        FileUtils.copyFile(userLogoFile, new File(projectPath + "/logo." + FilenameUtils.getExtension(userLogoFile.getName())));
+                        FileUtils.writeStringToFile(logoMd5File, userLogoFileMd5, Charset.forName("utf-8"));
+                        LOGGER.info("[ " + projectName + " ] project update logo image.");
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else if (!logoFile.exists() && userLogoFile.exists()) {
+            try {
+                FileUtils.copyFile(userLogoFile, new File(projectPath + "/logo." + FilenameUtils.getExtension(userLogoFile.getName())));
+                String userLogoFileMd5 = DigestUtils.md5Hex(new FileInputStream(userLogoFile));
+                FileUtils.writeStringToFile(logoMd5File, userLogoFileMd5, Charset.forName("utf-8"));
+                LOGGER.info("[ " + projectName + " ] project create logo image.");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            LOGGER.info("[ " + projectName + " ] project icon path [ " + project.getProperties().get("japi.icon") + " ] file not exists.");
+        }
+    }
+
     public void autoSaveToDisk() {
         if (!JapiClient.isUseCache()) {
             File file = new File(JAPI_CLIENT_STORAGE.japiPath + project.getProperties().get("japi.name"));
@@ -158,6 +205,7 @@ public class JapiClientStorage {
         String projectName = project.getProperties().get("japi.name");
         createProjectDir(projectName);
         saveProjectInfo();
+        saveLogo();
         for (IPackage iPackage : project.getPackages()) {
             List<IAction> actions = iPackage.getActions();
             String packageName = iPackage.getName();
@@ -180,7 +228,7 @@ public class JapiClientStorage {
 
     public void saveByTime(String projectName, String packageName, String funName, ActionInfo actionInfo) {
         createVersionDir(projectName, packageName, funName, actionInfo.getActionName(), actionInfo.getVersion());
-        File dateFold = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion() + "/date");
+        File dateFold = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionInfo.getActionName() + "/" + actionInfo.getVersion());
         File newDateFold = null;
         if (!dateFold.exists() || (null != dateFold && dateFold.list().length == 0)) {
             dateFold.mkdir();
@@ -198,15 +246,7 @@ public class JapiClientStorage {
                 e.printStackTrace();
             }
         } else {
-            final IOFileFilter javaFileFilter = FileFilterUtils.asFileFilter(new FileFilter() {
-                @Override
-                public boolean accept(File pathname) {
-                    return pathname.isDirectory() && pathname.getName().matches("\\d{13}") && !pathname.getName().equals("date");
-                }
-            });
-
             List<File> dateFolds = new ArrayList<>();
-
             for (File file : dateFold.listFiles()) {
                 dateFolds.add(file);
             }

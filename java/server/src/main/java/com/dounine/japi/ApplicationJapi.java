@@ -24,11 +24,6 @@ import java.io.IOException;
 @PropertySource({"classpath:config.properties"})
 public class ApplicationJapi extends SpringBootServletInitializer {
 
-    @PostConstruct
-    public void init(){
-
-    }
-
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(ApplicationJapi.class);
