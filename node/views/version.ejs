@@ -1,0 +1,12 @@
+    <div class="version">
+        <p>版本：<span class="verNo"></span>
+            <select class="version-list" onchange="verSel()">
+                <% datass.forEach(function(version){ %>
+                <option value="0"><%= version.msg %></option>
+                <% }) %>
+            </select>
+        </p>
+    </div>
+
+
+

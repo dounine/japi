@@ -26,20 +26,12 @@ module.exports = {
             },{
                 test: /\.scss$/,
                 loader: 'style!css!sass?sourceMap'
-            },
-            // {
-            //     test: /\.(png|jpg|woff|woff2|eot|ttf|svg)$/,
-            //     loader: 'url-loader?limit=8192'
-            // },
-            {
+            },{
+                test: /\.(png|jpg|woff|woff2|eot|ttf|svg)$/,
+                loader: 'url-loader?limit=8192'
+            },{
                 test: /\.json$/,
                 loader: 'json-loader'
-            },{
-                test: /\.(png|jpg|gif)$/,
-                loader: 'url-loader?limit=819200'
-            },{
-                test: /\.(woff|svg|eot|ttf)\??.*$/,
-                loader: 'url-loader?limit=50000&name=[path][name].[ext]'
             }
         ]
     },

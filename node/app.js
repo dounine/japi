@@ -6,7 +6,9 @@ const session = require('koa-session');//cookie
 const koaBody = require('koa-body');
 const json = require('koa-json');
 const cors = require('koa-cors');
-
+const render = require('koa-ejs');
+const EJS = require('ejs')
+const port = 7777;
 app.use(cors());//跨域请求,用于与browsesync调试
 app.keys = ['feedback'];//session加密值
 app.use(session(app));//使用cookie
@@ -16,14 +18,25 @@ router.get('/', function *(next) {//根路由
     this.status = 301;
 });
 
+render(app, {
+    root: path.join(__dirname, 'views'),
+    layout: '',
+    viewExt: 'html',
+    cache: false,
+    debug: true
+});
+
 //============路由===========
 app.use(require(path.join(__dirname,'koa/routers/routers.js'))().routes());
+app.use(require(path.join(__dirname,'koa/routers/router_ejs.js'))().routes());
 app.use(router.routes());
+
+
 
 
 //============静态文件资源===========
 app.use(serve({rootDir: './'}));
 
-app.listen(8888, function () {
-    console.log('koa server listening on port ' + 8888);
+app.listen(port, function () {
+    console.log('koa server listening on port ' + port);
 });

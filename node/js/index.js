@@ -35,19 +35,14 @@ $(document).ready(function(){
         })
         var es = $(areaId+'div.sec-table-list[parent^="%{parent}"]'.format({parent:par.attr('parent')+('-'+index)}));
         if(par.hasClass("isOpen")){
-            es.hide();
+            es.slideToggle('fast');
             par.removeClass("isOpen");
+            $(this).addClass('open')
         }else{
-            es.show();
+            es.slideToggle('fast');
             par.addClass("isOpen");
+            $(this).removeClass('open')
         }
-
-         if($(this).hasClass('open')){
-             $(this).removeClass('open').parents('.sec-table-list').children('.sub').slideToggle();
-
-         }else {
-             $(this).addClass('open').parents('.sec-table-list').children('.sub').slideToggle();
-         }
     });
 });
 

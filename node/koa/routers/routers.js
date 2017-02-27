@@ -2,7 +2,7 @@ const Router = require('koa-router');
 const path = require('path');
 const sendfile = require('koa-sendfile');
 const server = require(path.resolve('koa/server/server.js'));
-
+const render = require('koa-ejs');
 module.exports = function (config) {
     const router = new Router();
     router.get('/list', function *() {
@@ -35,7 +35,7 @@ module.exports = function (config) {
         yield (server().sso(user)
             .then( (parsedBody)=> {
                 let responseText = JSON.parse(parsedBody);
-                console.info("后台数据：",responseText);
+                // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
                 if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
