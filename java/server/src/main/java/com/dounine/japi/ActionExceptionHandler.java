@@ -3,6 +3,7 @@ package com.dounine.japi;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.act.ResultImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,9 @@ public class ActionExceptionHandler extends AbstractHandlerExceptionResolver {
         }
         actResult.setMsg(e.getMessage());
         try {
+            if(StringUtils.isNotBlank(actResult.getMsg())){
+                actResult.setCode(1);
+            }
             httpServletResponse.getWriter().print(JSON.toJSON(actResult));
         } catch (IOException e1) {
             e1.printStackTrace();
