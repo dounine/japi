@@ -142,9 +142,4 @@ public class UserUtils {
         return false;
     }
 
-    public static void main(String[] args) {
-        System.out.println(login(new UserAuth("lake", "lake")));
-        System.out.println(login(new UserAuth("lake", "lake")));
-        System.out.println(userIsAuth(new UserAuth("lake", "la1ke")));
-    }
 }
