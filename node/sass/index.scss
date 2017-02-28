@@ -184,6 +184,10 @@ header{
               &:hover{
                 background:rgba(221,236,244,1);
               }
+              &.active{
+                border-left:2px solid #00b272;
+                background:rgba(221,236,244,1);
+              }
             }
             a{
               font-size:14px;
@@ -196,10 +200,7 @@ header{
 
       }
     }
-    .active{
-      border-left:2px solid #00b272;
-      background:rgba(221,236,244,1);
-    }
+
   }
   #content{
     padding: 10px;
@@ -279,9 +280,11 @@ header{
           ul{
             border-top:none;
             li{
+              font-size:14px;
               display:flex;
               align-items:center;
               position:relative;
+              min-height:16px;
               .icon-sub{
                 width:12px;
                 height:12px;
@@ -296,7 +299,9 @@ header{
                 }
               }
               &:first-child{
-                color:#f00;
+                color:#666;
+                font-weight:bold;
+                letter-spacing:1px;
               }
             }
           }
@@ -307,10 +312,19 @@ header{
               }
             }
           }
+          span[data-ac="ac"]{
+            color:#238dfa;
+            font-weight:bold;
+          }
         }
 
       }
     }
   }
+}
+#modal{
+  width:200px;
+  height:200px;
+  background:#ccc;
 }
 
