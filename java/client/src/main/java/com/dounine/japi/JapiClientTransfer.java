@@ -9,9 +9,14 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.CookieSpecs;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.HttpMultipartMode;
@@ -19,6 +24,8 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpCoreContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +44,18 @@ import java.util.concurrent.TimeUnit;
 public class JapiClientTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JapiClientTransfer.class);
     private static final int reties = 3;
+    private static final String TOKEN_NOT_EMPTY = "请求头token不能为空";
+    private static final FileFilter FILE_FILTER = DirectoryFileFilter.DIRECTORY;
+    public static final RequestConfig COOKIE_REQUEST_CONFIG = RequestConfig.custom()
+            .setCookieSpec(CookieSpecs.STANDARD_STRICT)
+            .setSocketTimeout(100000)
+            .build();
     /**
      * seconds
      */
     private static final int tryTime = 3;
     private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
+    private static final HttpClientContext httpContext = new HttpClientContext();
 
     private Result postValues(String url, String[] datas) {
         List<String[]> da = new ArrayList<>(1);
@@ -51,6 +65,7 @@ public class JapiClientTransfer {
 
     private Result postValues(String url, List<String[]> datas) {
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(COOKIE_REQUEST_CONFIG);
         List<NameValuePair> valuePairs = new ArrayList<>();
         for (String[] keyValue : datas) {
             valuePairs.add(new BasicNameValuePair(keyValue[0], keyValue[1]));
@@ -59,7 +74,7 @@ public class JapiClientTransfer {
         while (reties > tryCount) {
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(valuePairs, "utf-8"));
-                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity(), Consts.UTF_8);
+                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost, httpContext).getEntity(), Consts.UTF_8);
                 return JSON.parseObject(result, ResultImpl.class);
             } catch (IOException e) {
                 if (e instanceof HttpHostConnectException) {
@@ -84,6 +99,7 @@ public class JapiClientTransfer {
             throw new JapiException(file.getAbsolutePath() + " file not exist.");
         }
         HttpPost httpPost = new HttpPost(url);
+        httpPost.setConfig(COOKIE_REQUEST_CONFIG);
         Integer tryCount = 0;
         while (reties > tryCount) {
             try {
@@ -95,7 +111,7 @@ public class JapiClientTransfer {
                 }
                 multipartEntity.addBinaryBody("file", file);
                 httpPost.setEntity(multipartEntity.build());
-                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost).getEntity());
+                String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost, httpContext).getEntity());
                 return JSON.parseObject(result, ResultImpl.class);
             } catch (IOException e) {
                 if (e instanceof HttpHostConnectException) {
@@ -164,7 +180,7 @@ public class JapiClientTransfer {
         List<String[]> datas = new ArrayList<>();
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         datas.add(new String[]{"projectName", projectName});
-        String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
+        String serverUrl = getServerPath(japiClientStorage);
         File projectFile = new File(prePath + "/project-info.txt");
         File projectMd5File = new File(prePath + "/project-md5.txt");
         if (projectFile.exists()) {
@@ -190,9 +206,53 @@ public class JapiClientTransfer {
         }
     }
 
-    private static final FileFilter FILE_FILTER = DirectoryFileFilter.DIRECTORY;
+    private String getServerPath(JapiClientStorage japiClientStorage) {
+        return japiClientStorage.getProject().getProperties().get("japi.server");
+    }
+
+    private boolean checkServerLive(JapiClientStorage japiClientStorage) {
+        String serverPath = getServerPath(japiClientStorage);
+        HttpGet httpGet = new HttpGet(serverPath);
+        httpGet.setConfig(COOKIE_REQUEST_CONFIG);
+        Integer tryCount = 0;
+        while (reties > tryCount) {
+            try {
+                Result result = JSON.parseObject(EntityUtils.toString(HTTP_CLIENT.execute(httpGet).getEntity(), "utf-8"), ResultImpl.class);
+                if (result.getCode() == 0) {
+                    return true;
+                }
+                if (result.getCode() != 0 && TOKEN_NOT_EMPTY.equals(result.getMsg())) {
+                    List<String[]> datas = new ArrayList<>();
+                    datas.add(new String[]{"username",japiClientStorage.getProject().getProperties().get("japi.server.username")});
+                    datas.add(new String[]{"password",japiClientStorage.getProject().getProperties().get("japi.server.password")});
+                    Result login = postValues(serverPath + "/user/login", datas);
+                    if (login.getCode() != 0 || login.getData() == null) {
+                        throw new JapiException("登录失败.");
+                    }else{
+                        return true;
+                    }
+                }
+            } catch (IOException e) {
+                if (e instanceof HttpHostConnectException) {
+                    tryCount++;
+                    LOGGER.warn("try connect server " + tryCount + " count.");
+                    try {
+                        TimeUnit.SECONDS.sleep(tryTime);
+                    } catch (InterruptedException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
     public void autoTransfer(JapiClientStorage japiClientStorage) {
-        String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
+        if (!checkServerLive(japiClientStorage)) {
+            return;
+        }
+        String serverUrl = getServerPath(japiClientStorage);
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         List<String[]> datas = new ArrayList<>();
         datas.add(new String[]{"projectName", projectName});
@@ -209,31 +269,31 @@ public class JapiClientTransfer {
         File projectFile = new File(projectPath);
 
         for (File packageFile : projectFile.listFiles(FILE_FILTER)) {
-            if(packageFile.isHidden()){
+            if (packageFile.isHidden()) {
                 continue;
             }
             JapiNavPackage japiNavPackage = new JapiNavPackage();
             japiNavPackage.setName(packageFile.getName());
             for (File funFile : packageFile.listFiles(FILE_FILTER)) {
-                if(funFile.isHidden()){
+                if (funFile.isHidden()) {
                     continue;
                 }
                 JapiNavFun japiNavFun = new JapiNavFun();
                 japiNavFun.setName(funFile.getName());
                 for (File actionFile : funFile.listFiles(FILE_FILTER)) {
-                    if(actionFile.isHidden()){
+                    if (actionFile.isHidden()) {
                         continue;
                     }
                     JapiNavAction japiNavAction = new JapiNavAction();
                     japiNavAction.setName(actionFile.getName());
                     for (File versionFile : actionFile.listFiles(FILE_FILTER)) {
-                        if(versionFile.isHidden()){
+                        if (versionFile.isHidden()) {
                             continue;
                         }
                         JapiNavVersion japiNavVersion = new JapiNavVersion();
                         japiNavVersion.setName(versionFile.getName());
                         for (File dateFile : versionFile.listFiles(FILE_FILTER)) {
-                            if(dateFile.isHidden()){
+                            if (dateFile.isHidden()) {
                                 continue;
                             }
                             JapiNavDate japiNavDate = new JapiNavDate();

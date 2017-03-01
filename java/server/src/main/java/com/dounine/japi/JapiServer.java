@@ -172,6 +172,12 @@ public class JapiServer {
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
+        }else{
+            try {
+                return new FileInputStream(JapiServer.class.getResource("/logo.png").getFile());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  */
 public class ProjectImpl implements IProject {
 
-    private static final Pattern API_CONFIG_NAME = JapiPattern.getPattern("\\s*japi[.][a-zA-Z0-9_]*\\s*[=]\\s*");
+    private static final Pattern API_CONFIG_NAME = JapiPattern.getPattern("\\s*japi[.a-zA-Z0-9_]*\\s*[=]\\s*");
 
     private Map<String, String> properties = new HashMap<>();
     private static final ProjectImpl PROJECT = new ProjectImpl();

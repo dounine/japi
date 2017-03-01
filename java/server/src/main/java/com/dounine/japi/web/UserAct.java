@@ -25,7 +25,7 @@ import java.io.IOException;
 public class UserAct {
 
     @PostMapping("login")
-    public Result login(String username, String password) throws JapiException {
+    public Result login(String username, String password,HttpServletRequest request,HttpServletResponse response) throws JapiException {
         if(StringUtils.isBlank(username)){
             throw new JapiException("username 不能为空.");
         }
@@ -34,6 +34,10 @@ public class UserAct {
         }
         String token = UserUtils.login(new UserAuth(username,password));
         if(null!=token){
+            response.setHeader("token",token);
+            Cookie cookie = new Cookie("token",token);
+            cookie.setPath("/");
+            response.addCookie(cookie);
             return new ResultImpl("success",token);
         }else{
             throw new JapiException("用户名或密码错误.");
