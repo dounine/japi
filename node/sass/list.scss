@@ -68,40 +68,21 @@ header{
     height:100%;
     align-items:center;
     display:flex;
-    justify-content:flex-end;
-    max-width:1300px;
-      .search{
-        display:flex;
-        position:relative;
+    justify-content:space-between;
+    padding:0 30px;
+    .head-l{
+      a{
+        color:#fff;
+        margin:0 5px;
         &:hover{
-          border:1px solid #fff;
-        }
-        input{
-          background:none;
-          color:#fff;
-        }
-        i{
-          display:flex;
-          width:25px;
-          height:25px;
-          background:url("../images/search.png") no-repeat;
-          background-size:100% 100%;
-        }
-        .secrchList{
-          position:absolute;
-          width:120px;
-          max-height:60px;
-          background:#ccc;
-          top:40px;
-          left:10px;
-          padding:10px;
-          li{
-            height:20px;
-            border:1px solid #fff;
-            line-height:20px;
-          }
+          color:#000;
         }
       }
+    }
+    .head-r{
+      margin-right:50px;
+    }
+
   }
 
 }
@@ -133,8 +114,9 @@ header{
             display:flex;
             justify-content:center;
             flex:1;
+            align-items:center;
             &.time{
-              border-left:1px solid #ccc;
+              width:110px;
             }
           }
         }

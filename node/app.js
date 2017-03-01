@@ -7,32 +7,33 @@ const koaBody = require('koa-body');
 const json = require('koa-json');
 const cors = require('koa-cors');
 const render = require('koa-ejs');
-const EJS = require('ejs')
 const port = 7777;
+const routersPath = '/koa/routers/';
+
 app.use(cors());//跨域请求,用于与browsesync调试
 app.keys = ['feedback'];//session加密值
 app.use(session(app));//使用cookie
 app.use(koaBody());//必需要路由用之前使用,不然获取不到表单
 router.get('/', function *(next) {//根路由
-    this.redirect('/list');//重写向到列表页面
+    this.redirect('/login');//重写向到登录页面
     this.status = 301;
 });
 
-render(app, {
-    root: path.join(__dirname, 'views'),
-    layout: '',
-    viewExt: 'html',
-    cache: false,
-    debug: true
-});
+/**ejs**/
+// render(app, {
+//     root: path.join(__dirname, 'views'),
+//     layout: '',
+//     viewExt: 'html',
+//     cache: false,
+//     debug: true
+// });
 
 //============路由===========
-app.use(require(path.join(__dirname,'koa/routers/routers.js'))().routes());
-app.use(require(path.join(__dirname,'koa/routers/router_ejs.js'))().routes());
+app.use(require(path.join(__dirname,routersPath,'login.js'))().routes());//登录路由
+app.use(require(path.join(__dirname,routersPath,'list.js'))().routes());//列表路由
+app.use(require(path.join(__dirname,routersPath,'index.js'))().routes());//首页路由
+// app.use(require(path.join(__dirname,'koa/routers/routers.js'))().routes());
 app.use(router.routes());
-
-
-
 
 //============静态文件资源===========
 app.use(serve({rootDir: './'}));

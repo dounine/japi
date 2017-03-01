@@ -1,16 +1,19 @@
 $(document).ready(function(){
-    $('#nav ').on("click",".mainbav",function(){
+    $('#nav ').on("click",".mainbav",function(e){
         if($(this).hasClass('open')){
-            $(this).removeClass('open').next('ul').slideToggle("fast");
+            $(this).removeClass('open').siblings('ul').slideToggle("fast");
+            e.stopPropagation()
 
         }else {
-            $(this).addClass('open').next('ul').slideToggle("fast");
+            $(this).addClass('open').siblings('ul').slideToggle("fast");
+            e.stopPropagation()
         }
     });
     $("#nav").on("click","a",function(){
         $("#nav a").parent().removeClass('active')
         $(this).not('.mainbav a','.icon').parent().addClass('active')
     });
+    
     $("#nav").on("click",".icon",function(){
         if(!$(this).hasClass('ac')){
             $(this).addClass('ac');
@@ -22,29 +25,54 @@ $(document).ready(function(){
             $(".nav-list .nav-section .mainbav").removeClass("open")
         }
     })
-    $('#content').on("click",".icon-sub",function(){
-        var area = $(this).parents('.sec-table-wrap').children('div').prop('id');
-        var areaId = "#"+area+" ";
-        var par = $(this).parents(areaId+'div.sec-table-list');
-        var asMyParents = $(areaId+'div.sec-table-list[parent="%{parent}"]'.format({parent:par.attr('parent')}));
-        var index = 1;
-        $.each(asMyParents,function(i,item){
-            if($(item).is(par)){
-                index += i;
-            }
-        })
-        var es = $(areaId+'div.sec-table-list[parent^="%{parent}"]'.format({parent:par.attr('parent')+('-'+index)}));
-        if(par.hasClass("isOpen")){
-            es.slideToggle('fast');
-            par.removeClass("isOpen");
-            $(this).addClass('open')
-        }else{
-            es.slideToggle('fast');
-            par.addClass("isOpen");
-            $(this).removeClass('open')
-        }
-    });
 });
+
+
+
+
+$("#content").on("mouseover","span.itemName",function(){
+    var ac = $(this).attr('data-ac');
+    if(ac=="ac"){
+        $(this).css({"cursor":"pointer"})
+    }
+    return
+});
+
+$("#content").on("click","#modal .close",function(){
+    $("#modal .m-con").empty();
+    $("#modal").hide()
+})
+
+
+
+$('#content').on("click",".icon-sub.first",function(e){
+    if($(this).hasClass('ac')){
+        $(this).removeClass('ac')
+        $(this).parents('.sec-table-list').children('.sub-list').slideUp("fast");
+    }else {
+        $(this).addClass('ac')
+        $(this).parents('.sec-table-list').children('.sub-list').slideDown("fast");
+    }
+});
+
+
+function iconSubClick(self){
+    var area = $(self).parents('.sec-table-wrap');
+    var par = $(self).parents('div.sec-table-list');
+    var asMyParents = area.find('div.sec-table-list[index="%{index}"]'.format({index:par.attr('index')}));
+    var es = area.find('div.sec-table-list[index^="%{index}"]'.format({index:par.attr('index')+"-"})).not(par);
+    if(par.hasClass("isOpen")){
+        es.stop();
+        es.slideUp("fast");
+        par.removeClass("isOpen");
+        $(self).addClass('open');
+    }else{
+        es.stop();
+        es.slideDown("fast");
+        par.addClass("isOpen");
+        $(self).removeClass('open');
+    }
+}
 
 //复制
 function copy(){
@@ -74,4 +102,18 @@ function copy(){
         $('.copysuc').hide();
     },2000)
 
+}
+
+function logout(){
+    window.location.href='/login'
+    // $.ajax({
+    //     type:"get",
+    //     url:"/logout",
+    //     success:function(data){
+    //         window.location.href="/login"
+    //     },
+    //     error:function(data){
+    //         console.info(data);
+    //     }
+    // })
 }
