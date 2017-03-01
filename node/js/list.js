@@ -26,4 +26,39 @@ $(document).ready(function(){
             console.info(data);
         }
     })
+});
+
+$("#pages").on("click","a",function(){
+    var page = $(this).attr('class');
+    var pageGet;
+    if(page=="firstPage"){
+        pageGet=1;
+    }else {
+
+    }
+    $.ajax({
+        type:"post",
+        url:"/pages",
+        data:pageGet,
+        success:function(data){
+            console.info(data);
+        },
+        error:function(data){
+            console.info(data);
+        }
+    })
 })
+
+function logout(){
+    window.location.href="/login"
+    // $.ajax({
+    //     type:"get",
+    //     url:"/logout",
+    //     success:function(data){
+    //         window.location.href="/login"
+    //     },
+    //     error:function(data){
+    //         console.info(data);
+    //     }
+    // })
+}

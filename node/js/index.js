@@ -38,9 +38,11 @@ $("#content").on("mouseover","span.itemName",function(){
     return
 });
 
-$("#content").on("click","span.itemName[data-ac='ac']",function(){
-
+$("#content").on("click","#modal .close",function(){
+    $("#modal .m-con").empty();
+    $("#modal").hide()
 })
+
 
 
 $('#content').on("click",".icon-sub.first",function(e){
@@ -100,4 +102,18 @@ function copy(){
         $('.copysuc').hide();
     },2000)
 
+}
+
+function logout(){
+    window.location.href='/login'
+    // $.ajax({
+    //     type:"get",
+    //     url:"/logout",
+    //     success:function(data){
+    //         window.location.href="/login"
+    //     },
+    //     error:function(data){
+    //         console.info(data);
+    //     }
+    // })
 }

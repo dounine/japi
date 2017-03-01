@@ -1,4 +1,3 @@
-var newDatas,urls,extype,reqParm,resParm ;
 var version={};
 $(document).ready(function(){
     var navName={"projectName":location.hash.split("=")[1]}
@@ -55,9 +54,8 @@ $(document).ready(function(){
                     });
                     vNum+="</select>";
                 }
-                cont+="</div><section class='section info'></section><section class='section reqtable'></section><section class='section restable'></section></div>"
-
-
+                cont+="</div><section class='section info'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
+                    "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close'>关闭</a></div><div class='m-con'></div></section></div>"
 
                 $("#content").html(cont);
                 $(".v-num").html(vNum)
@@ -101,6 +99,8 @@ function verSel(version){
 
 
 var rootShowMySelf = new Object();
+var rootShowMySelfRes = new Object();
+var responseFields1 = null;
 function action(version){
     var actTag=document.getElementsByClassName('time')[0].tagName;
     if(actTag=="SPAN"){
@@ -179,18 +179,35 @@ function action(version){
 
             /*****响应参数*****/
 
-            var responseFields="<div class='sec-head'><h4>响应参数</h4></div><div class='sec-table'><div class='sec-table-wrap'>" +
+            var responseFields="<div class='sec-head'><h4>请求参数</h4></div><div class='sec-table'><div class='sec-table-wrap'>" +
                 "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>类型</li>" +
                 "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul><div id='res'>";
+
+            $.each(resData.responseFields,function(index,obj){
+                if(obj.type=='$this'){
+                    obj._parent = {'name':'not-null'};
+                    obj.ac="ac";
+                }
+
+            })
+
             var level = new Object();
             level.indent = 4;
             level.count = 0;
             level.datas = new Object();
             subObj(resData.responseFields,level,"");
+            responseFields1 = resData.responseFields;
             for(var subIndex in level.datas){
+                var _parent = level.datas[subIndex]['_parent'];
+                var _parentClickEventStr = "";
+                if(_parent){
+                    rootShowMySelfRes[subIndex] = _parent;
+                    _parentClickEventStr = "onclick=_parentRes(this,"+subIndex+")";
+                    level.datas[subIndex]['type'] = 'object';
+                }
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+2;
                 responseFields+=("<div class='sec-table-list %{_open}' index='%{_index}'> <ul>" +
-                "<li class='col-2'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+                "<li class='col-2'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span class='itemName' "+_parentClickEventStr+"  data-ac='%{ac}'  style='text-indent:%{_indent1}px'>%{name}</span></li>" +
                 "<li class='col-1'>%{type}</li>" +
                 "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
             }
@@ -209,14 +226,61 @@ function action(version){
 
 
 function _parent(self,_parent){
-    var ac = $(self).attr('data-ac');
-    // if(ac=="ac"){
-    //     console.info(_parent);
-    // }\
-    console.info(rootShowMySelf[_parent]);
+    // var ac = $(self).attr('data-ac');
+    // var top = $(self).offset().top;
+    // var left = $(self).offset().left;
+    $('#modal').show();
+
+    var modalCon="<div class='sec-table'><div class='sec-table-wrap'>" +
+        "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
+        "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul>";
 
 
+    var level = new Object();
+    level.indent = 4;
+    level.count = 0;
+    level.datas = new Object();
+    subObj(rootShowMySelf[_parent].fields,level,"");
+    for(var subIndex in level.datas){
+        level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+2;
+        modalCon+=("<div class='sec-table-list' index='%{_index}'> <ul>" +
+        "<li class='col-2'><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+        "<li class='col-1'>%{required}</li><li class='col-1'>%{type}</li>" +
+        "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
+    }
+
+    modalCon+="</div></div>";
+
+    $('.m-con').html(modalCon)
 }
+
+function _parentRes(self,_parent){
+    $('#modal').show()
+
+    var modalCon="<div class='sec-table'><div class='sec-table-wrap'>" +
+        "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>类型</li>" +
+        "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul>";
+
+    var item = responseFields1;
+
+    var level = new Object();
+    level.indent = 4;
+    level.count = 0;
+    level.datas = new Object();
+    subObj(item,level,"");
+    for(var subIndex in level.datas){
+        level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"]+4;
+        modalCon+=("<div class='sec-table-list' index='%{_index}'> <ul>" +
+        "<li class='col-2'><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+        "<li class='col-1'>%{type}</li>" +
+        "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
+    }
+
+    modalCon+="</div></div>";
+
+    $('.m-con').html(modalCon)
+}
+
 
 
 function subObj(arr,level,tmpIndex){

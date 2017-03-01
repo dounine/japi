@@ -19,19 +19,20 @@ router.get('/', function *(next) {//根路由
     this.status = 301;
 });
 
-render(app, {
-    root: path.join(__dirname, 'views'),
-    layout: '',
-    viewExt: 'html',
-    cache: false,
-    debug: true
-});
+/**ejs**/
+// render(app, {
+//     root: path.join(__dirname, 'views'),
+//     layout: '',
+//     viewExt: 'html',
+//     cache: false,
+//     debug: true
+// });
 
 //============路由===========
-
-
 app.use(require(path.join(__dirname,routersPath,'login.js'))().routes());//登录路由
-app.use(require(path.join(__dirname,'koa/routers/routers.js'))().routes());
+app.use(require(path.join(__dirname,routersPath,'list.js'))().routes());//列表路由
+app.use(require(path.join(__dirname,routersPath,'index.js'))().routes());//首页路由
+// app.use(require(path.join(__dirname,'koa/routers/routers.js'))().routes());
 app.use(router.routes());
 
 //============静态文件资源===========

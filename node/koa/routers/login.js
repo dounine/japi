@@ -19,7 +19,7 @@ module.exports = function (config) {
                 if(responseText.code == 0){
                     var token = responseText.data;
                     $self.body = responseText;
-                    $self.cookies.set('token', token,{maxAge: 24*60*1000});
+                    $self.cookies.set('token', token,{maxAge: 7*24*60*1000});
                     $self.redirect('/list')
                 }
             }).catch((error)=> {
