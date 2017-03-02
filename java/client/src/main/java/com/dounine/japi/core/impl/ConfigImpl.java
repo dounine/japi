@@ -11,6 +11,7 @@ public class ConfigImpl implements IConfig {
 
     private String projectJavaPath;
     private String actionReletivePath;
+    private String[] includePackages;
     private List<String> includeProjectJavaPath;
 
     @Override
@@ -37,5 +38,13 @@ public class ConfigImpl implements IConfig {
 
     public void setActionReletivePath(String actionReletivePath) {
         this.actionReletivePath = actionReletivePath;
+    }
+
+    public String[] getIncludePackages() {
+        return includePackages;
+    }
+
+    public void setIncludePackages(String[] includePackages) {
+        this.includePackages = includePackages;
     }
 }

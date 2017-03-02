@@ -116,7 +116,9 @@ public class ProjectAct {
             throw new JapiException("versionName" + NOT_EMPTY_TIP);
         }
         ResultImpl rest = new ResultImpl();
-        rest.setData(japiServer.getActionVerDates(projectName, packageName, funName, actionName, versionName));
+        List<String> datas = japiServer.getActionVerDates(projectName, packageName, funName, actionName, versionName);
+        datas.sort((b,a)->a.compareTo(b));
+        rest.setData(datas);
         return rest;
     }
 

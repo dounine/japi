@@ -44,6 +44,15 @@ public class UserAct {
         }
     }
 
+    @PostMapping("isLogin")
+    public Result login(String token) throws JapiException {
+        if(StringUtils.isBlank(token)){
+            throw new JapiException("token 不能为空.");
+        }
+        boolean isAuth = UserUtils.isAuth(token);
+        return new ResultImpl("success", isAuth);
+    }
+
     @GetMapping("logout")
     public Result logout(HttpServletRequest request,HttpServletResponse response) throws JapiException {
         String token = request.getHeader("token");

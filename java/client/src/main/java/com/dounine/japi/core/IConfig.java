@@ -24,4 +24,6 @@ public interface IConfig {
      * @return {"/home/lake/github/japi/java/client1/src/main/java","/home/lake/github/japi/java/api/src/main/java"}
      */
     List<String> getIncludeProjectJavaPath();
+
+    String[] getIncludePackages();
 }

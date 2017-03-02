@@ -2,7 +2,7 @@ package com.dounine.japi.core.action.comm;
 
 import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
-import com.dounine.japi.entity.User;
+import com.dounine.japi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
