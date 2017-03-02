@@ -1,4 +1,4 @@
-package com.dounine.japi;
+package com.dounine.japi.config;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.exception.JapiException;
@@ -28,6 +28,7 @@ public class ActionExceptionHandler extends AbstractHandlerExceptionResolver {
 
     @Override
     protected ModelAndView doResolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o, Exception e) {
+
         ResultImpl actResult = new ResultImpl();
         httpServletResponse.setContentType(JSON_CONTEXT);
         if (e instanceof JapiException) {

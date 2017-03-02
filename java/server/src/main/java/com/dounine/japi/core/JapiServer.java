@@ -1,4 +1,4 @@
-package com.dounine.japi;
+package com.dounine.japi.core;
 
 import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.transfer.*;

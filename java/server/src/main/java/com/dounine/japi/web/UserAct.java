@@ -45,7 +45,7 @@ public class UserAct {
     }
 
     @GetMapping("logout")
-    public Result logout(HttpServletRequest request) throws JapiException {
+    public Result logout(HttpServletRequest request,HttpServletResponse response) throws JapiException {
         String token = request.getHeader("token");
         if(null==token){
             token = request.getParameter("token");

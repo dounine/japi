@@ -1,4 +1,4 @@
-package com.dounine.japi;
+package com.dounine.japi.config;
 
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.act.ResultImpl;

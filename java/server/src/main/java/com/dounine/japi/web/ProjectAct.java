@@ -1,6 +1,6 @@
 package com.dounine.japi.web;
 
-import com.dounine.japi.JapiServer;
+import com.dounine.japi.core.JapiServer;
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
 import com.dounine.japi.transfer.JapiNavRoot;
@@ -8,7 +8,6 @@ import com.dounine.japi.transfer.JapiProject;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;

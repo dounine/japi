@@ -1,7 +1,7 @@
 package com.dounine.japi.web;
 
 import com.alibaba.fastjson.JSON;
-import com.dounine.japi.JapiServer;
+import com.dounine.japi.core.JapiServer;
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
 import com.dounine.japi.exception.JapiException;
