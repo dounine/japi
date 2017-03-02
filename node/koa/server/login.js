@@ -16,5 +16,6 @@ module.exports = function (a) {
         };
         return request(options);
     };
+
     return this;
 }

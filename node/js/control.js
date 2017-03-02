@@ -1,5 +1,17 @@
 var version={};
+
+$.get("/islogin",function(data){
+    if(data.data==true){
+        return
+
+    }else {
+        location.href="/login";
+    }
+})
+
 $(document).ready(function(){
+
+    //请求导航，生成nav
     var navName={"projectName":location.hash.split("=")[1]}
     $.ajax({
         type:"post",
@@ -66,7 +78,7 @@ $(document).ready(function(){
 });
 
 
-
+//版本选择
 function verSel(version){
     var verTag=document.getElementsByClassName('version-list')[0].tagName;
     if(verTag=="SPAN"){
@@ -101,6 +113,9 @@ function verSel(version){
 var rootShowMySelf = new Object();
 var rootShowMySelfRes = new Object();
 var responseFields1 = null;
+
+//参数
+
 function action(version){
     var actTag=document.getElementsByClassName('time')[0].tagName;
     if(actTag=="SPAN"){
@@ -127,9 +142,11 @@ function action(version){
                 info+="</select>"
             }
 
-            info+=("<span class='method'>请求方式：<strong>%{method}</strong></span>" +
-            "<button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span>").format({method:actInfoMethods});
+            info+=("<span class='method'>请求方式：<strong></strong></span>" +
+            "<button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span>");
             info+="</div><div class='item extype'></div></div>";
+
+
 
             /*******请求参数********/
 
@@ -176,7 +193,6 @@ function action(version){
 
             requestFields+="</div></div></div>";
 
-
             /*****响应参数*****/
 
             var responseFields="<div class='sec-head'><h4>请求参数</h4></div><div class='sec-table'><div class='sec-table-wrap'>" +
@@ -215,6 +231,8 @@ function action(version){
             responseFields+="</div></div></div>";
 
             $('.section.info').html(info);
+            var thod = actInfoMethods.join("||");
+            $('.method strong').text(thod)
             $('.section.reqtable').html(requestFields);
             $('.section.restable').html(responseFields)
         }
@@ -283,6 +301,8 @@ function _parentRes(self,_parent){
 
 
 
+
+//递归
 function subObj(arr,level,tmpIndex){
     var indent = level.indent;
 

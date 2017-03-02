@@ -7,11 +7,6 @@
 </head>
 <body>
     <div id="box">
-        <div class="header">
-            <p class="logo">
-                <a href="javascript:void(0)" title="ISSP智能服务公共平台"></a>
-            </p>
-        </div>
         <div id="content">
                 <div class="login-box">
                     <h3>
@@ -26,17 +21,18 @@
                             <form id="form" action="/login" method="post">
                                 <ul>
                                     <li class="form-item">
-                                        <input type="text" placeholder="账号" required name="username" value="admin" id="username" >
+                                        <input type="text" placeholder="账号" required name="username"  id="username" >
                                     </li>
                                     <li class="form-item">
-                                        <input type="password" name="password" placeholder="密码" value="admin" id="userpass">
+                                        <input type="password" name="password" required placeholder="密码"  id="password">
                                     </li>
+                                    <li class="form-msg"></li>
                                     <li class="form-rem">
-                                        <input type="checkbox" data-style="checkeds" class="checkedNum" />
+                                        <input type="checkbox" data-style="checkeds" class="checkedNum"  />
                                         <label class="icon"></label>
                                         <span>记住我</span>
                                         <span>
-                                            <button type="submit" class="subBtn">登陆</button>
+                                            <button type="button" class="subBtn" onclick="login()">登陆</button>
                                         </span>
                                     </li>
                                 </ul>
@@ -50,6 +46,7 @@
     </div>
     <script src="/js/jquery-2.1.1.min.js"></script>
     <script src="/js/jquery.validate.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
     <script src="/js/login.js"></script>
 </body>
 </html>

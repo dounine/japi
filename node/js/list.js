@@ -1,4 +1,15 @@
 $(document).ready(function(){
+
+    $.get("/islogin",function(data){
+        if(data.data==true){
+           return
+        }else {
+            location.href="/login";
+        }
+    })
+
+
+
     $.ajax({
         type:"get",
         url:"/lists",
@@ -17,10 +28,10 @@ $(document).ready(function(){
                     date:item.createTime.split(" ")[0],
                     detailed:item.description
                 })
-
             });
             list+="</div>";
             $("#containal").html(list)
+            location.hash="page=1"
         },
         error:function(data){
             console.info(data);
@@ -28,20 +39,40 @@ $(document).ready(function(){
     })
 });
 
-$("#pages").on("click","a",function(){
-    var page = $(this).attr('class');
-    var pageGet;
-    if(page=="firstPage"){
-        pageGet=1;
-    }else {
+//获取分页数
+var sizes;
+$.get('/sizes',function(data){
+    sizes=data.data
 
+});
+
+
+//分页跳转
+$("#pages").on("click","a",function(){
+    var pageName = $(this).attr('class');
+    var pagination={};
+    var curPage = location.hash.split("=")[1];
+    if(pageName=="firstPage"){
+        pagination.pageSize=1;
+    }else if(pageName=="nextPage"){
+        pagination.pageSize = ++curPage;
+        if(pagination.pageSize>sizes){
+            pagination.pageSize=sizes;
+        }
+    }else if(pageName="prevPage"){
+        pagination.pageSize = --curPage;
+        if(pagination.pageSize<1){
+            pagination.pageSize=1
+        }
+    }else if(pageName="lastPage"){
+        pagination.pageSize=sizes;
     }
     $.ajax({
         type:"post",
-        url:"/pages",
-        data:pageGet,
+        url:"/pageSize",
+        data:pagination,
         success:function(data){
-            console.info(data);
+            location.hash="page="+pagination.pageSize
         },
         error:function(data){
             console.info(data);
@@ -50,15 +81,14 @@ $("#pages").on("click","a",function(){
 })
 
 function logout(){
-    window.location.href="/login"
-    // $.ajax({
-    //     type:"get",
-    //     url:"/logout",
-    //     success:function(data){
-    //         window.location.href="/login"
-    //     },
-    //     error:function(data){
-    //         console.info(data);
-    //     }
-    // })
+    $.ajax({
+        type:"get",
+        url:"/logout",
+        success:function(data){
+            window.location.href="/login"
+        },
+        error:function(data){
+            console.info(data);
+        }
+    })
 }

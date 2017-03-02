@@ -82,5 +82,17 @@ module.exports = function (argvs,token) {
         };
         return request(options);
     }
+    this.islogin = function (token) {
+        var options = {
+            method: 'POST',
+            timeout:3000,
+            uri: config()['rurl']+'/user/isLogin',
+            form: token,
+            headers: {
+                /* 'content-type': 'application/x-www-form-urlencoded' */ // Set automatically
+            }
+        };
+        return request(options);
+    };
     return this;
 }

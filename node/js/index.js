@@ -1,3 +1,5 @@
+
+
 $(document).ready(function(){
     $('#nav ').on("click",".mainbav",function(e){
         if($(this).hasClass('open')){
@@ -56,6 +58,8 @@ $('#content').on("click",".icon-sub.first",function(e){
 });
 
 
+//参数点击折叠效果
+
 function iconSubClick(self){
     var area = $(self).parents('.sec-table-wrap');
     var par = $(self).parents('div.sec-table-list');
@@ -105,15 +109,15 @@ function copy(){
 }
 
 function logout(){
-    window.location.href='/login'
-    // $.ajax({
-    //     type:"get",
-    //     url:"/logout",
-    //     success:function(data){
-    //         window.location.href="/login"
-    //     },
-    //     error:function(data){
-    //         console.info(data);
-    //     }
-    // })
+    $.ajax({
+        type:"get",
+        url:"/logout",
+        success:function(data){
+            window.location.href="/login"
+        },
+        error:function(data){
+            console.info(data);
+        }
+    })
 }
+

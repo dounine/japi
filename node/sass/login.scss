@@ -150,7 +150,7 @@ html{
                 height: 24px;
                 border: 0 none;
                 line-height: 24px;
-                font-size: 14px;
+                font-size: 18px;
               }
               label.error{
                 color:#f00;
@@ -208,9 +208,16 @@ html{
                     border:none;
                     background:none;
                     outline:none;
+                    &:hover{
+                      cursor:pointer;
+                    }
                   }
                 }
               }
+            }
+            .form-msg{
+              text-indent:20px;
+              color:#f00;
             }
           }
         }
