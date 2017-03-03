@@ -50,6 +50,43 @@ module.exports = function(a){
         };
         return request(options);
     };
+    //是否关注
+    this.addFollow = function(argvs,token){
+        var options = {
+            method : 'POST',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/follow',
+            form : argvs,
+            headers : {
+                token : token
+            }
+        };
+        return request(options);
+    };
+    this.deleteFollow = function(projectName,token){
+        var options = {
+            method : 'DELETE',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/follow/'+projectName,
+            // form : argvs,
+            headers : {
+                token : token
+            }
+        };
+        return request(options);
+    };
+    this.followList = function(token){
+        var options = {
+            method : 'GET',
+            timeout : 3000,
+            uri : config()['rurl'] + '/user/follows',
+
+            headers : {
+                token : token
+            }
+        };
+        return request(options);
+    };
 
     return this;
 }

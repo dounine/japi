@@ -96,6 +96,48 @@ module.exports = function(config){
                     $self.status = 408;
                 }
             }))
+    }).post("/addFollow", function*(){
+        let token = this.cookies.get('token');
+        let adFollow = this.request.body;
+        let $self = this;
+        yield (server().addFollow(adFollow,token)
+            .then((parsedBody) =>{
+                let responseText = JSON.parse(parsedBody);
+                $self.body = responseText;
+            }).catch((error) =>{
+                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
+                    $self.body = {'msg' : '请求错误！', errno : 3};
+                    $self.status = 408;
+                }
+            }))
+    }).post("/delFollow", function*(){
+        let token = this.cookies.get('token');
+        let delFollow = this.request.body.projectName;
+        let $self = this;
+        yield (server().deleteFollow(delFollow,token)
+            .then((parsedBody) =>{
+                let responseText = JSON.parse(parsedBody);
+                $self.body = responseText;
+            }).catch((error) =>{
+                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
+                    $self.body = {'msg' : '请求错误！', errno : 3};
+                    $self.status = 408;
+                }
+            }));
+    }).get("/followList", function*(){
+        let token = this.cookies.get('token');
+
+        let $self = this;
+        yield (server().followList(token)
+            .then((parsedBody) =>{
+                let responseText = JSON.parse(parsedBody);
+                $self.body = responseText;
+            }).catch((error) =>{
+                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
+                    $self.body = {'msg' : '请求错误！', errno : 3};
+                    $self.status = 408;
+                }
+            }));
     });
 
     return router;

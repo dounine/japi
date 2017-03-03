@@ -46,15 +46,17 @@ $(document).ready(function(){
     //导航点击
     $("#nav").on("click", ".nav-list .acLi a", function(){
 
-        version.projectName = "test";
+        version.projectName = window.location.hash.split("=")[1];
         version.packageName = $(this).parents('.root').find('.rootName').text();
         version.funName = $(this).parents('.sub').find('.subName').text();
         version.actionName = $(this).text();
+
         $.ajax({
             type : "post",
             url : "/versions",
             data : version,
             success : function(data){
+                console.info(data);
                 var cont, vNum;
 
                 cont = "<div><h4>基本信息</h4><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
@@ -94,7 +96,7 @@ function verSel(version){
         success : function(data){
             var verDate
             if(data.data.length == "1"){
-                verDate = "<span class='time' data-index='%{verDates}' >%{verDates}</span>".format({verDates : res.data})
+                verDate = "<span class='time' data-index='%{verDates}' >%{verDates}</span>".format({verDates : data.data})
 
             } else {
                 verDate = "<select onchange='action(version)' class='time'>";

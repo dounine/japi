@@ -24,6 +24,25 @@ $(document).ready(function(){
             $(".nav-list .nav-section ul").hide();
             $(".nav-list .nav-section .mainbav").removeClass("open")
         }
+    });
+
+    //关注列表
+    $.ajax({
+        type:"GET",
+        async:false,
+        url:"/followList",
+        success:function(data){
+            var followList="<ul>"
+            $.each(data.data,function(index,item){
+                followList+=("<li><a href='javascript:void(0)' class='followName'>%{followName}</a><a href='javascript:void(0)' class='del-fol'>" +
+                "<img src='/images/pro_close.png' alt=''></a></li>").format({followName:item})
+            });
+            followList+="</ul>";
+            $('.user-list').html(followList)
+        },
+        error:function(data){
+            console.info(data);
+        }
     })
 });
 
