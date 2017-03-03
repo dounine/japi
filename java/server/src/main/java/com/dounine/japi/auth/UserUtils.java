@@ -8,10 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -65,6 +62,14 @@ public class UserUtils {
 
     }
 
+    public static UserAuth getUserAuth(String token){
+        return ONLINES.get(token);
+    }
+
+    public static Map<String, UserAuth> getOnlines(){
+        return ONLINES;
+    }
+
     private static void sessionManager(Integer sessionTime) {
         while (true) {
             try {
@@ -72,10 +77,10 @@ public class UserUtils {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            for (String token : ONLINES.keySet()) {
-                if (ONLINES.get(token).getLiveTime().plusSeconds(sessionTime).isBefore(LocalDateTime.now())) {
-                    ONLINES.remove(token);
-                    break;
+            Iterator<UserAuth> userAuthIterator = ONLINES.values().iterator();
+            while(userAuthIterator.hasNext()){
+                if (userAuthIterator.next().getLiveTime().plusSeconds(sessionTime).isBefore(LocalDateTime.now())) {
+                    userAuthIterator.remove();
                 }
             }
         }

@@ -14,7 +14,7 @@ public class MyWebAppConfigurer extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new ErrorRequestInterceptor()).addPathPatterns("/**");
-        registry.addInterceptor(new LoginRequestInterceptor()).addPathPatterns("/**").excludePathPatterns(new String[]{"/user/login","/user/isLogin"});
+        registry.addInterceptor(new LoginRequestInterceptor()).addPathPatterns("/**").excludePathPatterns(new String[]{"/user/login","/user/isLogin","/user/onlines"});
         super.addInterceptors(registry);
     }
 }

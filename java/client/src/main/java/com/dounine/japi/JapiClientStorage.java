@@ -51,7 +51,7 @@ public class JapiClientStorage {
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("project" + TIPS[0]);
         }
-        if (projectName.indexOf("/") != -1) {
+        if (projectName.indexOf("/") != -1||projectName.indexOf(",") != -1) {
             throw new JapiException("project" + TIPS[1]);
         }
         File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName);
@@ -65,7 +65,7 @@ public class JapiClientStorage {
         if (StringUtils.isBlank(packageName)) {
             throw new JapiException("package" + TIPS[0]);
         }
-        if (packageName.indexOf("/") != -1) {
+        if (packageName.indexOf("/") != -1||packageName.indexOf(",") != -1) {
             throw new JapiException("package" + TIPS[1]);
         }
         File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName);
@@ -79,7 +79,7 @@ public class JapiClientStorage {
         if (StringUtils.isBlank(funName)) {
             throw new JapiException("fun" + TIPS[0]);
         }
-        if (funName.indexOf("/") != -1) {
+        if (funName.indexOf("/") != -1||funName.indexOf(",") != -1) {
             throw new JapiException("fun" + TIPS[1]);
         }
         File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName);
@@ -93,7 +93,7 @@ public class JapiClientStorage {
         if (StringUtils.isBlank(actionName)) {
             throw new JapiException("action" + TIPS[0]);
         }
-        if (actionName.indexOf("/") != -1) {
+        if (actionName.indexOf("/") != -1||actionName.indexOf(",") != -1) {
             throw new JapiException("action" + TIPS[1]);
         }
         File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionName);
@@ -107,7 +107,7 @@ public class JapiClientStorage {
         if (StringUtils.isBlank(actionName)) {
             throw new JapiException("version" + TIPS[0]);
         }
-        if (actionName.indexOf("/") != -1) {
+        if (actionName.indexOf("/") != -1||actionName.indexOf(",") != -1) {
             throw new JapiException("version" + TIPS[1]);
         }
         File file = new File(JAPI_CLIENT_STORAGE.japiPath + projectName + "/" + packageName + "/" + funName + "/" + actionName + "/" + version);

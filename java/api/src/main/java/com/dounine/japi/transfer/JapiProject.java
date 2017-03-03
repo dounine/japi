@@ -8,6 +8,7 @@ public class JapiProject {
     private String author = "";
     private String createTime = "";
     private boolean icon = false;
+    private boolean follow = false;
     private String version = "";
     private String description = "";
 
@@ -58,5 +59,13 @@ public class JapiProject {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public boolean isFollow() {
+        return follow;
+    }
+
+    public void setFollow(boolean follow) {
+        this.follow = follow;
     }
 }

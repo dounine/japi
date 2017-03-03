@@ -4,6 +4,7 @@ import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
 import com.dounine.japi.auth.UserAuth;
 import com.dounine.japi.auth.UserUtils;
+import com.dounine.japi.core.JapiServer;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,55 @@ import java.io.IOException;
 @RestController
 @RequestMapping("user")
 public class UserAct {
+
+    private JapiServer japiServer = new JapiServer();
+
+    private String getToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+        Object tokenObject = httpServletRequest.getHeader("token");
+        if (null == tokenObject) {
+            tokenObject = httpServletRequest.getParameter("token");
+        }
+        if (null == tokenObject) {
+            Cookie[] cookies = httpServletRequest.getCookies();
+            if (null != cookies) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("token")) {
+                        tokenObject = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+
+        }
+        if (null == tokenObject) {
+            throw new JapiException("请求头token不能为空");
+        }
+        return tokenObject.toString();
+    }
+
+    @GetMapping("follows")
+    public Result follows(HttpServletRequest request,HttpServletResponse response){
+        String token = getToken(request,response);
+        ResultImpl result = new ResultImpl();
+        result.setData(japiServer.getFollows(token));
+        return result;
+    }
+
+    @PostMapping("follows/sortAndDel")
+    public Result follows(String[] projects,HttpServletRequest request,HttpServletResponse response){
+        String token = getToken(request,response);
+        ResultImpl result = new ResultImpl();
+        result.setData(japiServer.sortAndDel(token,projects));
+        return result;
+    }
+
+    @GetMapping("onlines")
+    public Result onlines(HttpServletRequest request,HttpServletResponse response){
+        String token = getToken(request,response);
+        ResultImpl result = new ResultImpl();
+        result.setData(UserUtils.getOnlines());
+        return result;
+    }
 
     @PostMapping("login")
     public Result login(String username, String password,HttpServletRequest request,HttpServletResponse response) throws JapiException {
