@@ -27,7 +27,7 @@ public class JapiClient {
         JapiClient.setProjectJavaPath("/home/lake/github/japi/java/client/src/main/java");
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
         JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
-//        JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});
+        JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//可以准确快速搜索
         JapiClient.setUseCache(false);//
 
         IProject project = ProjectImpl.init();
