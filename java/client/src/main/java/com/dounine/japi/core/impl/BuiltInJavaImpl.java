@@ -1,5 +1,6 @@
 package com.dounine.japi.core.impl;
 
+import com.dounine.japi.JapiClient;
 import com.dounine.japi.core.IBuiltIn;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
@@ -27,9 +28,13 @@ public class BuiltInJavaImpl implements IBuiltIn {
 
     private BuiltInJavaImpl() {
         if (null == builtInFile) {
-            URL url = this.getClass().getResource("/class-builtIn-types.txt");
+            URL url = JapiClient.class.getResource("/class-builtIn-types.txt");
             builtInFile = new File(url.getFile());
             if (!builtInFile.exists()) {
+                url = JapiClient.class.getResource("/japi/class-builtIn-types.txt");
+                builtInFile = new File(url.getFile());
+            }
+            if(!builtInFile.exists()){
                 String err = url.getFile() + " 文件不存在";
                 LOGGER.error(err);
                 throw new JapiException(err);

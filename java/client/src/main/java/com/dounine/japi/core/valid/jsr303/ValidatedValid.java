@@ -125,7 +125,7 @@ public class ValidatedValid implements IMVC {
                                 List<String> _docs = new ArrayList<>();
                                 _docs.add("* @param " + iField.getName() + " " + iField.getDocs().get(0).getName());
                                 IRequest _requestField = getRequestField(null, iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
-                                if(null==_requestField){
+                                if(null!=_requestField){
                                     requestFields.add(_requestField);
                                 }
                             } else {

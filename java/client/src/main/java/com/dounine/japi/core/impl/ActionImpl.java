@@ -244,7 +244,13 @@ public class ActionImpl implements IAction {
      */
     private List<String> getMethodParameterStrs(String methodLineStr) {
         List<String> parameters = new ArrayList<>();
-        Matcher matcher = JapiPattern.PARAMETER_BODYS.matcher(methodLineStr);
+        String methodLine = methodLineStr;
+        Pattern hasThrowsExceptionPattern = JapiPattern.getPattern("\\s*throws\\s*[a-zA-Z0-9_]*\\s*[{]");
+        Matcher hasThrowsExceptionMatcher =  hasThrowsExceptionPattern.matcher(methodLine);
+        if(hasThrowsExceptionMatcher.find()){
+            methodLine = methodLineStr.substring(0,hasThrowsExceptionMatcher.start())+"{";
+        }
+        Matcher matcher = JapiPattern.PARAMETER_BODYS.matcher(methodLine);
         if (matcher.find()) {
             String parStrs = StringUtils.substring(matcher.group(), 1, -1).trim();
             parStrs = StringUtils.substring(parStrs.trim(), 0, -1);

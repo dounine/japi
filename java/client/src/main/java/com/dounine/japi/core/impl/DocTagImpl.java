@@ -1,6 +1,7 @@
 package com.dounine.japi.core.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.dounine.japi.JapiClient;
 import com.dounine.japi.core.IDocTag;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
@@ -32,9 +33,13 @@ public class DocTagImpl implements IDocTag {
 
     private DocTagImpl() {
         if (null == docTagFile) {
-            URL url = this.getClass().getResource("/doc-tags.txt");
+            URL url = JapiClient.class.getResource("/doc-tags.txt");
             docTagFile = new File(url.getFile());
             if (!docTagFile.exists()) {
+                url = JapiClient.class.getResource("/japi/doc-tags.txt");
+                docTagFile = new File(url.getFile());
+            }
+            if(!docTagFile.exists()){
                 String err = url.getFile() + " 文件不存在";
                 LOGGER.error(err);
                 throw new JapiException(err);

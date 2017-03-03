@@ -31,7 +31,7 @@ public class NotBlankValid implements IMVC {
         List<String> paths = new ArrayList<>();
         for (String interfaceGroup : interfaceGroups) {
             String key = interfaceGroup.substring(0, interfaceGroup.lastIndexOf("."));
-            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key,javaFilePath);
+            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key, javaFilePath);
             if (null != file) {
                 paths.add(file.getAbsolutePath());
             }
@@ -48,7 +48,7 @@ public class NotBlankValid implements IMVC {
         boolean required = true;
 
         List<String> myGroupInterfaces = new ArrayList<>();
-        if (null != interfaceGroups) {
+        if (null != interfaceGroups && interfaceGroups.size() > 0) {
             required = false;
             Pattern pattern = JapiPattern.getPattern("groups\\s*[=]\\s*");
             Matcher matcher = pattern.matcher(annoStr);
@@ -56,7 +56,7 @@ public class NotBlankValid implements IMVC {
                 Pattern leftPattern = JapiPattern.getPattern("groups\\s*[=]\\s*[{]");
                 Matcher leftMatcher = leftPattern.matcher(annoStr);
                 if (leftMatcher.find()) {//interfaces
-                    String groupAndInterface = annoStr.substring(annoStr.indexOf("{")+1,annoStr.lastIndexOf("}"));
+                    String groupAndInterface = annoStr.substring(annoStr.indexOf("{") + 1, annoStr.lastIndexOf("}"));
                     myGroupInterfaces.addAll(Arrays.asList(groupAndInterface.split(",")));
                 } else {//single interface
                     Pattern groupAndInterfacePattern = JapiPattern.getPattern("groups\\s*[=]\\s*[a-zA-Z0-9_]*[.]class");

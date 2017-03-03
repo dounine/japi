@@ -49,7 +49,7 @@ public class JapiClient {
         JAPI_CLIENT.config.setIncludeProjectJavaPath(includeProjectJavaPath);
     }
 
-    public  static void setIncludePackages(String[] includePackages) {
+    public static void setIncludePackages(String[] includePackages) {
         JAPI_CLIENT.config.setIncludePackages(includePackages);
     }
 

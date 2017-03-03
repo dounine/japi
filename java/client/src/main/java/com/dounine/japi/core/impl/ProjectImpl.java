@@ -11,12 +11,15 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -28,7 +31,7 @@ import java.util.regex.Pattern;
 public class ProjectImpl implements IProject {
 
     private static final Pattern API_CONFIG_NAME = JapiPattern.getPattern("\\s*japi[.a-zA-Z0-9_]*\\s*[=]\\s*");
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProjectImpl.class);
     private Map<String, String> properties = new HashMap<>();
     private static final ProjectImpl PROJECT = new ProjectImpl();
 
@@ -43,7 +46,18 @@ public class ProjectImpl implements IProject {
     }
 
     public static IProject init() {
-        return init(new File(ProjectImpl.class.getResource("/japi.properties").getFile()));
+        URL url = JapiClient.class.getResource("/japi.properties");
+        File japiFile = new File(url.getFile());
+        if (!japiFile.exists()) {
+            url = JapiClient.class.getResource("/japi/japi.properties");
+            japiFile = new File(url.getFile());
+        }
+        if(!japiFile.exists()){
+            String err = url.getFile() + " 文件不存在";
+            LOGGER.error(err);
+            throw new JapiException(err);
+        }
+        return init(japiFile);
     }
 
     public static IProject init(File propertiesFile) {

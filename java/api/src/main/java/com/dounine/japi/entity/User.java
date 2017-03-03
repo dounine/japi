@@ -23,7 +23,6 @@ public class User {
     /**
      * 用户密码
      */
-    @NotBlank(message = "密码不能为空")
     private String password;
     /**
      * 测试子类
