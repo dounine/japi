@@ -2,131 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>接口测试</title>
-    <link rel="stylesheet" href="css/index.css">
+    <title>Title</title>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
-    <header>
-        <div class="logo"><a href="/list"> <img src="/images/logo.png" alt=""></a></div>
-        <section>
-            <p class="head-l">
-                <a href="javascript:void(0)">接口测试</a>
-                <a href="javascript:void(0)">第三方接口测试</a>
-            </p>
-            <div class="head-r">
-                <div class="search">
-                    <input type="text">
-                    <i></i>
+<header>
+    <div class="h-wrap">
+        <section class="logo"><a href="/index"> <img src="/images/logo.png" alt=""></a></section>
+        <section class="user">
+            <div >
+                <a href="javascript:void(0)" ><img src="/images/user.png"></a>
+                <div class="user-list">
+                    <ul>
+                        <li>
+                            <a href="javascript:void(0)" onclick="logout()"><img src="/images/logout.png" alt=""></a>
+                        </li>
+                    </ul>
                 </div>
+
             </div>
         </section>
-
-    </header>
-    <div id="containal">
-        <nav id="nav">
-            <div class="nav-head active">
-                <a href="javascript:void(0)" class="text">文档说明</a>
-                <i class="icon ac"></i>
-            </div>
-            <div class="nav-list">
-            </div>
-        </nav>
-        <div id="content">
-            <section class="section">
-                <div class="sec-head">
-                    <h1>演示demo</h1>
-                    <p>更新时间：<span class="time">2017-2-9</span></p>
-                </div>
-                <div class="basic-info">
-                    <p>1.支持http、websocket测试</p>
-                    <p>2.支持json，xml，txt，jsonp等测试</p>
-                    <p>3.支持form-data，x-www-form-urlencoded ，raw，binary 上传格式</p>
-                    <p>4.支持rest地址，http://www.test.com/test/{id}.json 这样的地址会自动替换id</p>
-                    <p>5.由于浏览器跨域访问限制，为了更好的体验服务，请下载安装扩展
-                        <a href="javascript:void(0)">https://chrome.google.com/webstore/detail/%E5%B0%8F%E5%B9%BA%E9%B8%A1/omohfhadnbkakganodaofplinheljnbd</a>
-
-                    </p>
-                    <p>6.如果在使用过程中发现界面排版错误，请切换至chrome最新版本浏览器。其他浏览器，其他浏览器正在适配中。</p>
-                    <p>7.如果配置了地址前缀，则该模块下所有url访问时会自动带上前缀。</p>
-                    <p>8.如果有任何建议或意见都可以在这儿留言 http://www.xiaoyaoji.com.cn/help.html</p>
-                    <p>9.有任何bug 都可以在这儿提出来 http://git.oschina.net/zhoujingjie/apiManager/issues</p>
-                    <p>10.支持markdown编辑器</p>
-                    <p>11.支持mock</p>
-                    <p>12.支持变量</p>
-                </div>
-            </section>
-            <section class="section">
-                <div class="sec-head">
-                    <h4> 请求参数</h4>
-                </div>
-                <div class="sec-table">
-                    <div>
-                        <ul class="sec-table-head">
-                            <li class="col-2">参数名称</li>
-                            <li class="col-1">是否必须</li>
-                            <li class="col-1">类型</li>
-                            <li class="col-6">描述</li>
-                        </ul>
-                        <div class="req">
-                            <div>
-                                <div class="sec-table-list">
-                                    <ul>
-                                        <li class="col-2">name</li>
-                                        <li class="col-1">true</li>
-                                        <li class="col-1">string</li>
-                                        <li class=" col-6">测试1</li>
-                                    </ul>
-                                </div>
-                                <div class="sec-table-list">
-                                    <ul>
-                                        <li class="col-2">key</li>
-                                        <li class="col-1">true</li>
-                                        <li class="col-1">int</li>
-                                        <li class=" col-6">测试2</li>
-                                    </ul>
-                                </div>
-                                <div class="sec-table-list">
-                                    <ul>
-                                        <li class="col-2">other</li>
-                                        <li class="col-1">false</li>
-                                        <li class="col-1">function</li>
-                                        <li class=" col-6">测试3</li>
-                                    </ul>
-                                </div>
-                                <div class="sec-table-list">
-                                    <ul>
-                                        <li class="col-2"><i class="icon-sub"></i> test</li>
-                                        <li class="col-1">true</li>
-                                        <li class="col-1">string</li>
-                                        <li class=" col-6">测试4</li>
-                                    </ul>
-                                    <div class="sub">
-                                        <ul>
-                                            <li class="col-2">test</li>
-                                            <li class="col-1">true</li>
-                                            <li class="col-1">string</li>
-                                            <li class=" col-6">测试4</li>
-                                        </ul>
-                                        <ul>
-                                            <li class="col-2">test</li>
-                                            <li class="col-1">true</li>
-                                            <li class="col-1">string</li>
-                                            <li class=" col-6">测试4</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-        </div>
     </div>
+</header>
+<div id="containal"></div>
+<div id="pages">
+    <button type="button" onclick="pageBtn(this,'first')" class="firstPage " >首页</button>
+    <button type="button" onclick="pageBtn(this,'prev')" class="prevPage " >上一页</button>
+    <button type="button" onclick="pageBtn(this,'next')" class="nextPage">下一页</button>
+    <button type="button" onclick="pageBtn(this,'end')" class="lastPage">尾页</button>
+</div>
 </body>
 <script src="js/jquery-2.1.1.min.js"></script>
 <script src="js/format.js"></script>
-<!--<script src="js/controller.js"></script>-->
-<script src="js/control.js"></script>
 <script src="js/index.js"></script>
 </html>

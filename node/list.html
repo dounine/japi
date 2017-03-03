@@ -9,18 +9,21 @@
 <header>
     <div class="logo"><a href="/list"> <img src="/images/logo.png" alt=""></a></div>
     <section>
-        <div class="search">
-            <input type="text">
-            <i></i>
+        <p class="head-l">
+            <a href="javascript:void(0)">接口测试</a>
+        </p>
+        <div class="head-r">
+            <div class="user"><a href="javascript:void(0)" onclick="logout()"><img src="/images/logout.png"></a></div>
         </div>
     </section>
+
 </header>
 <div id="containal"></div>
 <div id="pages">
-    <a href="javascript:void(0)">首页</a>
-    <a href="javascript:void(0)">上一页</a>
-    <a href="javascript:void(0)">下一页</a>
-    <a href="javascript:void(0)">尾页</a>
+    <a href="javascript:void(0)" class="firstPage">首页</a>
+    <a href="javascript:void(0)" class="prevPage">上一页</a>
+    <a href="javascript:void(0)" class="nextPage">下一页</a>
+    <a href="javascript:void(0)" class="endPage">尾页</a>
 </div>
 </body>
 <script src="js/jquery-2.1.1.min.js"></script>

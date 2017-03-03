@@ -5,26 +5,17 @@
     <title>Title</title>
 </head>
 <body>
-<ul>
-    <li>
-        <a href="javascript:void(0)" >点击</a>
-    </li>
-    <li>
-        <a href="javascript:void(0)">点击</a>
-    </li>
-    <li>
-        <a href="javascript:void(0)">点击</a>
-    </li>
-</ul>
-    <a href="javascript:void(0)" onclick="a()">点击</a>
-    <a href="javascript:void(0)" onclick="a()">点击</a>
-    <a href="javascript:void(0)" onclick="a()">点击</a>
-
-</body>
+    <div>请求方式：<span class="method"></span></div>
+    <a href="javascript:void(0)">点击</a>
 <script src="js/jquery-2.1.1.min.js"></script>
 <script>
-    function a(){
-      console.info();
-    }
+    var methods = ["get"];
+    $('a').click(function(){
+        var mm = methods.join("||");
+        console.info(mm);
+        $(".method").text(mm)
+    })
+
 </script>
+</body>
 </html>

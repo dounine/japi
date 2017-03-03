@@ -1,0 +1,11 @@
+{
+  "default":"dev",
+  "dev": {
+    "lurl": "http://192.168.0.115:7777",
+  	"rurl": "http://192.168.0.121:8080"
+  },
+  "pro": {
+    "lurl": "http://localhost:7777",
+  	"rurl": "http://localhost:8080"
+  }
+}
