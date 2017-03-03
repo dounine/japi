@@ -30,8 +30,8 @@ router.get('/', function *(next) {//根路由
 
 //============路由===========
 app.use(require(path.join(__dirname,routersPath,'login.js'))().routes());//登录路由
-app.use(require(path.join(__dirname,routersPath,'list.js'))().routes());//列表路由
-app.use(require(path.join(__dirname,routersPath,'index.js'))().routes());//首页路由
+app.use(require(path.join(__dirname,routersPath,'detail.js'))().routes());//api路由
+app.use(require(path.join(__dirname,routersPath,'index.js'))().routes());//列表路由
 app.use(router.routes());
 
 //============静态文件资源===========

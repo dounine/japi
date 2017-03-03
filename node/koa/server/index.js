@@ -2,54 +2,54 @@ var request = require('request-promise');
 var path = require('path');
 var config = require(path.resolve('plugins/read-config.js'));
 var form = require(path.resolve('plugins/form.js'));
-module.exports = function (argvs,token) {
-
-    // 版本
-    this.version = function (argvs,token) {
-        var rep = null;
+module.exports = function(a){
+    //获取第一页分页列表
+    this.pagesList = function(pages, token){
         var options = {
-            method: 'POST',
-            timeout:3000,
-            uri: config()['rurl']+'/project/versions',
-            form: argvs,
-            headers: {
-                token:token
-                /* 'content-type': 'application/x-www-form-urlencoded' */ // Set automatically
+            method : 'GET',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/lists/' + pages + '/8',
+            headers : {
+                token : token
             }
         };
         return request(options);
-    }
-    //时间
-    this.verDates = function (argvs,token) {
-        var rep = null;
+    };
+    //获取图片流
+    this.captcha = function(argvs){
         var options = {
-            method: 'POST',
-            timeout:3000,
-            uri: config()['rurl']+'/project/dates',
-            form: argvs,
-            headers: {
-                token:token
-                /* 'content-type': 'application/x-www-form-urlencoded' */ // Set automatically
+            method : 'get',
+            timeout : 3000,
+            uri : config()['rurl'] + 'project/' + argvs + '/logo',
+            headers : {}
+        };
+        return request(options);
+    };
+
+    //分页列表
+    this.pageSizes = function(token, page){
+        var options = {
+            method : 'GET',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/lists/' + page + '/8',
+            headers : {
+                token : token
             }
         };
         return request(options);
-    }
-
-    //参数
-    this.verActions = function (argvs,token) {
+    };
+    //总页数
+    this.sizes = function(token){
         var options = {
-            method: 'POST',
-            timeout:3000,
-            uri: config()['rurl']+'/project/action',
-            form: argvs,
-            headers: {
-                token:token
-                /* 'content-type': 'application/x-www-form-urlencoded' */ // Set automatically
+            method : 'GET',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/count',
+            headers : {
+                token : token
             }
         };
         return request(options);
-    }
-
+    };
 
     return this;
 }
