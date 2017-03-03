@@ -37,10 +37,18 @@ public class JapiClient {
         new JapiClientTransfer().autoTransfer(japiClientStorage);
     }
 
+    /**
+     * 设置主项目地扯
+     * @param projectJavaPath
+     */
     public static void setProjectJavaPath(String projectJavaPath) {
         JAPI_CLIENT.config.setProjectJavaPath(projectJavaPath);
     }
 
+    /**
+     * pringmvc action reletivePath
+     * @param actionReletivePath
+     */
     public static void setActionReletivePath(String actionReletivePath) {
         JAPI_CLIENT.config.setActionReletivePath(actionReletivePath);
     }
