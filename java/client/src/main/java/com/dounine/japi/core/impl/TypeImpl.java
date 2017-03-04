@@ -38,12 +38,12 @@ public class TypeImpl implements IType {
 
     @Override
     public List<IField> getFields() {
-        if(null==javaKeyTxt){
+        if (null == javaKeyTxt) {
             CONSOLE.error("javaKeyTxt 不能为空");
             throw new JapiException("javaKeyTxt 不能为空");
         }
 
-        if(BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt)){
+        if (BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt)) {
             return null;
         }
         if (null == returnFields) {
@@ -54,10 +54,10 @@ public class TypeImpl implements IType {
 
     @Override
     public String getName() {
-        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt,javaFile.getAbsolutePath());
+        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
 
-        if(null==searchFile){
-            throw new JapiException("找不到相关文件："+javaKeyTxt+".java");
+        if (null == searchFile) {
+            throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
         }
         List<String> javaFileLines = null;
         try {
@@ -65,7 +65,7 @@ public class TypeImpl implements IType {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(null!=javaFileLines){
+        if (null != javaFileLines) {
             Pattern docBeginPattern = JapiPattern.getPattern("[/][*][*]");
             Pattern classBeginPattern = JapiPattern.getPattern("[a-zA-Z0-9_]+\\s*[{]$");
             List<String> docsAndAnnos = new ArrayList<>();
@@ -78,22 +78,22 @@ public class TypeImpl implements IType {
                 if (docBegin && !classBegin) {
                     docsAndAnnos.add(line);
                 }
-                if(classBeginPattern.matcher(line).find()){
+                if (classBeginPattern.matcher(line).find()) {
                     classBegin = true;
                 }
             }
-            if(docsAndAnnos.size()>0){
+            if (docsAndAnnos.size() > 0) {
                 Pattern docEndPattern = JapiPattern.getPattern("[*][/]$");
                 List<String> docs = new ArrayList<>();
-                for(String line : docsAndAnnos){
+                for (String line : docsAndAnnos) {
                     docs.add(line);
-                    if(docEndPattern.matcher(line).find()){
+                    if (docEndPattern.matcher(line).find()) {
                         break;
                     }
                 }
                 String name = "";
-                for(String line : docs){
-                    if(line.length()>3){
+                for (String line : docs) {
+                    if (line.length() > 3) {
                         name = line.substring(3).trim();
                         break;
                     }
@@ -142,14 +142,14 @@ public class TypeImpl implements IType {
     }
 
     private List<IField> extractDocAndFieldInfo() {
-        if(javaKeyTxt.equals("void")){
+        if (javaKeyTxt.equals("void")) {
             return null;
         }
 
-        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt,javaFile.getAbsolutePath());
+        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
 
-        if(null==searchFile){
-            throw new JapiException("找不到相关文件："+javaKeyTxt+".java");
+        if (null == searchFile) {
+            throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
         }
         List<String> javaFileLines = null;
         try {
@@ -172,6 +172,13 @@ public class TypeImpl implements IType {
                 noPackageLines.add(line);
             }
         }
+        String javaHeaderStr = noPackageLines.get(0);
+        Pattern genericPatther = JapiPattern.getPattern("<(\\s|\\S)*>");
+        Matcher genericMatcher = genericPatther.matcher(javaHeaderStr);
+        String genericStr = null;
+        if (genericMatcher.find()) {
+            genericStr = genericMatcher.group();
+        }
         noPackageLines = noPackageLines.subList(1, noPackageLines.size() - 1);//去掉类头与尾巴
         final List<List<String>> fieldBodyAndDocs = fieldBodyAndDoc(noPackageLines);
 
@@ -185,16 +192,22 @@ public class TypeImpl implements IType {
             fieldImpl.setDocs(fieldDocs);
             fieldImpl.setAnnotations(extractField.getAnnotations());
             fieldImpl.setType(extractField.getType());
-            fieldImpl.setName(extractField.getName());
-            if(!BuiltInJavaImpl.getInstance().isBuiltInType(extractField.getType())){//不是java内置类型,属于算定义类型,递归查找
-                File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(extractField.getType(),searchFile.getAbsolutePath());
-                if(childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())){//自身对象
-                    fieldImpl.setName(extractField.getName());
+            String name = extractField.getName();
+            name = name.contains("(") ? name.substring(3, name.lastIndexOf("(")).toLowerCase() : name;//method
+            fieldImpl.setName(name);
+            String type = extractField.getType();
+            if((StringUtils.isNotBlank(genericStr) && genericStr.contains(type))){//generic type
+                fieldImpl.setName(name);
+                fieldImpl.setType("object");
+            }else if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
+                File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
+                if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
+                    fieldImpl.setName(name);
                     fieldImpl.setType(MY_SELF_REF);
-                }else{
+                } else {
                     TypeImpl returnTypeImpl = new TypeImpl();
                     returnTypeImpl.setJavaFile(searchFile.getAbsoluteFile());
-                    returnTypeImpl.setJavaKeyTxt(extractField.getType());
+                    returnTypeImpl.setJavaKeyTxt(type);
                     fieldImpl.setFields(returnTypeImpl.getFields());
                 }
             }
@@ -280,13 +293,11 @@ public class TypeImpl implements IType {
             }
         }
         String returnTypeStr = getFieldTypeStr(fieldLineStr);
-//        IType returnType = getFieldType(returnTypeStr);
         fieldImpl.setType(returnTypeStr);
         fieldImpl.setAnnotations(annotationStrs);
-        //fieldImpl.setReturnFields(returnType.getFields());
-        fieldLineStr = fieldLineStr.endsWith(";")?StringUtils.substring(fieldLineStr,0,-1):fieldLineStr;
+        fieldLineStr = fieldLineStr.endsWith(";") ? StringUtils.substring(fieldLineStr, 0, -1) : fieldLineStr;
         String[] typeOrName = fieldLineStr.split(StringUtils.SPACE);
-        fieldImpl.setName(typeOrName[typeOrName.length-1]);
+        fieldImpl.setName(typeOrName[typeOrName.length - 1]);
         return fieldImpl;
     }
 
@@ -301,21 +312,14 @@ public class TypeImpl implements IType {
         }
         String returnType = null;
         if (StringUtils.isNotBlank(typeStr)) {
-            if(typeStr.split(" ").length==2){
-                returnType = typeStr.substring(0,typeStr.trim().lastIndexOf(" "));
-            }else{
+            if (typeStr.split(" ").length == 2) {
+                returnType = typeStr.substring(0, typeStr.trim().lastIndexOf(" "));
+            } else {
                 returnType = typeStr.substring(typeStr.indexOf(StringUtils.SPACE), typeStr.lastIndexOf(StringUtils.SPACE));
             }
             returnType = returnType.trim();
         }
         return returnType;
-    }
-
-    private IType getFieldType(final String returnTypeStr) {
-        TypeImpl returnTypeImpl =  new TypeImpl();
-        returnTypeImpl.setJavaFile(javaFile);
-        returnTypeImpl.setJavaKeyTxt(returnTypeStr);
-        return returnTypeImpl;
     }
 
     public void setJavaKeyTxt(String javaKeyTxt) {

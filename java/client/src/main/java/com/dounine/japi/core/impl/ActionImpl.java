@@ -1,5 +1,6 @@
 package com.dounine.japi.core.impl;
 
+import com.dounine.japi.JapiClient;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.*;
 import com.dounine.japi.core.annotation.IActionRequest;
@@ -561,7 +562,7 @@ public class ActionImpl implements IAction {
                     IType returnType = getType(doc.getValue().split(" ")[1]);
                     actionInfo.setResponseFields(getChildFields(returnType.getFields()));
                 } else {
-                    if (!"param".equals(doc.getName())) {
+                    if (!ExcludesActionImpl.getInstance().isExcludesTag(doc.getName())) {
                         ActionInfoDoc actionInfoDoc = new ActionInfoDoc();
                         actionInfoDoc.setTagName(doc.getDocType());
                         actionInfoDoc.setTagValue(doc.getValue());
@@ -570,7 +571,12 @@ public class ActionImpl implements IAction {
                 }
             }
             if (!hasReturnDoc) {//use action return default type
-                actionInfo.setResponseFields(getChildFields(actionMethod.getType().getFields()));
+                List<IResponse> responses = getChildFields(actionMethod.getType().getFields());
+                if(null!=responses&&responses.size()>0){
+                    actionInfo.setResponseFields(responses);
+                }else{
+                    actionInfo.setResponseFields(ActionReturnParser.getResponses(JapiClient.getConfig().getActionDefaultReturnType(),null));
+                }
             }
             List<String> versionUrls = new ArrayList<>(actionInfo.getActionInfoRequest().getUrls().size());
             for (String url : actionInfo.getActionInfoRequest().getUrls()) {

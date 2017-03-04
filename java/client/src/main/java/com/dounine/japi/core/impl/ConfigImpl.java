@@ -2,6 +2,7 @@ package com.dounine.japi.core.impl;
 
 import com.dounine.japi.core.IConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,7 +13,11 @@ public class ConfigImpl implements IConfig {
     private String projectJavaPath;
     private String actionReletivePath;
     private String[] includePackages;
-    private List<String> includeProjectJavaPath;
+    private List<String> includeProjectJavaPath = new ArrayList<>();
+    private Class<?> actionDefaultReturnType;
+    private String actionReplaceType;
+    private String prefixPath = "";
+    private String postfixPath = "";
 
     @Override
     public String getProjectJavaPath() {
@@ -47,4 +52,36 @@ public class ConfigImpl implements IConfig {
     public void setIncludePackages(String[] includePackages) {
         this.includePackages = includePackages;
     }
+
+    public Class<?> getActionDefaultReturnType() {
+        return actionDefaultReturnType;
+    }
+
+    public void setActionDefaultReturnType(String actionReplaceType,Class<?> actionDefaultReturnType) {
+        this.actionReplaceType = actionReplaceType;
+        this.actionDefaultReturnType = actionDefaultReturnType;
+    }
+
+    public void setPrefixPath(String prefixPath) {
+        this.prefixPath = prefixPath;
+    }
+
+    public String getPrefixPath() {
+        return prefixPath;
+    }
+
+    public String getPostfixPath() {
+        return postfixPath;
+    }
+
+    @Override
+    public String getActionReplaceType() {
+        return actionReplaceType;
+    }
+
+    public void setPostfixPath(String postfixPath) {
+        this.postfixPath = postfixPath;
+    }
+
+
 }

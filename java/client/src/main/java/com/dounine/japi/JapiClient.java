@@ -1,5 +1,7 @@
 package com.dounine.japi;
 
+import com.dounine.japi.act.Result;
+import com.dounine.japi.act.ResultImpl;
 import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IProject;
 import com.dounine.japi.core.impl.ConfigImpl;
@@ -24,11 +26,15 @@ public class JapiClient {
     }
 
     public static void main(String[] args) {
-        JapiClient.setProjectJavaPath("/home/lake/github/japi/java/client/src/main/java");
+        JapiClient.setPrefixPath("/home/lake/github/japi/java/");//路径前缀
+        JapiClient.setpostfixPath("/src/main/java");
+
+        JapiClient.setProjectJavaPath("client");
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
-        JapiClient.setIncludeProjectJavaPath(new String[]{"/home/lake/github/japi/java/api/src/main/java"});
+        JapiClient.setIncludeProjectJavaPath(new String[]{"api"});
         JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//可以准确快速搜索
         JapiClient.setUseCache(true);//
+        JapiClient.setActionDefaultReturnType("com.dounine.japi.act.Result",Result.class);
 
         IProject project = ProjectImpl.init();
         JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
@@ -60,6 +66,19 @@ public class JapiClient {
     public static void setIncludePackages(String[] includePackages) {
         JAPI_CLIENT.config.setIncludePackages(includePackages);
     }
+
+    public static void setActionDefaultReturnType(String replaceType,Class<?> clazz) {
+        JAPI_CLIENT.config.setActionDefaultReturnType(replaceType,clazz);
+    }
+
+    public static void setPrefixPath(String prefixPath){
+        JAPI_CLIENT.config.setPrefixPath(prefixPath);
+    }
+
+    public static void setpostfixPath(String postfixPath){
+        JAPI_CLIENT.config.setPostfixPath(postfixPath);
+    }
+
 
     public static void setIncludeProjectJavaPath(String[] includeProjectJavaPath) {
         if(null!=includeProjectJavaPath){

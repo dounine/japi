@@ -1,5 +1,6 @@
 package com.dounine.japi.core.action.comm;
 
+import com.dounine.japi.act.Result;
 import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.*;
@@ -21,12 +22,13 @@ public class TestAction {
     /**
      * 获取热闹新闻
      * @param user 用户信息
-     * @return class User
-     * @version 1
+     * @deprecated yes
+     * @throws RuntimeException
      */
+    @ApiVersion(1)
     @org.springframework.web.bind.annotation.GetMapping(value = "list")
     @ResponseBody
-    public User testUser(@Validated User user,String[] names,BindingResult bindingResult) throws RuntimeException{
+    public Result testUser(@Validated User user, String[] names, BindingResult bindingResult) throws RuntimeException{
 
         return null;
     }

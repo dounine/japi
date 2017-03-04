@@ -65,7 +65,7 @@ public class DefaultValid implements IValid {
 
             requestField.setDescription(description);
             requestField.setDefaultValue("");
-            requestField.setType(typeAndName[0]);
+            requestField.setType(typeAndName[0].toLowerCase());
             requestFields.add(requestField);
             parameter.setRequestFields(requestFields);
         } else {
@@ -76,7 +76,7 @@ public class DefaultValid implements IValid {
             RequestImpl request = new RequestImpl();
             request.setName(typeAndName[1]);
             request.setRequired(false);
-            request.setType(typeAndName[0]);
+            request.setType(typeAndName[0].toLowerCase());
             request.setDefaultValue("");
             if(StringUtils.isBlank(description)){
                 request.setDescription(type.getName());

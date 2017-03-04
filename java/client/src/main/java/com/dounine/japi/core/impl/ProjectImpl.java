@@ -35,7 +35,9 @@ public class ProjectImpl implements IProject {
     private Map<String, String> properties = new HashMap<>();
     private static final ProjectImpl PROJECT = new ProjectImpl();
 
-    private ProjectImpl(){}
+    private ProjectImpl() {
+    }
+
     public static IProject init(Map<String, String> properties) {
         PROJECT.properties = properties;
         return PROJECT;
@@ -52,7 +54,7 @@ public class ProjectImpl implements IProject {
             url = JapiClient.class.getResource("/japi/japi.properties");
             japiFile = new File(url.getFile());
         }
-        if(!japiFile.exists()){
+        if (!japiFile.exists()) {
             String err = url.getFile() + " 文件不存在";
             LOGGER.error(err);
             throw new JapiException(err);
@@ -83,7 +85,7 @@ public class ProjectImpl implements IProject {
 
     @Override
     public List<IPackage> getPackages() {
-        String masterProjectActionPath = JapiClient.getConfig().getProjectJavaPath() + "/" + JapiClient.getConfig().getActionReletivePath();
+        String masterProjectActionPath = JapiClient.getConfig().getPrefixPath() + JapiClient.getConfig().getProjectJavaPath() + JapiClient.getConfig().getPostfixPath() + "/" + JapiClient.getConfig().getActionReletivePath();
         File actionFold = new File(masterProjectActionPath);
         if (!actionFold.exists()) {
             throw new JapiException(masterProjectActionPath + " fold not exists.");
@@ -97,7 +99,7 @@ public class ProjectImpl implements IProject {
         Collection<File> folds = FileUtils.listFilesAndDirs(actionFold, dirFilter, TrueFileFilter.INSTANCE);
         List<IPackage> packages = new ArrayList<>(folds.size());
         for (File fold : folds) {
-            if(!fold.getAbsolutePath().equals(actionFold.getAbsolutePath())){
+            if (!fold.getAbsolutePath().equals(actionFold.getAbsolutePath())) {
                 PackageImpl packageImpl = new PackageImpl();
                 packageImpl.setPackageFold(fold);
                 packages.add(packageImpl);

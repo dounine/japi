@@ -53,16 +53,16 @@ public class JavaFileImpl implements IJavaFile {
         if (StringUtils.isBlank(javaFilePath)) {
             throw new JapiException("javaFilePath 主文件路径不能为空");
         }
-        if (null == JapiClient.getConfig().getIncludeProjectJavaPath() || (null != JapiClient.getConfig().getIncludeProjectJavaPath() && JapiClient.getConfig().getIncludeProjectJavaPath().size() == 0)) {
-            throw new JapiException("includePaths 至少包含一个主项目地扯");
-        }
+//        if (null == JapiClient.getConfig().getIncludeProjectJavaPath() || (null != JapiClient.getConfig().getIncludeProjectJavaPath() && JapiClient.getConfig().getIncludeProjectJavaPath().size() == 0)) {
+//            throw new JapiException("includePaths 至少包含一个主项目地扯");
+//        }
         File javaFile = null;
         if (javaTxt.contains(".")) {//查找关键字包含点的
-            File javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getProjectJavaPath()) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
+            File javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + JapiClient.getConfig().getProjectJavaPath() + JapiClient.getConfig().getPostfixPath()) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
             List<File> findChildFiles = new ArrayList<>();
             if (!javaTxtFile.exists()) {//主项目不存在,查找其它项目
                 for (String childProjectPath : JapiClient.getConfig().getIncludeProjectJavaPath()) {
-                    javaTxtFile = new File(getEndSplitPath(childProjectPath) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
+                    javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + childProjectPath + JapiClient.getConfig().getPostfixPath()) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
                     if (javaTxtFile.exists()) {
                         findChildFiles.add(javaTxtFile);
                     }
@@ -84,15 +84,15 @@ public class JavaFileImpl implements IJavaFile {
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }
-            List<String> javaFileImportPackageLines = filterJavaFileImportPackageLines(javaFileLines).stream().filter(line->line.startsWith("import ")).collect(Collectors.toList());
+            List<String> javaFileImportPackageLines = filterJavaFileImportPackageLines(javaFileLines).stream().filter(line -> line.startsWith("import ")).collect(Collectors.toList());
 
-            Optional<String> keyEndOptional = javaFileImportPackageLines.stream().filter(line->line.endsWith("."+javaTxt+";")).findFirst();
-            if(keyEndOptional.isPresent()){//找到有.关键字结尾的包
+            Optional<String> keyEndOptional = javaFileImportPackageLines.stream().filter(line -> line.endsWith("." + javaTxt + ";")).findFirst();
+            if (keyEndOptional.isPresent()) {//找到有.关键字结尾的包
                 String packageStr = StringUtils.substring(keyEndOptional.get(), PACKAGE_PREFIX.length(), -1).replace(".", "/").trim();
-                File javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getProjectJavaPath()) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
+                File javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + JapiClient.getConfig().getProjectJavaPath() + JapiClient.getConfig().getPostfixPath()) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
                 if (!javaTxtFile.exists()) {//主项目不存在,查找其它项目
                     for (String childProjectPath : JapiClient.getConfig().getIncludeProjectJavaPath()) {
-                        javaTxtFile = new File(getEndSplitPath(childProjectPath) + packageStr.replace(".", "/") + CHECK_FILE_SUFFIX);
+                        javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + childProjectPath + JapiClient.getConfig().getPostfixPath()) + packageStr.replace(".", "/") + CHECK_FILE_SUFFIX);
                         if (javaTxtFile.exists()) {
                             javaFile = javaTxtFile;
                             break;
@@ -101,20 +101,20 @@ public class JavaFileImpl implements IJavaFile {
                 } else {
                     javaFile = javaTxtFile;
                 }
-            }else{
-                List<String> javaFileImportPackageHasAllLines = javaFileImportPackageLines.stream().filter(line->line.endsWith(".*;")).collect(Collectors.toList());
+            } else {
+                List<String> javaFileImportPackageHasAllLines = javaFileImportPackageLines.stream().filter(line -> line.endsWith(".*;")).collect(Collectors.toList());
                 List<String> findHasPackageLines = new ArrayList<>();
-                if(null!=JapiClient.getConfig().getIncludePackages()&&JapiClient.getConfig().getIncludePackages().length>0){//有使用确定包，可加快搜索速度
-                    for(String includePackage : JapiClient.getConfig().getIncludePackages()){
-                        for(String allKey : javaFileImportPackageHasAllLines){
-                            if(allKey.contains(includePackage)){
-                                findHasPackageLines.add(StringUtils.substring(allKey.substring("import ".length()).trim(),0,-3));
+                if (null != JapiClient.getConfig().getIncludePackages() && JapiClient.getConfig().getIncludePackages().length > 0) {//有使用确定包，可加快搜索速度
+                    for (String includePackage : JapiClient.getConfig().getIncludePackages()) {
+                        for (String allKey : javaFileImportPackageHasAllLines) {
+                            if (allKey.contains(includePackage)) {
+                                findHasPackageLines.add(StringUtils.substring(allKey.substring("import ".length()).trim(), 0, -3));
                             }
                         }
                     }
-                }else{
-                    for(String allKey : javaFileImportPackageHasAllLines){
-                        findHasPackageLines.add(StringUtils.substring(allKey.substring("import ".length()).trim(),0,-3));
+                } else {
+                    for (String allKey : javaFileImportPackageHasAllLines) {
+                        findHasPackageLines.add(StringUtils.substring(allKey.substring("import ".length()).trim(), 0, -3));
                     }
                 }
 
@@ -124,39 +124,39 @@ public class JavaFileImpl implements IJavaFile {
                         return pathname.isFile() && pathname.getName().equals(javaTxt + CHECK_FILE_SUFFIX);
                     }
                 });
-                for(String packageStr : findHasPackageLines){
-                    String packagePath = getEndSplitPath(JapiClient.getConfig().getProjectJavaPath()) + packageStr.replace(".", "/");
+                for (String packageStr : findHasPackageLines) {
+                    String packagePath = getEndSplitPath(JapiClient.getConfig().getPrefixPath() + JapiClient.getConfig().getProjectJavaPath() + JapiClient.getConfig().getPostfixPath()) + packageStr.replace(".", "/");
                     File packageFile = new File(packagePath);
-                    if(packageFile.exists()){
-                        Collection<File> files = FileUtils.listFiles(packageFile,javaFileFilter,TrueFileFilter.INSTANCE);
-                        if (files.size()>1) {
+                    if (packageFile.exists()) {
+                        Collection<File> files = FileUtils.listFiles(packageFile, javaFileFilter, TrueFileFilter.INSTANCE);
+                        if (files.size() > 1) {
                             javaFile = files.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList()).get(0);
                             break;
-                        }else if(files.size()==1){
+                        } else if (files.size() == 1) {
                             javaFile = files.iterator().next();
                             break;
                         }
                     }
 
-                    if(null==javaFile){
+                    if (null == javaFile) {
                         for (String childProjectPath : JapiClient.getConfig().getIncludeProjectJavaPath()) {
-                            packageFile = new File(getEndSplitPath(childProjectPath) + packageStr.replace(".", "/") );
-                            Collection<File> files = FileUtils.listFiles(packageFile,javaFileFilter,TrueFileFilter.INSTANCE);
-                            if (files.size()>1) {
+                            packageFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + childProjectPath + JapiClient.getConfig().getPostfixPath()) + packageStr.replace(".", "/"));
+                            Collection<File> files = FileUtils.listFiles(packageFile, javaFileFilter, TrueFileFilter.INSTANCE);
+                            if (files.size() > 1) {
                                 javaFile = files.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList()).get(0);
                                 break;
-                            }else if(files.size()==1){
+                            } else if (files.size() == 1) {
                                 javaFile = files.iterator().next();
                             }
                         }
-                        if(null!=javaFile){
+                        if (null != javaFile) {
                             break;
                         }
                     }
                 }
-                if(null==javaFile){
+                if (null == javaFile) {
                     File myReletivePath = new File(new File(javaFilePath).getParentFile().getAbsoluteFile() + "/" + javaTxt + ".java");
-                    if(myReletivePath.exists()){
+                    if (myReletivePath.exists()) {
                         javaFile = myReletivePath;
                     }
                 }

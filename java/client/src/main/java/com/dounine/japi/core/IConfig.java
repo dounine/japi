@@ -26,4 +26,12 @@ public interface IConfig {
     List<String> getIncludeProjectJavaPath();
 
     String[] getIncludePackages();
+
+    Class<?> getActionDefaultReturnType();
+
+    String getPrefixPath();
+
+    String getPostfixPath();
+
+    String getActionReplaceType();
 }
