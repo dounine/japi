@@ -575,7 +575,7 @@ public class ActionImpl implements IAction {
                 if(null!=responses&&responses.size()>0){
                     actionInfo.setResponseFields(responses);
                 }else{
-                    actionInfo.setResponseFields(ActionReturnParser.getResponses(JapiClient.getConfig().getActionDefaultReturnType(),null));
+                    actionInfo.setResponseFields(ActionReturnParser.getResponses(JapiClient.getConfig().getActionDefaultReturnType()));
                 }
             }
             List<String> versionUrls = new ArrayList<>(actionInfo.getActionInfoRequest().getUrls().size());

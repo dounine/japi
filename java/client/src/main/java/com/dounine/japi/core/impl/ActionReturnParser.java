@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class ActionReturnParser {
 
-    public static List<IResponse> getResponses(Class<?> returnType,List<String[]> docs){
+    public static List<IResponse> getResponses(Class<?> returnType){
         List<IResponse> responses = new ArrayList<>();
         for(Method method : returnType.getMethods()) {
             ResponseImpl responseImpl = new ResponseImpl();

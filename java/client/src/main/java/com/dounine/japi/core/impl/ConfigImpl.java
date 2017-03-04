@@ -15,7 +15,6 @@ public class ConfigImpl implements IConfig {
     private String[] includePackages;
     private List<String> includeProjectJavaPath = new ArrayList<>();
     private Class<?> actionDefaultReturnType;
-    private String actionReplaceType;
     private String prefixPath = "";
     private String postfixPath = "";
 
@@ -57,8 +56,7 @@ public class ConfigImpl implements IConfig {
         return actionDefaultReturnType;
     }
 
-    public void setActionDefaultReturnType(String actionReplaceType,Class<?> actionDefaultReturnType) {
-        this.actionReplaceType = actionReplaceType;
+    public void setActionDefaultReturnType(Class<?> actionDefaultReturnType) {
         this.actionDefaultReturnType = actionDefaultReturnType;
     }
 
@@ -72,11 +70,6 @@ public class ConfigImpl implements IConfig {
 
     public String getPostfixPath() {
         return postfixPath;
-    }
-
-    @Override
-    public String getActionReplaceType() {
-        return actionReplaceType;
     }
 
     public void setPostfixPath(String postfixPath) {

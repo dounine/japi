@@ -33,5 +33,4 @@ public interface IConfig {
 
     String getPostfixPath();
 
-    String getActionReplaceType();
 }
