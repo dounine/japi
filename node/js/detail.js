@@ -119,7 +119,7 @@ function copy(){
     $('.copysuc').show();
     $('.copy').attr("disabled");
     setTimeout(function(){
-        $('.copy').removeAttr("disabled")
+        $('.copy').removeAttr("disabled");
         $('.copysuc').hide();
     }, 2000)
 

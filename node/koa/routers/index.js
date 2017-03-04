@@ -138,6 +138,20 @@ module.exports = function(config){
                     $self.status = 408;
                 }
             }));
+    }).post("/sortList", function*(){
+        let token = this.cookies.get('token');
+
+        let $self = this;
+        yield (server().sortList(token)
+            .then((parsedBody) =>{
+                let responseText = JSON.parse(parsedBody);
+                $self.body = responseText;
+            }).catch((error) =>{
+                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
+                    $self.body = {'msg' : '请求错误！', errno : 3};
+                    $self.status = 408;
+                }
+            }));
     });
 
     return router;

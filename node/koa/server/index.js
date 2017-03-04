@@ -87,6 +87,18 @@ module.exports = function(a){
         };
         return request(options);
     };
+    this.sortList = function(token){
+        var options = {
+            method : 'GET',
+            timeout : 3000,
+            uri : config()['rurl'] + '/user/follows',
+
+            headers : {
+                token : token
+            }
+        };
+        return request(options);
+    };
 
     return this;
 }

@@ -12,7 +12,7 @@ $.get("/islogin", function(data){
 $(document).ready(function(){
 
     //请求导航，生成nav
-    var navName = {"projectName" : location.hash.split("=")[1]}
+    var navName = {"projectName" : location.hash.split("#")[1].split("/")[0]}
     $.ajax({
         type : "post",
         url : "/detail",
@@ -43,10 +43,61 @@ $(document).ready(function(){
             console.info(request);
         }
     });
+
+    //刷新后回到页面
+    function refresh(){
+        var refHashArr = location.hash.split("#")[1].split('/');
+        if(refHashArr.length!=1){
+            version.projectName=refHashArr[0];
+            version.packageName = refHashArr[1];
+            version.funName = refHashArr[2];
+            version.actionName = refHashArr[3];
+            version.versionName = refHashArr[4];
+            version.dateName = refHashArr[5];
+            $.ajax({
+                type : "post",
+                url : "/versions",
+                data : version,
+                success : function(data){
+
+                    var cont, vNum;
+
+                    cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
+                    if(data.data.length == "1"){
+                        vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
+                    } else {
+                        vNum = "版本：<select  class='version-list' onchange='verSel(version)'>";
+                        $.each(data.data, function(index, item){
+                            vNum += "<option value='%{version}'>%{version}</option>".format({version : item})
+                        });
+                        vNum += "</select>";
+                    }
+                    cont += "</div><section class='section info'></section><section class='section infodous'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
+                        "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close' onclick='modalClose()'>关闭</a></div><div class='m-con'></div></section></div>"
+
+                    $("#content").html(cont);
+                    $(".v-num").html(vNum)
+                    verSel(version);
+                     $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
+
+
+                }
+            });
+
+
+
+
+        }
+
+
+    }
+    refresh()
+
+
     //导航点击
     $("#nav").on("click", ".nav-list .acLi a", function(){
 
-        version.projectName = window.location.hash.split("=")[1];
+        version.projectName = window.location.hash.split("#")[1].split("/")[0];
         version.packageName = $(this).parents('.root').find('.rootName').text();
         version.funName = $(this).parents('.sub').find('.subName').text();
         version.actionName = $(this).text();
@@ -56,10 +107,10 @@ $(document).ready(function(){
             url : "/versions",
             data : version,
             success : function(data){
-                console.info(data);
+
                 var cont, vNum;
 
-                cont = "<div><h4>基本信息</h4><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
+                cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
                 if(data.data.length == "1"){
                     vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
                 } else {
@@ -69,7 +120,7 @@ $(document).ready(function(){
                     });
                     vNum += "</select>";
                 }
-                cont += "</div><section class='section info'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
+                cont += "</div><section class='section info'></section><section class='section infodous'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
                     "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close' onclick='modalClose()'>关闭</a></div><div class='m-con'></div></section></div>"
 
                 $("#content").html(cont);
@@ -107,7 +158,16 @@ function verSel(version){
             }
 
             $('.v-time').html(verDate);
-            action(version)
+            action(version);
+            var hashArr=[];
+            $.each(version,function(i,t){
+                hashArr.push(t)
+            });
+            var newHash=hashArr.join('/');
+
+
+            location.hash=newHash
+
         }
     })
 }
@@ -135,6 +195,10 @@ function action(version){
             var info = "<div class='basic-info'><div class='item urls'>";
             var actInfoUrls = resData.actionInfoRequest.urls;
             var actInfoMethods = resData.actionInfoRequest.methods;
+            var actionInfoDocs = resData.actionInfoDocs;
+
+
+
             if(actInfoUrls.length == "1"){
                 info += "<span class='urls-select' data-value='%{url}'>%{url}</span>".format({url : actInfoUrls})
             } else {
@@ -145,10 +209,22 @@ function action(version){
                 info += "</select>"
             }
 
-            info += ("<span class='method'>请求方式：<strong></strong></span>" +
-            "<button class='copy' onclick='copy()'>复制</button><span class='copysuc'>复制成功</span>");
+            info += ("<span class='method'><strong></strong></span>" +
+            "<a href='javascript:void(0)' class='copy' onclick='copy()'><img src='/images/copy.png' alt=''></a><span class='copysuc'>复制成功</span>");
             info += "</div><div class='item extype'></div></div>";
 
+
+            var infoDocs="<ul>";
+            $.each(actionInfoDocs,function(index,item){
+                infoDocs+="<li>";
+                infoDocs+="<p><span>%{tagName}</span>：<span>%{tagval}</span></p>".format({tagName:item.tagName,tagval:item.tagValue})
+                // $.each(item,function(i,t){
+                //     infoDocs+="<p><span>%{docsKey}</span>：<span>%{docsVal}</span></p>".format({docsKey:i,docsVal:t})
+                // })
+                // }
+                infoDocs+="</li>"
+            })
+            infoDocs+="</ul>"
 
             /*******请求参数********/
 
@@ -237,6 +313,7 @@ function action(version){
             $('.method strong').text(thod)
             $('.section.reqtable').html(requestFields);
             $('.section.restable').html(responseFields)
+            $('.section.infodous').html(infoDocs)
         }
     })
 

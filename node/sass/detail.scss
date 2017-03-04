@@ -47,7 +47,7 @@ a{
 
 header{
   height:80px;
-  background:rgba(0, 178, 114, 1);
+  background:#5ebbc2;
   color:#fff;
   padding:0 30px;
   position:fixed;
@@ -74,21 +74,41 @@ header{
       align-items:center;
       .logout{
         display:flex;
-        margin-right:20px;
-        width:30px;
-        height:30px;
+        flex-direction:column;
+        align-items:center;
+        width:50px;
+        height:40px;
+        font-size:14px;
+        font-family:"Microsoft YaHei";
+
         img{
-          width:100%;
-          height:100%;
+          width:30px;
+          height:27px;
+          margin-bottom:5px;
         }
       }
       .user-wrap{
-        margin-right:30px;
+        padding-right:30px;
         width:40px;
         height:40px;
+        .user{
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          width:50px;
+          font-size:14px;
+          font-family:"Microsoft YaHei";
+          img{
+            width:23px;
+            height:27px;
+            margin-bottom:5px;
+          }
+        }
         .user-list{
           display:none;
-          padding-top:20px;
+          padding-top:30px;
+          margin-top:-10px;
+          width:300%;
           ul{
             display:flex;
             box-shadow:0 0 5px #000;
@@ -103,6 +123,11 @@ header{
               width:90%;
               justify-content:space-between;
               align-items:center;
+              .drag{
+                width:22px;
+                height:18px;
+                margin-right:10px;
+              }
               .followName{
                 display:flex;
                 width:85%;
@@ -141,7 +166,7 @@ header{
       text-overflow: ellipsis;
       white-space: nowrap;
       &:hover{
-        color:#00b272;
+        color:#5ebbc2;
       }
     }
     .nav-head{
@@ -191,7 +216,7 @@ header{
                 background:rgba(221,236,244,1);
               }
               &.active{
-                border-left:2px solid #00b272;
+                border-left:2px solid #5ebbc2;
                 background:rgba(221,236,244,1);
               }
             }
@@ -220,6 +245,8 @@ header{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      margin-top:20px;
+      font-weight:bold;
       select{
         margin:0 10px;
       }
@@ -235,15 +262,22 @@ header{
           display:flex;
           align-items:center;
           &.urls{
+
+            .urls-select{
+              font-size:18px;
+              font-weight:bold;
+              &span{
+                border:1px solid #ccc;
+              }
+            }
             .method{
-              margin:0 10px;
+              margin:0 20px;
             }
             .copy{
-              border:1px solid #ccc;
+
               margin:0 10px;
-              border-radius:3px;
-              height:20px;
-              line-height:20px;
+              height:26px;
+
               &:hover{
                 color:#00b272;
               }
@@ -258,6 +292,16 @@ header{
           }
 
 
+        }
+      }
+      &.infodous{
+        ul{
+          li{
+            display:flex;
+            p{
+              span{ margin-right: 5px; font-weight:bold;}
+            }
+          }
         }
       }
       .sec-table{
@@ -384,7 +428,7 @@ header{
     .close{
       color:#333;
       &:hover{
-        color:#00b272;
+        color:#5ebbc2;
       }
     }
   }
@@ -399,4 +443,5 @@ header{
   display:none;
   
 }
+
 

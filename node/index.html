@@ -13,13 +13,13 @@
         <section class="head-r">
 
             <div class="user-wrap">
-                <a href="javascript:void(0)" class="user"><img src="/images/user.png"></a>
+                <a href="javascript:void(0)" class="user"><img src="/images/user.png"><span>用户名</span></a>
                 <div class="user-list">
 
                 </div>
 
             </div>
-            <a href="javascript:void(0)" class="logout" onclick="logout()"><img src="/images/logout.png" alt=""></a>
+            <a href="javascript:void(0)" class="logout" onclick="logout()"><img src="/images/logout.png" alt=""><span>退出</span></a>
         </section>
     </div>
 </header>
@@ -30,6 +30,7 @@
     <button type="button" onclick="pageBtn(this,'next')" class="nextPage">下一页</button>
     <button type="button" onclick="pageBtn(this,'end')" class="lastPage">尾页</button>
 </div>
+<input type="hidden" id="orderlist" />
 </body>
 <script src="js/jquery-2.1.1.min.js"></script>
 <script src="js/format.js"></script>
