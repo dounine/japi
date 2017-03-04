@@ -1,6 +1,7 @@
 package com.dounine.japi.core.action.comm;
 
 import com.dounine.japi.act.Result;
+import com.dounine.japi.act.ResultImpl;
 import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.*;
@@ -28,7 +29,7 @@ public class TestAction {
     @ApiVersion(1)
     @org.springframework.web.bind.annotation.GetMapping(value = "list")
     @ResponseBody
-    public Result testUser(@Validated User user, String[] names, BindingResult bindingResult) throws RuntimeException{
+    public Result<String> testUser(@Validated User user, String[] names, BindingResult bindingResult) throws RuntimeException{
 
         return null;
     }

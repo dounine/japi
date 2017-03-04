@@ -4,8 +4,17 @@ package com.dounine.japi.act;
  * Created by lake on 17-2-24.
  */
 public class ResultImpl<T> implements Result<T> {
+    /**
+     * 状态码
+     */
     private int code;
+    /**
+     * 错误消息
+     */
     private String msg;
+    /**
+     * 返回数据
+     */
     private T data;
 
     public ResultImpl(){}

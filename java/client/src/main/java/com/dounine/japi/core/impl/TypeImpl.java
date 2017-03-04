@@ -145,6 +145,7 @@ public class TypeImpl implements IType {
         if (javaKeyTxt.equals("void")) {
             return null;
         }
+        javaKeyTxt = javaKeyTxt.contains("<") ? javaKeyTxt.substring(0, javaKeyTxt.indexOf("<")).trim() : javaKeyTxt;//remove generic str
 
         searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
 
@@ -196,10 +197,10 @@ public class TypeImpl implements IType {
             name = name.contains("(") ? name.substring(3, name.lastIndexOf("(")).toLowerCase() : name;//method
             fieldImpl.setName(name);
             String type = extractField.getType();
-            if((StringUtils.isNotBlank(genericStr) && genericStr.contains(type))){//generic type
+            if ((StringUtils.isNotBlank(genericStr) && genericStr.contains(type))) {//generic type
                 fieldImpl.setName(name);
                 fieldImpl.setType("object");
-            }else if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
+            } else if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
                 File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
                 if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
                     fieldImpl.setName(name);
