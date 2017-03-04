@@ -67,7 +67,8 @@ public final class JapiPattern {
     public static final Pattern PATTERN_SYM_BEGIN = JapiPattern.getPattern("[{]\\s*[\"]");
     public static final Pattern PATTERN_SYM_END = JapiPattern.getPattern("[\"]\\s*[}]");
 
-    public static final Pattern REQUEST_ANNO_PATTERN = JapiPattern.getPattern("^\\S+[(]");
+    public static final Pattern REQUEST_ANNO_LEFT_PATTERN = JapiPattern.getPattern("^[a-zA-Z0-9._$]*\\s*[(]");
+    public static final Pattern REQUEST_ANNO_PATTERN = JapiPattern.getPattern("^[a-zA-Z0-9._$]*\\s*");
 
     public static final Pattern TYPE_NAME_PATTERN = JapiPattern.getPattern("(\\S)*(\\s)*(\\S)*$");
 

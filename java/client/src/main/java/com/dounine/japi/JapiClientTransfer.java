@@ -223,12 +223,12 @@ public class JapiClientTransfer {
                 }
                 if (result.getCode() != 0 && TOKEN_NOT_EMPTY.equals(result.getMsg())) {
                     List<String[]> datas = new ArrayList<>();
-                    datas.add(new String[]{"username",japiClientStorage.getProject().getProperties().get("japi.server.username")});
-                    datas.add(new String[]{"password",japiClientStorage.getProject().getProperties().get("japi.server.password")});
+                    datas.add(new String[]{"username", japiClientStorage.getProject().getProperties().get("japi.server.username")});
+                    datas.add(new String[]{"password", japiClientStorage.getProject().getProperties().get("japi.server.password")});
                     Result login = postValues(serverPath + "/user/login", datas);
                     if (login.getCode() != 0 || login.getData() == null) {
                         throw new JapiException("登录失败.");
-                    }else{
+                    } else {
                         return true;
                     }
                 }
@@ -287,13 +287,13 @@ public class JapiClientTransfer {
                     JapiNavAction japiNavAction = new JapiNavAction();
                     japiNavAction.setName(actionFile.getName());
                     for (File versionFile : actionFile.listFiles(FILE_FILTER)) {
-                        if (versionFile.isHidden()) {
+                        if (versionFile.isHidden() && !versionFile.getName().startsWith("v\\d+")) {
                             continue;
                         }
                         JapiNavVersion japiNavVersion = new JapiNavVersion();
                         japiNavVersion.setName(versionFile.getName());
                         for (File dateFile : versionFile.listFiles(FILE_FILTER)) {
-                            if (dateFile.isHidden()) {
+                            if (dateFile.isHidden() && !versionFile.getName().matches("\\d+")) {
                                 continue;
                             }
                             JapiNavDate japiNavDate = new JapiNavDate();

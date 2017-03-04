@@ -21,11 +21,12 @@ public class TestAction {
     /**
      * 获取热闹新闻
      * @param user 用户信息
+     * @return class User
+     * @version 1
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "list")
-    @ApiVersion(1)
     @ResponseBody
-    public User testUser(@Validated User user,User mm, BindingResult bindingResult) throws RuntimeException{
+    public User testUser(@Validated User user,BindingResult bindingResult) throws RuntimeException{
 
         return null;
     }

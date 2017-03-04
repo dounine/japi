@@ -29,7 +29,7 @@ import java.util.Map;
 public class JapiClientStorage {
     private String japiPath = null;
     private IProject project;
-    private static final String[] TIPS = new String[]{" name not empty.", " name forbid '/' symbol."};
+    private static final String[] TIPS = new String[]{" 不能为空.", " name forbid '/',',' symbol."};
     private static final Logger LOGGER = LoggerFactory.getLogger(JapiClientStorage.class);
     private static final JapiClientStorage JAPI_CLIENT_STORAGE = new JapiClientStorage();
 
@@ -91,7 +91,7 @@ public class JapiClientStorage {
     public void createActionDir(String projectName, String packageName, String funName, String actionName) {
         createFunDir(projectName, packageName, funName);
         if (StringUtils.isBlank(actionName)) {
-            throw new JapiException("action" + TIPS[0]);
+            throw new JapiException("请求方法名" + TIPS[0]);
         }
         if (actionName.indexOf("/") != -1||actionName.indexOf(",") != -1) {
             throw new JapiException("action" + TIPS[1]);

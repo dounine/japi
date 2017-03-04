@@ -246,9 +246,9 @@ public class ActionImpl implements IAction {
         List<String> parameters = new ArrayList<>();
         String methodLine = methodLineStr;
         Pattern hasThrowsExceptionPattern = JapiPattern.getPattern("\\s*throws\\s*[a-zA-Z0-9_]*\\s*[{]");
-        Matcher hasThrowsExceptionMatcher =  hasThrowsExceptionPattern.matcher(methodLine);
-        if(hasThrowsExceptionMatcher.find()){
-            methodLine = methodLineStr.substring(0,hasThrowsExceptionMatcher.start())+"{";
+        Matcher hasThrowsExceptionMatcher = hasThrowsExceptionPattern.matcher(methodLine);
+        if (hasThrowsExceptionMatcher.find()) {
+            methodLine = methodLineStr.substring(0, hasThrowsExceptionMatcher.start()) + "{";
         }
         Matcher matcher = JapiPattern.PARAMETER_BODYS.matcher(methodLine);
         if (matcher.find()) {
@@ -372,29 +372,43 @@ public class ActionImpl implements IAction {
      * @return
      */
     private ActionRequest getRequestsByAnnotations(List<String> annotationStrs, List<String> annoLines) {
-        String requestAnno = null, requestAnnoOrign = null;
+        List<String> requestAnnos = new ArrayList<>();
+        List<String> requestAnnosOrigin = new ArrayList<>();
+
         for (String annotationLine : annotationStrs) {
+            Matcher requestAnnoLeftMatcher = JapiPattern.REQUEST_ANNO_LEFT_PATTERN.matcher(annotationLine);
             Matcher requestAnnoMatcher = JapiPattern.REQUEST_ANNO_PATTERN.matcher(annotationLine);
-            if (requestAnnoMatcher.find()) {
-                requestAnnoOrign = annotationLine;
-                requestAnno = StringUtils.substring(requestAnnoMatcher.group(), 0, -1);
-                break;
+            if (requestAnnoLeftMatcher.find()) {
+                requestAnnosOrigin.add(annotationLine);
+                requestAnnos.add(StringUtils.substring(requestAnnoLeftMatcher.group(), 0, -1));
+            }else if(requestAnnoMatcher.find()){
+                requestAnnosOrigin.add(annotationLine);
+                requestAnnos.add(StringUtils.substring(requestAnnoMatcher.group(), 0, -1));
             }
         }
 
         IActionRequest actionRequest = null;
-        if (StringUtils.isNotBlank(requestAnno)) {
-            for (IActionRequest ar : MVCActionRequest.getMVCActionRequest()) {
-                if (ar.annotation().equals(requestAnno)) {
-                    actionRequest = ar;
-                    break;
-                } else if (ar.annotation().indexOf(".") >= -1) {
-                    if (ar.annotation().endsWith(requestAnno)) {
+        String requestAnnoOrign = null,requestAnno = null;
+        if (requestAnnos.size() > 0) {
+            for (int index = 0, len = requestAnnos.size(); index < len; index++) {
+                String _requestAnno = requestAnnos.get(index);
+                for (IActionRequest ar : MVCActionRequest.getMVCActionRequest()) {
+                    if (ar.annotation().equals(_requestAnno)) {
                         actionRequest = ar;
+                        requestAnno = _requestAnno;
+                        requestAnnoOrign = requestAnnosOrigin.get(index);
                         break;
+                    } else if (ar.annotation().indexOf(".") >= -1) {
+                        if (ar.annotation().endsWith(_requestAnno)) {
+                            actionRequest = ar;
+                            requestAnno = _requestAnno;
+                            requestAnnoOrign = requestAnnosOrigin.get(index);
+                            break;
+                        }
                     }
                 }
             }
+
         }
         List<String> requestUrls = new ArrayList<>();
         RequestMethod[] methodTypeList = null;
@@ -561,10 +575,18 @@ public class ActionImpl implements IAction {
             List<String> versionUrls = new ArrayList<>(actionInfo.getActionInfoRequest().getUrls().size());
             for (String url : actionInfo.getActionInfoRequest().getUrls()) {
                 if (verstionPattern.matcher(url).find()) {
-                    versionUrls.add(url.replace("{version}", actionInfo.getVersion()));
+                    if(StringUtils.isNotBlank(actionInfo.getVersion())){
+                        versionUrls.add(url.replace("{version}", actionInfo.getVersion()));
+                    }
                 } else {
                     versionUrls.add(url);
                 }
+            }
+            if(StringUtils.isBlank(actionInfo.getVersion())){
+                throw new JapiException("[ "+actionInfo.getActionName()+" ] 版本号不能为空");
+            }
+            if(StringUtils.isBlank(actionInfo.getActionName())){
+                throw new JapiException("请求方法名不能为空");
             }
             actionInfo.getActionInfoRequest().setUrls(versionUrls);
             actionInfos.add(actionInfo);
@@ -609,6 +631,9 @@ public class ActionImpl implements IAction {
                         name = line.substring(3).trim();
                         break;
                     }
+                }
+                if(name.contains("/")||name.contains(" ")||name.contains(",")){
+                    throw new JapiException("类名注释[ "+name+" ] 不能有特殊符号['/',' ',',']");
                 }
                 return name;
             }

@@ -3,6 +3,7 @@ package com.dounine.japi.core.impl;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IAction;
 import com.dounine.japi.core.IPackage;
+import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
@@ -85,6 +86,9 @@ public class PackageImpl implements IPackage {
                             name = line.substring(3).trim();
                             break;
                         }
+                    }
+                    if(name.contains("/")||name.contains(" ")||name.contains(",")){
+                        throw new JapiException("包名注释[ "+name+" ] 不能有特殊符号['/',' ',',']");
                     }
                     return name;
                 }
