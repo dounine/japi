@@ -34,7 +34,6 @@ public class JapiClient {
         JapiClient.setIncludeProjectJavaPath(new String[]{"api"});
         JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//可以准确快速搜索
         JapiClient.setUseCache(true);//
-        JapiClient.setActionDefaultReturnType(Result.class);
 
         IProject project = ProjectImpl.init();
         JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
@@ -65,10 +64,6 @@ public class JapiClient {
 
     public static void setIncludePackages(String[] includePackages) {
         JAPI_CLIENT.config.setIncludePackages(includePackages);
-    }
-
-    public static void setActionDefaultReturnType(Class<?> clazz) {
-        JAPI_CLIENT.config.setActionDefaultReturnType(clazz);
     }
 
     public static void setPrefixPath(String prefixPath){

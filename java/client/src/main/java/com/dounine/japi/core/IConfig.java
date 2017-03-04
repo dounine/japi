@@ -27,8 +27,6 @@ public interface IConfig {
 
     String[] getIncludePackages();
 
-    Class<?> getActionDefaultReturnType();
-
     String getPrefixPath();
 
     String getPostfixPath();
