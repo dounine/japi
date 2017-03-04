@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -67,7 +68,7 @@ public class UserAct {
     }
 
     @GetMapping("onlines")
-    public Result onlines(HttpServletRequest request,HttpServletResponse response){
+    public Result onlines(HttpServletRequest request, HttpServletResponse response){
         String token = getToken(request,response);
         ResultImpl result = new ResultImpl();
         result.setData(UserUtils.getOnlines());

@@ -26,7 +26,7 @@ public class TestAction {
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "list")
     @ResponseBody
-    public User testUser(@Validated User user,BindingResult bindingResult) throws RuntimeException{
+    public User testUser(@Validated User user,String[] names,BindingResult bindingResult) throws RuntimeException{
 
         return null;
     }

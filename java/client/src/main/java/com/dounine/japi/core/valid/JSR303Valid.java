@@ -3,6 +3,7 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
+import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.jsr303.ValidValid;
@@ -34,6 +35,9 @@ public class JSR303Valid implements IValid {
 
     @Override
     public IParameter getParameter(String parameterStr,List<String> docsStrs) {
+        if(parameterStr.contains("[")||parameterStr.contains("<")){
+            throw new JapiException("暂时不支持数组或列表对象数据解析.");
+        }
         Matcher typeAndNameMatcher = JapiPattern.TYPE_NAME_PATTERN.matcher(parameterStr);
         typeAndNameMatcher.find();
         String typeAndName = typeAndNameMatcher.group();
