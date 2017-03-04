@@ -7,6 +7,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * 用户类信息
  */
@@ -18,11 +20,12 @@ public class User {
      * @reg 这是正则表达式
      * @des 这是描述信息
      */
-    @NotBlank(message = "用户用户名不能为空",groups = {AddInterface.class})
+    @NotNull(message = "用户名不能为空",groups = {AddInterface.class})
     protected String username;
     /**
      * 用户密码
      */
+    @NotBlank(message = "用户密码不能为空",groups = {AddInterface.class})
     private String password;
     /**
      * 测试子类

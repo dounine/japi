@@ -7,10 +7,7 @@ import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.*;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 新闻工具
@@ -29,7 +26,21 @@ public class TestAction {
     @ApiVersion(1)
     @org.springframework.web.bind.annotation.GetMapping(value = "list")
     @ResponseBody
-    public Result<String> testUser(@Validated User user, String[] names, BindingResult bindingResult) throws RuntimeException{
+    public Result testUser(@Validated User user, String[] names, BindingResult bindingResult) throws RuntimeException{
+
+        return null;
+    }
+
+    /**
+     * 获取冷门新闻
+     * @deprecated yes
+     * @param id 用户
+     * @throws RuntimeException
+     */
+    @ApiVersion(1)
+    @org.springframework.web.bind.annotation.GetMapping(value = "list/{id}")
+    @ResponseBody
+    public Result testUser(@PathVariable String id) throws RuntimeException{
 
         return null;
     }

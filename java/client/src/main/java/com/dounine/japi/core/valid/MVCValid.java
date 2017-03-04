@@ -3,6 +3,7 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.impl.ParameterImpl;
+import com.dounine.japi.core.valid.mvc.PathVariableValid;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.mvc.RequestParamValid;
@@ -28,6 +29,7 @@ public class MVCValid implements IValid {
     public List<IMVC> getTypes() {
         List<IMVC> imvcs = new ArrayList<>();
         imvcs.add(new RequestParamValid());
+        imvcs.add(new PathVariableValid());
         return imvcs;
     }
 
