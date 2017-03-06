@@ -57,6 +57,7 @@ $(document).ready(function(){
             });
             list += "</div>";
             $("#containal").html(list);
+            userName()
             //获取分页数
             location.hash = "page=" + page.pageSize;
             if(window.location.hash.split("=")[1] == "1"){
@@ -81,6 +82,12 @@ $(document).ready(function(){
 
 
 });
+
+//读取用户名
+function userName(){
+   var userName = $.cookie("username");
+   $('.user strong').text(userName)
+}
 
 //关注列表
 function followLists(){
