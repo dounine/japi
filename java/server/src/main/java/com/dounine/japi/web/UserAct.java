@@ -18,6 +18,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * Created by huanghuanlai on 2017/1/15.
@@ -52,52 +53,71 @@ public class UserAct {
     }
 
     @GetMapping("follows")
-    public Result follows(HttpServletRequest request,HttpServletResponse response){
-        String token = getToken(request,response);
+    public Result follows(HttpServletRequest request, HttpServletResponse response) {
+        String token = getToken(request, response);
         ResultImpl result = new ResultImpl();
         result.setData(japiServer.getFollows(token));
         return result;
     }
 
     @PostMapping("follows/sortAndDel")
-    public Result follows(String[] projects,HttpServletRequest request,HttpServletResponse response){
-        String token = getToken(request,response);
+    public Result follows(String[] projects, HttpServletRequest request, HttpServletResponse response) {
+        if(null==projects){
+            throw new JapiException("projects 数组不能为空.");
+        }
+        String token = getToken(request, response);
         ResultImpl result = new ResultImpl();
-        result.setData(japiServer.sortAndDel(token,projects));
+        List<String> follows = japiServer.getFollows(token);
+        if (follows == null || (follows != null && follows.size() != projects.length)) {
+            throw new JapiException("数据只能用于排序,不能增加或减少");
+        }
+        int equalsCount = 0;
+        for (String follow : follows) {
+            for (String projectName : projects) {
+                if (projectName.equals(follow)) {
+                    equalsCount++;
+                    break;
+                }
+            }
+        }
+        if (follows.size() != equalsCount) {
+            throw new JapiException("数据只能用于排序,不能增加或减少");
+        }
+        result.setData(japiServer.sortAndDel(token, projects));
         return result;
     }
 
     @GetMapping("onlines")
-    public Result onlines(HttpServletRequest request, HttpServletResponse response){
-        String token = getToken(request,response);
+    public Result onlines(HttpServletRequest request, HttpServletResponse response) {
+        String token = getToken(request, response);
         ResultImpl result = new ResultImpl();
         result.setData(UserUtils.getOnlines());
         return result;
     }
 
     @PostMapping("login")
-    public Result login(String username, String password,HttpServletRequest request,HttpServletResponse response) throws JapiException {
-        if(StringUtils.isBlank(username)){
+    public Result login(String username, String password, HttpServletRequest request, HttpServletResponse response) throws JapiException {
+        if (StringUtils.isBlank(username)) {
             throw new JapiException("username 不能为空.");
         }
-        if(StringUtils.isBlank(password)){
+        if (StringUtils.isBlank(password)) {
             throw new JapiException("password 不能为空.");
         }
-        String token = UserUtils.login(new UserAuth(username,password));
-        if(null!=token){
-            response.setHeader("token",token);
-            Cookie cookie = new Cookie("token",token);
+        String token = UserUtils.login(new UserAuth(username, password));
+        if (null != token) {
+            response.setHeader("token", token);
+            Cookie cookie = new Cookie("token", token);
             cookie.setPath("/");
             response.addCookie(cookie);
-            return new ResultImpl("success",token);
-        }else{
+            return new ResultImpl("success", token);
+        } else {
             throw new JapiException("用户名或密码错误.");
         }
     }
 
     @PostMapping("isLogin")
     public Result login(String token) throws JapiException {
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             throw new JapiException("token 不能为空.");
         }
         boolean isAuth = UserUtils.isAuth(token);
@@ -105,30 +125,30 @@ public class UserAct {
     }
 
     @GetMapping("logout")
-    public Result logout(HttpServletRequest request,HttpServletResponse response) throws JapiException {
+    public Result logout(HttpServletRequest request, HttpServletResponse response) throws JapiException {
         String token = request.getHeader("token");
-        if(null==token){
+        if (null == token) {
             token = request.getParameter("token");
         }
-        if(null==token){
+        if (null == token) {
             Cookie[] cookies = request.getCookies();
-            if(null!=cookies){
-                for(Cookie cookie : cookies){
-                    if(cookie.getName().equals("token")){
+            if (null != cookies) {
+                for (Cookie cookie : cookies) {
+                    if (cookie.getName().equals("token")) {
                         token = cookie.getValue();
                         break;
                     }
                 }
             }
         }
-        if(StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             throw new JapiException("token 不能为空.");
         }
 
-        if(UserUtils.logout(token)){
-            return new ResultImpl("success","/user/login");
+        if (UserUtils.logout(token)) {
+            return new ResultImpl("success", "/user/login");
         }
-        return new ResultImpl("error","请登录后再操作.");
+        return new ResultImpl("error", "请登录后再操作.");
     }
 
 
