@@ -23,8 +23,6 @@ $(document).ready(function(){
             }
         }
     });
-
-
     var hash = window.location.hash;
     if(!hash){
         hash = "page=1"
@@ -44,18 +42,18 @@ $(document).ready(function(){
                 "<div class='item-title'><strong>%{name}</strong></div><div>作者：%{author}</div>" +
                 "<div class='item-info'><span class='version'>%{version}</span><span class='time'>%{date}<br/>%{time}</span></div>" +
                 "<div class='detailed'><a href='/detail#%{name}'>文档</a></div><div class='des'>%{detailed}</div>" +
-                "<div class='follow'><a href='javascript:void(0)' class='%{flwed}' onclick='follow(this)' data-follow='%{follow}' ></a></div></div>").format({
+                "<div class='follow'><a href='javascript:void(0)' class='%{flwed}' onclick='follow(this)' data-name='%{name}' data-follow='%{follow}' ></a></div></div>").format({
                     icon : '/logo/' + item.name,
                     name : item.name,
                     author : item.author,
                     version : item.version,
-                    flwed:((item.follow==true)?'flwed':''),
+                    flwed : ((item.follow == true) ? 'flwed' : ''),
                     time : item.createTime.split(" ")[1],
                     date : item.createTime.split(" ")[0],
                     detailed : item.description,
-                    follow:item.follow
+                    follow : item.follow
                 })
-               
+
             });
             list += "</div>";
             $("#containal").html(list);
@@ -70,7 +68,6 @@ $(document).ready(function(){
             }
 
 
-
         },
         error : function(data){
             console.info(data);
@@ -78,38 +75,47 @@ $(document).ready(function(){
     })
 
 
-    //关注列表
-    function followLists(){
-        $.ajax({
-            type:"GET",
-            async:false,
-            url:"/followList",
-            success:function(data){
-                var followList="<ul>"
-                $.each(data.data,function(index,item){
-                    followList+=("<li><a href='javascript:void(0)'><img src='/images/drag.png' alt='' class='drag'></a>" +
-                    "<a href='/detail#%{followName}' class='followName'>%{followName}</a><a href='javascript:void(0)' onclick='delFollow(this)' class='del-fol'>" +
-                    "<img src='/images/pro_close.png' alt=''></a></li>").format({followName:item});
 
-                });
-                followList+="</ul>";
-                $('.user-list').html(followList)
-            },
-            error:function(data){
-                console.info(data);
-            }
-        })
-    }
+
     followLists();
-
-    $('.user-wrap .user').hover(function(){
-        followLists();
-    })
-
-
 
 
 });
+
+//关注列表
+function followLists(){
+    $.ajax({
+        type : "GET",
+        async : false,
+        url : "/followList",
+        success : function(data){
+            var followList = "<ul>"
+            $.each(data.data, function(index, item){
+                followList += ("<li><span class='sort'><a href='javascript:void(0)' onclick='folSort(this)' class='prev'><img src='/images/up.png' alt=''></a><a href='javascript:void(0)' class='next' onclick='folSort(this)'><img src='/images/down.png' alt=''></a></span>" +
+                "<a href='/detail#%{followName}'  class='followName'>%{followName}</a><a href='javascript:void(0)' onclick='delFollow(this)' class='del-fol'>" +
+                "<img src='/images/pro_close.png' alt=''></a></li>").format({followName : item});
+
+            });
+            followList += "</ul>";
+            $('.user-list').html(followList)
+        },
+        error : function(data){
+            console.info(data);
+        }
+    })
+}
+
+function user(self){
+
+    if(!$(self).hasClass('ac')){
+        $(self).addClass('ac');
+      $('.user-list').show();
+        followLists();
+    }else {
+        $(self).removeClass('ac');
+        $('.user-list').hide()
+    }
+}
 
 function des(_this){
     $(_this).parents('.item').children('.des').show();
@@ -161,21 +167,21 @@ function pageBtn(self, name){
         url : "/pageSize",
         data : pagination,
         success : function(data){
-
             var list = "<div class='item-list'>"
             $.each(data.data, function(index, item){
                 list += ("<div class='item'><div class='icon'><a href='/detail#%{name}'><img src='%{icon}' alt='图片未找到'></a></div>" +
                 "<div class='item-title'><strong>%{name}</strong></div><div>作者：%{author}</div>" +
                 "<div class='item-info'><span class='version'>%{version}</span><span class='time'>%{date}<br/>%{time}</span></div>" +
-                "<div class='follow'><a href='javascript:void(0)' onclick='follow(this)' data-follow='%{follow}'></a></div><div class='detailed'><a href='/detail#%{name}'>文档</a></div></div>").format({
+                "<div class='follow'><a href='javascript:void(0)' class='%{flwed}' onclick='follow(this)' data-follow='%{follow}'></a></div><div class='detailed'><a href='/detail#%{name}'>文档</a></div></div>").format({
                     icon : '/logo/' + item.name,
                     name : item.name,
                     author : item.author,
                     version : item.version,
                     time : item.createTime.split(" ")[1],
                     date : item.createTime.split(" ")[0],
+                    flwed : ((item.follow == true) ? 'flwed' : ''),
                     detailed : item.description,
-                    follow:item.follow
+                    follow : item.follow
                 })
 
             });
@@ -209,32 +215,32 @@ function logout(){
 }
 
 function follow(_this){
-    var data={};
-    data.projectName=$(_this).parents('.item').children('.item-title').children().text();
+    var data = {};
+    data.projectName = $(_this).parents('.item').children('.item-title').children().text();
 
     if($(_this).hasClass('flwed')){
         $(_this).removeClass('flwed');
         $.ajax({
-            type:"post",
-            url:"/delFollow",
-            data:data,
-            success:function(data){
+            type : "post",
+            url : "/delFollow",
+            data : data,
+            success : function(data){
                 console.info(data);
             },
-            error:function(data){
+            error : function(data){
                 console.info(data);
             }
         })
-    }else {
+    } else {
         $(_this).addClass('flwed');
         $.ajax({
-            type:"POST",
-            url:"/addFollow",
-            data:data,
-            success:function(data){
+            type : "POST",
+            url : "/addFollow",
+            data : data,
+            success : function(data){
                 console.info();
             },
-            error:function(data){
+            error : function(data){
                 console.info(data);
             }
         })
@@ -242,49 +248,53 @@ function follow(_this){
 }
 
 function delFollow(_this){
-    var data={};
+    var data = {};
     data.projectName = $(_this).siblings('.followName').text();
     $.ajax({
-        type:"POST",
-        url:"/delFollow",
-        data:data,
-        success:function(data){
+        type : "POST",
+        url : "/delFollow",
+        data : data,
+        success : function(data){
             var proName = $(_this).parent().children('.followName').text()
             $(_this).parent().remove();
-            // $('.item-list .item .item-title strong[text='+ proName +']').parents('.item').children('.follow').children().removeClass('flwed')
-            // // console.info($('.item-list .item .item-title strong[innerHTML='+ proName +']'));
+            $('.item-list .item .follow a[data-name='+ proName+']').removeClass('flwed')
         },
-        error:function(data){
+        error : function(data){
             console.info(data);
         }
     })
 }
 
-//ajax更新
-var Update = function() {
-    var projects = $('#orderlist').val();
-    $.ajax({
-        type: "post",
-        async:false,
-        url: "/sortList",
-        data: { projects},
-        success: function(data) {
-            $.each(data.data,function(index,item){
-                var followList="<ul>"
-                $.each(data.data,function(index,item){
-                    followList+=("<li><a href='javascript:void(0)'><img src='/images/drag.png' alt='' class='drag'></a>" +
-                    "<a href='javascript:void(0)' class='followName'>%{followName}</a><a href='javascript:void(0)' onclick='delFollow(this)' class='del-fol'>" +
-                    "<img src='/images/pro_close.png' alt=''></a></li>").format({followName:item})
-                });
-                followList+="</ul>";
-                $('.user-list').html(followList)
-            })
-        },
-        error:function(data){
-            console.info(data);
-        }
-    });
-};
+//关注排序
+
+function folSort(self){
+    var name = $(self).attr("class");
+    var li = $(self).parents('li');
+    var sortData={};
+    if(name=="next"&&li.next()){
+        li.next().after(li)
+    }else if(name=="prev"&&li.prev()){
+        li.prev().before(li);
+    }
+    var listSort=[];
+    for(var i=0,len=$('.user-list li').length; i<len; i++){
+        var listName = $('.user-list li').eq(i).children('.followName').text();
+        listSort.push(listName)
+    }
+    sortData.projects = listSort.join(',');
+   $.ajax({
+       type:"post",
+       url:"/sortList",
+       async:false,
+       data:sortData,
+       success:function(data){
+       },
+       error:function(data){
+       }
+   })
+}
+
+
 
 
 
