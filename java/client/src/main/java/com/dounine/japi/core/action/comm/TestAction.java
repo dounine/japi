@@ -20,27 +20,29 @@ public class TestAction {
     /**
      * 获取热闹新闻
      * @param user 用户信息
-     * @deprecated yes
      * @throws RuntimeException
+     * @deprecated yes
+     * @return class User
      */
     @ApiVersion(1)
-    @org.springframework.web.bind.annotation.GetMapping(value = "list")
+    @org.springframework.web.bind.annotation.GetMapping(value = "hots")
     @ResponseBody
-    public Result testUser(@Validated User user, String[] names, BindingResult bindingResult) throws RuntimeException{
+    public Result hots(@Validated User user, BindingResult bindingResult) throws RuntimeException {
 
         return null;
     }
 
     /**
      * 获取冷门新闻
-     * @deprecated yes
+     *
      * @param id 用户
      * @throws RuntimeException
+     * @deprecated yes
      */
     @ApiVersion(1)
     @org.springframework.web.bind.annotation.GetMapping(value = "list/{id}")
     @ResponseBody
-    public Result testUser(@PathVariable String id) throws RuntimeException{
+    public Result testUser(@PathVariable String id) throws RuntimeException {
 
         return null;
     }
