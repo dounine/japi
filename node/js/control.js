@@ -48,6 +48,7 @@ $(document).ready(function(){
         }
     });
 
+    userName()
     //关注列表
    followLists()
 
@@ -502,4 +503,10 @@ function listJump(self){
 
     window.location.reload();
 
+}
+
+//读取用户名
+function userName(){
+    var userName = $.cookie("username");
+    $('.user strong').text(userName)
 }
