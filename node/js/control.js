@@ -1,16 +1,20 @@
 var version = {};
+//判断是否登录
+function isLogin(){
+    $.get("/islogin", function(data){
+        if(data.data == true){
+            return
 
-$.get("/islogin", function(data){
-    if(data.data == true){
-        return
+        } else {
+            location.href = "/login";
+        }
+    })
+}
 
-    } else {
-        location.href = "/login";
-    }
-})
+
 
 $(document).ready(function(){
-
+    isLogin()
     //请求导航，生成nav
     var navName = {"projectName" : location.hash.split("#")[1].split("/")[0]}
     $.ajax({
@@ -43,6 +47,11 @@ $(document).ready(function(){
             console.info(request);
         }
     });
+
+    //关注列表
+   followLists()
+
+
 
     //刷新后回到页面
     function refresh(){
@@ -79,13 +88,8 @@ $(document).ready(function(){
                     $(".v-num").html(vNum)
                     verSel(version);
                      $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
-
-
                 }
             });
-
-
-
 
         }
 
@@ -415,3 +419,88 @@ var is_array = function(value){
         typeof value.length === 'number' &&
         typeof value.splice === 'function' && !(value.propertyIsEnumerable('length'));
 };
+
+function delFollow(_this){
+    var data = {};
+    data.projectName = $(_this).siblings('.followName').text();
+    $.ajax({
+        type : "POST",
+        url : "/delFollow",
+        data : data,
+        success : function(data){
+            var proName = $(_this).parent().children('.followName').text()
+            $(_this).parent().remove();
+        },
+        error : function(data){
+            console.info(data);
+        }
+    })
+}
+
+function folSort(self){
+    var name = $(self).attr("class");
+    var li = $(self).parents('li');
+    var sortData={};
+    if(name=="next"&&li.next()){
+        li.next().after(li)
+    }else if(name=="prev"&&li.prev()){
+        li.prev().before(li);
+    }
+    var listSort=[];
+    for(var i=0,len=$('.user-list li').length; i<len; i++){
+        var listName = $('.user-list li').eq(i).children('.followName').text();
+        listSort.push(listName)
+    }
+    sortData.projects = listSort.join(',');
+    $.ajax({
+        type:"post",
+        url:"/sortList",
+        async:false,
+        data:sortData,
+        success:function(data){
+        },
+        error:function(data){
+        }
+    })
+}
+
+function user(self){
+
+    if(!$(self).hasClass('ac')){
+        $(self).addClass('ac');
+        $('.user-list').show();
+
+    }else {
+        $(self).removeClass('ac');
+        $('.user-list').hide()
+    }
+}
+
+function followLists(){
+    $.ajax({
+        type:"GET",
+        async:false,
+        url:"/followList",
+        success:function(data){
+            var followList="<ul>"
+            $.each(data.data,function(index,item){
+                followList+=("<li><span class='sort'><a href='javascript:void(0)' onclick='folSort(this)' class='prev'><img src='/images/up.png' alt=''></a>" +
+                "<a href='javascript:void(0)' class='next' onclick='folSort(this)'><img src='/images/down.png' alt=''></a></span>" +
+                "<a href='/detail#%{followName}' onclick='listJump(this)' class='followName'>%{followName}</a><a href='javascript:void(0)' class='del-fol' onclick='delFollow(this)'>" +
+                "<img src='/images/pro_close.png' alt=''></a></li>").format({followName:item})
+            });
+            followList+="</ul>";
+            $('.user-list').html(followList)
+
+        },
+        error:function(data){
+            console.info(data);
+        }
+    })
+}
+
+function listJump(self){
+
+    window.location.reload();
+
+}

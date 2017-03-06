@@ -1,3 +1,4 @@
+"use strict";
 const Router = require('koa-router');
 const path = require('path');
 const sendfile = require('koa-sendfile');

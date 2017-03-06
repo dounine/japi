@@ -106,60 +106,75 @@ header{
         }
         .user-list{
           position:absolute;
-          top:70px;
-          left:-60px;
+          top:50px;
+          left:-100px;
           display:none;
           width:180px;
-          max-height:240px;
-          overflow-y:auto;
-          background:rgba(255,252,255,0.6);
-          box-shadow:0 0 10px #000;
-          padding: 10px 0;
+
           ul{
             display:flex;
-
             flex:0 0 100%;
             justify-content:center;
             align-items:center;
             flex-direction:column;
-
+            background:rgba(255,252,255,1);
+            box-shadow:0 0 10px rgba(71,71,71,0.3);
+            max-height:273px;
+            overflow-y:auto;
             li{
-              height:30px;
+              height:32px;
               display:flex;
               width:94%;
               justify-content:space-between;
               align-items:center;
               padding:0 5px;
+              &:last-child{
+                .followName{border-bottom:1px solid transparent;}
+
+              }
               a{
                 display:flex;
                 height:100%;
                 align-items:center;
               }
-              .drag{
-                width:22px;
-                height:18px;
-                margin-right:10px;
+              .sort{
+               a:first-child{
+                 margin-bottom:8px;
+               }
               }
               .followName{
                 display:inline-block;
-                line-height:30px;
+                line-height:32px;
+                height:31px;
                 width:100px;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
+                border-bottom:1px solid #c9d8d9;
+                text-indent:5px;
+
+              }
+              .del-fol{
+
+                img{
+                  width:20px;
+                }
               }
               img{
                 width:12px;
               }
               &:hover{
-                background:#ccc;
+                background:#c9d8d9;
+                .followName{
+                  border-bottom:1px solid transparent;
+                  color:#fff;
+                }
+
               }
             }
           }
         }
-        &:hover{
-          .user-list{ display:block; }
-        }
+
       }
 
     }

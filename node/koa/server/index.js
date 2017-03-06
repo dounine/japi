@@ -1,3 +1,4 @@
+
 var request = require('request-promise');
 var path = require('path');
 var config = require(path.resolve('plugins/read-config.js'));
@@ -87,12 +88,12 @@ module.exports = function(a){
         };
         return request(options);
     };
-    this.sortList = function(token){
+    this.sortList = function(argvs,token){
         var options = {
-            method : 'GET',
+            method : 'POST',
             timeout : 3000,
-            uri : config()['rurl'] + '/user/follows',
-
+            uri : config()['rurl'] + '/user/follows/sortAndDel',
+            form:argvs,
             headers : {
                 token : token
             }
