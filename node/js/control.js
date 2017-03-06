@@ -465,7 +465,6 @@ function folSort(self){
 }
 
 function user(self){
-
     if(!$(self).hasClass('ac')){
         $(self).addClass('ac');
         $('.user-list').show();

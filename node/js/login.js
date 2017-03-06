@@ -46,7 +46,7 @@ $(function(){
             },
             password : {
                 required : true,
-                minlength : 5,
+                minlength : 3,
                 maxlength : 14
             }
         },
@@ -56,8 +56,8 @@ $(function(){
             },
             password : {
                 required : "密码不能为空！",
-                minlength : "密码长度为5-14位!",
-                maxlength : "密码长度为5-14位!"
+                minlength : "密码长度为3-14位!",
+                maxlength : "密码长度为3-14位!"
             }
         },
     });
