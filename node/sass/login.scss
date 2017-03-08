@@ -1,0 +1,231 @@
+html, body, div, span, nav, header, iframe,
+h1, h2, h3, h4, h5, h6, p, section, footer,
+a, span, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, label, var,
+b, u, i, input, dl, dt, dd, ol, ul, li {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+}
+ul li{
+  list-style:none;
+}
+body{
+  font-family: "SimHei";
+}
+a{
+  text-decoration:none;
+}
+em{
+  font-style: normal;
+}
+input:focus {
+  outline:none;
+}
+a{
+  color: #535353;
+  text-decoration: none;
+  &:hover{
+    text-decoration: none;
+  }
+}
+em{
+  font-style: normal;
+}
+input:focus {
+  outline:none;
+}
+html{
+  overflow-x: hidden;
+}
+#box {
+  .header{
+    width: 100%;
+    height: 67px;
+    background:#00b272;
+    .logo {
+      width:100%;
+      height: 4.1875rem;
+      a{
+        display:flex;
+        width:60px;
+        height:60px;
+        background: url('/images/logo.png') no-repeat;
+        margin-left:30px;
+      }
+      span{
+        color: #666;
+        font:{
+          size: 1.5rem;
+          weight: bold;
+        }
+        cursor: pointer;
+      }
+    }
+
+  }
+  #content{
+    width: 100%;
+    height: 700px;
+    background: url("/images/bg.jpg");
+    display:flex;
+    justify-content:center;
+    align-items:center;
+      .login-box{
+        background: white;
+        border-radius: 7px;
+        border:1px solid #bfd1de;
+
+        h3{
+          margin: 8px 0 18px 10px;
+          img{
+            width: 36px;
+            height: 36px;
+            vertical-align: middle;
+          }
+          font-size: 18px;
+          color: #666;
+        }
+        .login-tabs{
+          height: 27px;
+          line-height: 27px;
+          border-bottom: 1px solid #bfd1de;
+          padding-left: 35px;
+          a{
+            display: block;
+            width: 96px;
+            height:27px;
+            font-size: 16px;
+            color: #666;
+            float: left;
+            margin: 0 20px 0 0;
+            line-height:27px;
+            text-align: center;
+            border: 0px;
+            border-radius: 5px 5px 0 0;
+            &.current{
+              border:{
+                top: 1px solid #bfd1de;
+                left: 1px solid #bfd1de;
+                right: 1px solid #bfd1de;
+              }
+              background: #f1f6f9;
+            }
+          }
+        }
+
+        .login-page{
+          background-color: #f1f6f9;
+          border-radius: 7px;
+          img{
+            width: 158px;
+            height: 158px;
+          }
+          p{
+            width: 156px;
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            padding: 6px 0 8px 0;
+          }
+          ul{
+            padding:20px;
+
+            .form-item{
+              width: 460px;
+              height: 42px;
+              border: 1px solid #bfd1de;
+              font-size: 16px;
+              color: #666;
+              background: white;
+              border-radius: 5px;
+              margin:10px 0;
+              display:flex;
+              align-items:center;
+              input{
+                text-indent:20px;
+                width: 300px;
+                height: 24px;
+                border: 0 none;
+                line-height: 24px;
+                font-size: 18px;
+              }
+              label.error{
+                color:#f00;
+                width:200px;
+              }
+            }
+            .form-rem{
+              margin-top:20px;
+              padding-left: 20px;
+              .checkedNum[data-style="checkeds"] {
+                display: none;
+              }
+              .checkedNum[data-style="checkeds"] + label {
+                width: 9px;
+                height: 9px;
+                background-color: #3cc3fb;
+                padding: 6px;
+                border-radius: 3px;
+                display: inline-block;
+                overflow: hidden;
+              }
+              .checkedNum[data-style="checkeds"]:checked + label{
+                background: url("/images/gou_pic.png") #3cc3fb center  no-repeat;
+              }
+              .checkedNum[data-style="checkeds"] + label:before{
+                width: 15px;
+                height: 11px;
+                background: url("/images/gou_pic.png") #3cc3fb center  no-repeat;
+                text-align: center;
+                -webkit-transition: all 0.2s linear;
+                transition: all 0.2s linear;
+              }
+              label{
+                vertical-align: middle;
+              }
+              span{
+                &:nth-of-type(1){
+                  font-size: 14px;
+                  color: #6c6c6c;
+                  padding: 5px 0 0 3px;
+                }
+                &:nth-of-type(2){
+                  display:inline-block;
+                  width: 124px;
+                  margin-left: 180px;
+                  padding-bottom: 15px;
+                  text-align: center;
+                  background: url("/images/loginbg.png") no-repeat;
+                  button{
+                    width:94px;
+                    height:38px;
+                    color: white;
+                    font-size: 16px;
+                    letter-spacing: 5px;
+                    font-weight: bold;
+                    border:none;
+                    background:none;
+                    outline:none;
+                    &:hover{
+                      cursor:pointer;
+                    }
+                  }
+                }
+              }
+            }
+            .form-msg{
+              text-indent:20px;
+              color:#f00;
+            }
+          }
+        }
+
+      }
+
+  }
+}
+
+

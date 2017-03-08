@@ -8,49 +8,50 @@ $(document).ready(function(){
             navInd = mainInd+subInd,
             cont;
         data.navInd=navInd
-        $.ajax({
-            type:"post",
-            url:"/ejs/index",
-            data:data,
-            success:function(res){
-                console.info(res);
-            },
-            error: function(res) {
-                console.info(res);
-            }
-        })
-
-        // $.get("/data/data_new.json",function(data){
-        //     cont="<div><h4>基本信息</h4><div class='version'>";
-        //     $.each(data.contDatas,function(ind,item){
-        //
-        //         if(item.key==navInd){
-        //             newDatas = item.version;
-        //             var dateTime;
-        //             cont+="<p>版本：<span class='verNo'></span><select class='version-list' onchange='verSel()'>";
-        //             urls = "接口地址：<select class='api-select'>"
-        //             $.each(newDatas,function(i,t){
-        //                 cont += "<option value=%{verVal}>%{verMsg}</option>".format({verVal:t.name,verMsg:t.msg});
-        //                 var newDate = t.datetime;
-        //             });
-        //             cont+="</select></p><p>更新时间：<select class='time' onchange='timeSel()'></select></p>";
-        //
-        //         }
-        //     })
-        //     cont+="</div><section class='section'><div class='basic-info'><div class='item urls'></div><div class='item extype'></div></div></section>" +
-        //         "<section class='section'><div class='sec-head'><h4> 请求参数</h4></div> " +
-        //         "<div class='sec-table'><div class='sec-table-wrap'><ul class='sec-table-head'>" +
-        //         "<li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li><li class='col-1'>默认值</li><li class='col-6'>描述</li>" +
-        //         "</ul><div id='req'></div></div></div> </section>" +
-        //
-        //         "<section class='section'><div class='sec-head'><h4> 响应参数</h4></div> " +
-        //         "<div class='sec-table'><div class='sec-table-wrap'><ul class='sec-table-head'>" +
-        //         "<li class='col-2'>参数名称</li><li class='col-1'>类型</li><li class='col-1'>默认值</li><li class='col-6'>描述</li>" +
-        //         "</ul><div id='res'></div></div></div> </section>" +
-        //         "</div>";
-        //     $("#content").html(cont);
-        //     verSel()
+        // $.ajax({
+        //     type:"post",
+        //     url:"/ejs/index",
+        //     data:data,
+        //     success:function(res){
+        //         console.info(res);
+        //     },
+        //     error: function(res) {
+        //         console.info(res);
+        //     }
         // })
+
+        $.post("/ejs/index",function(data){
+            console.info(data);
+            cont="<div><h4>基本信息</h4><div class='version'>";
+            $.each(data.contDatas,function(ind,item){
+
+                if(item.key==navInd){
+                    newDatas = item.version;
+                    var dateTime;
+                    cont+="<p>版本：<span class='verNo'></span><select class='version-list' onchange='verSel()'>";
+                    urls = "接口地址：<select class='api-select'>"
+                    $.each(newDatas,function(i,t){
+                        cont += "<option value=%{verVal}>%{verMsg}</option>".format({verVal:t.name,verMsg:t.msg});
+                        var newDate = t.datetime;
+                    });
+                    cont+="</select></p><p>更新时间：<select class='time' onchange='timeSel()'></select></p>";
+
+                }
+            })
+            cont+="</div><section class='section'><div class='basic-info'><div class='item urls'></div><div class='item extype'></div></div></section>" +
+                "<section class='section'><div class='sec-head'><h4> 请求参数</h4></div> " +
+                "<div class='sec-table'><div class='sec-table-wrap'><ul class='sec-table-head'>" +
+                "<li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li><li class='col-1'>默认值</li><li class='col-6'>描述</li>" +
+                "</ul><div id='req'></div></div></div> </section>" +
+
+                "<section class='section'><div class='sec-head'><h4> 响应参数</h4></div> " +
+                "<div class='sec-table'><div class='sec-table-wrap'><ul class='sec-table-head'>" +
+                "<li class='col-2'>参数名称</li><li class='col-1'>类型</li><li class='col-1'>默认值</li><li class='col-6'>描述</li>" +
+                "</ul><div id='res'></div></div></div> </section>" +
+                "</div>";
+            $("#content").html(cont);
+            verSel()
+        })
     })
 });
 
