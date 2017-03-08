@@ -5,6 +5,7 @@ import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
 import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.transfer.*;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -235,7 +236,7 @@ public class JapiClientTransfer {
                 if (result.getCode() != 0 && TOKEN_NOT_EMPTY.equals(result.getMsg())) {
                     List<String[]> datas = new ArrayList<>();
                     datas.add(new String[]{"username", japiClientStorage.getProject().getProperties().get("japi.server.username")});
-                    datas.add(new String[]{"password", japiClientStorage.getProject().getProperties().get("japi.server.password")});
+                    datas.add(new String[]{"password", DigestUtils.md5Hex(japiClientStorage.getProject().getProperties().get("japi.server.password"))});
                     datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
                     Result login = postValues(serverPath + "/user/login", datas);
                     if (login.getCode() != 0 || login.getData() == null) {

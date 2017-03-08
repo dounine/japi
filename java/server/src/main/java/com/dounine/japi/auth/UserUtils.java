@@ -1,6 +1,7 @@
 package com.dounine.japi.auth;
 
 import com.dounine.japi.exception.JapiException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -101,7 +102,7 @@ public class UserUtils {
     private static boolean userIsAuth(UserAuth userAuth) {
         boolean isAuth = false;
         for (UserAuth ua : SYSTEM_USERS) {
-            if (ua.getUsername().equals(userAuth.getUsername()) && ua.getPassword().equals(userAuth.getPassword())) {
+            if (ua.getUsername().equals(userAuth.getUsername()) && DigestUtils.md5Hex(ua.getPassword()).equals(userAuth.getPassword())) {
                 isAuth = true;
                 break;
             }
