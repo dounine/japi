@@ -33,14 +33,6 @@ public class ValidValid implements IMVC {
         this.javaFilePath = javaFilePath;
     }
 
-    private List<IMVC> getJsr303List() {
-        List<IMVC> imvcs = new ArrayList<>();
-        NotBlankValid notBlankValid = new NotBlankValid();
-        notBlankValid.setJavaFilePath(javaFilePath);
-        imvcs.add(notBlankValid);
-        return imvcs;
-    }
-
     @Override
     public String getRequestParamName() {
         return "javax.validation.Valid";
@@ -57,7 +49,7 @@ public class ValidValid implements IMVC {
             typeImpl.setJavaKeyTxt(typeStr);
 
             List<IField> fields = typeImpl.getFields();
-            List<IMVC> imvcs = getJsr303List();
+            List<IMVC> imvcs = getJSR303(javaFilePath);
             requestField.setType("object");
             List<IRequest> requestFields = new ArrayList<>();
             if (fields.size() > 0) {
@@ -81,7 +73,7 @@ public class ValidValid implements IMVC {
                         }
                     }
                     if (null != mvc) {//找到对应jsr303注解
-                        requestFields.add(mvc.getRequestFieldForField(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
+                        requestFields.add(mvc.getRequestFieldForAnno(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
                     } else {//其它注没有注解
                         if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
                             System.out.println(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");

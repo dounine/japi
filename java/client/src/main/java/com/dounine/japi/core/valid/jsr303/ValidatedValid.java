@@ -7,6 +7,7 @@ import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.core.valid.jsr303.list.MaxValid;
 import com.dounine.japi.core.valid.jsr303.list.NotNullValid;
 import com.dounine.japi.core.valid.jsr303.list.SizeValid;
 import com.dounine.japi.serial.request.IRequest;
@@ -35,22 +36,6 @@ public class ValidatedValid implements IMVC {
 
     public ValidatedValid( String javaFilePath) {
         this.javaFilePath = javaFilePath;
-    }
-
-    private List<IMVC> getJsr303List() {
-        List<IMVC> imvcs = new ArrayList<>();
-        NotBlankValid notBlankValid = new NotBlankValid();
-        notBlankValid.setJavaFilePath(javaFilePath);
-        imvcs.add(notBlankValid);
-
-        NotNullValid notNullValid = new NotNullValid();
-        notNullValid.setJavaFilePath(javaFilePath);
-        imvcs.add(notNullValid);
-
-        SizeValid sizeValid = new SizeValid();
-        sizeValid.setJavaFilePath(javaFilePath);
-        imvcs.add(sizeValid);
-        return imvcs;
     }
 
     @Override
@@ -102,7 +87,7 @@ public class ValidatedValid implements IMVC {
             typeImpl.setJavaKeyTxt(typeStr);
 
             List<IField> fields = typeImpl.getFields();
-            List<IMVC> imvcs = getJsr303List();
+            List<IMVC> imvcs = getJSR303(javaFilePath);
             requestField.setType("object");
             List<IRequest> requestFields = new ArrayList<>();
             if (fields.size() > 0) {
@@ -126,7 +111,7 @@ public class ValidatedValid implements IMVC {
                         }
                     }
                     if (null != mvc) {//找到对应jsr303注解
-                        requestFields.add(mvc.getRequestFieldForField(anno, iField.getType(), iField.getName(), iField.getDocs(), interfaceGroupPaths));
+                        requestFields.add(mvc.getRequestFieldForAnno(anno, iField.getType(), iField.getName(), iField.getDocs(), interfaceGroupPaths));
                     } else {//其它注没有注解
                         if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
                             LOGGER.warn(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");

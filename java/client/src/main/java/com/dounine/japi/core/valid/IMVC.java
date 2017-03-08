@@ -1,11 +1,19 @@
 package com.dounine.japi.core.valid;
 
+import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IFieldDoc;
+import com.dounine.japi.core.impl.JavaFileImpl;
+import com.dounine.japi.core.valid.jsr303.list.*;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by lake on 17-2-13.
@@ -14,23 +22,113 @@ public interface IMVC {
 
     String getRequestParamName();
 
-//    default String getRequestInfo(String annoStr,String typeStr,String nameStr){
-//        return null;
-//    }
+    default List<IMVC> getJSR303(String javaFilePath){
+        List<IMVC> imvcs = new ArrayList<>();
+        NotBlankValid notBlankValid = new NotBlankValid();
+        notBlankValid.setJavaFilePath(javaFilePath);
+        imvcs.add(notBlankValid);
+
+        NotNullValid notNullValid = new NotNullValid();
+        notNullValid.setJavaFilePath(javaFilePath);
+        imvcs.add(notNullValid);
+
+        SizeValid sizeValid = new SizeValid();
+        sizeValid.setJavaFilePath(javaFilePath);
+        imvcs.add(sizeValid);
+
+        MaxValid maxValid = new MaxValid();
+        maxValid.setJavaFilePath(javaFilePath);
+        imvcs.add(maxValid);
+
+        MinValid minValid = new MinValid();
+        minValid.setJavaFilePath(javaFilePath);
+        imvcs.add(minValid);
+
+        EmailValid emailValid = new EmailValid();
+        emailValid.setJavaFilePath(javaFilePath);
+        imvcs.add(emailValid);
+
+        AssertFalseValid assertFalseValid = new AssertFalseValid();
+        assertFalseValid.setJavaFilePath(javaFilePath);
+        imvcs.add(assertFalseValid);
+
+        AssertTrueValid assertTrueValid = new AssertTrueValid();
+        assertTrueValid.setJavaFilePath(javaFilePath);
+        imvcs.add(assertTrueValid);
+
+        LengthValid lengthValid = new LengthValid();
+        lengthValid.setJavaFilePath(javaFilePath);
+        imvcs.add(lengthValid);
+
+        return imvcs;
+    }
 
     default IRequest getRequestField(String annoStr, String typeStr, String nameStr, List<String> docs, File javaFile){
         return null;
     }
 
-//    default String getRequestInfo(String annoStr, String typeStr, String nameStr,List<String> docs,File javaFile){
-//        return null;
-//    }
-
-//    default String getRequestInfoForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs,List<String> interfaceGroups){
-//        return null;
-//    }
-
-    default IRequest getRequestFieldForField(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<String> interfaceGroups){
+    default IRequest getRequestFieldForAnno(String annoStr, String typeStr, String nameStr, List<IFieldDoc> fieldDocs, List<String> interfaceGroups){
         return null;
+    }
+
+    default List<String> getInterfacePaths(List<String> interfaceGroups,String javaFilePath) {
+        List<String> paths = new ArrayList<>();
+        for (String interfaceGroup : interfaceGroups) {
+            String key = interfaceGroup.substring(0, interfaceGroup.lastIndexOf("."));
+            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key, javaFilePath);
+            if (null != file) {
+                paths.add(file.getAbsolutePath());
+            }
+        }
+        return paths;
+    }
+
+    default boolean isRequired(String annoStr,List<String> interfaceGroups,String javaFilePath){
+        boolean isRequire = true;
+        List<String> myGroupInterfaces = new ArrayList<>();
+        if (null != interfaceGroups && interfaceGroups.size() > 0) {
+            isRequire = false;
+            Pattern pattern = JapiPattern.getPattern("groups\\s*[=]\\s*");
+            Matcher matcher = pattern.matcher(annoStr);
+            if (matcher.find()) {
+                Pattern leftPattern = JapiPattern.getPattern("groups\\s*[=]\\s*[{]");
+                Matcher leftMatcher = leftPattern.matcher(annoStr);
+                if (leftMatcher.find()) {//interfaces
+                    String groupAndInterface = annoStr.substring(annoStr.indexOf("{") + 1, annoStr.lastIndexOf("}"));
+                    myGroupInterfaces.addAll(Arrays.asList(groupAndInterface.split(",")));
+                } else {//single interface
+                    Pattern groupAndInterfacePattern = JapiPattern.getPattern("groups\\s*[=]\\s*[a-zA-Z0-9_]*[.]class");
+                    Matcher groupAndInterfaceMatcher = groupAndInterfacePattern.matcher(annoStr);
+                    if (groupAndInterfaceMatcher.find()) {
+                        String groupAndInterface = groupAndInterfaceMatcher.group().split("=")[1].trim();
+                        myGroupInterfaces.add(groupAndInterface);
+                    }
+                }
+            }
+        }
+
+        List<String> myInterfaceGroupPaths = getInterfacePaths(myGroupInterfaces,javaFilePath);
+        if (null != myInterfaceGroupPaths && null != interfaceGroups) {
+            for (String myPath : myInterfaceGroupPaths) {
+                for (String actionPath : interfaceGroups) {
+                    if (myPath.equals(actionPath)) {
+                        isRequire = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return isRequire;
+    }
+
+    default String getDescription(List<IFieldDoc> fieldDocs){
+        String description = "";
+        for (IFieldDoc fieldDoc : fieldDocs) {
+            if (StringUtils.isBlank(fieldDoc.getValue())) {
+                description = fieldDoc.getName();
+                break;
+            }
+        }
+        return description;
     }
 }

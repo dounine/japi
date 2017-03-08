@@ -4,6 +4,8 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 /**
@@ -20,7 +22,7 @@ public class UserChild {
     /**
      * 年龄
      */
-    @Size(min = 0,max = 100)
+    @Min(value = 10)
     private Integer age;
     /**
      * 年龄jj
