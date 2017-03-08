@@ -137,15 +137,15 @@ function pageBtn(self, name){
 
     if(name == "first"){
         console.info("first");
-        pagination.pageSize = 1;
+        pagination.limit = 1;
         $(self).attr("disabled", true).addClass('disabled').siblings().attr("disabled", false).removeClass('disabled')
         $("#pages .prevPage").attr("disabled", true).addClass("disabled");
     } else if(name == "prev"){
         console.info("prev");
-        pagination.pageSize = --curPage;
+        pagination.limit = --curPage;
         $("#pages button").removeAttr("disabled").removeClass('disabled');
-        if(pagination.pageSize <= 1){
-            pagination.pageSize = 1;
+        if(pagination.limit <= 1){
+            pagination.limit = 1;
 
             $("#pages .firstPage").attr("disabled", true).addClass("disabled");
             $("#pages .prevPage").attr("disabled", true).addClass("disabled");
@@ -153,10 +153,10 @@ function pageBtn(self, name){
 
     } else if(name == "next"){
         console.info("next");
-        pagination.pageSize = ++curPage;
+        pagination.limit = ++curPage;
         $("#pages button").removeAttr("disabled").removeClass('disabled');
-        if(pagination.pageSize >= sizes){
-            pagination.pageSize = sizes;
+        if(pagination.limit >= sizes){
+            pagination.limit = sizes;
             // $("#pages button").removeAttr("disabled").removeClass('disabled');
             $("#pages .lastPage").attr("disabled", true).addClass("disabled");
             $("#pages .nextPage").attr("disabled", true).addClass("disabled");
@@ -164,7 +164,7 @@ function pageBtn(self, name){
 
     } else if(name == "end"){
         console.info("end");
-        pagination.pageSize = sizes;
+        pagination.limit = sizes;
         $(self).attr("disabled", true).addClass('disabled').siblings().attr("disabled", false).removeClass('disabled');
         $("#pages .nextPage").attr("disabled", true).addClass("disabled");
     }
@@ -194,7 +194,7 @@ function pageBtn(self, name){
             });
             list += "</div>";
             $("#containal").html(list)
-            location.hash = "page=" + pagination.pageSize;
+            location.hash = "page=" + pagination.limit;
 
         },
         error : function(data){
