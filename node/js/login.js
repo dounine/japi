@@ -20,25 +20,10 @@ $(function(){
         $(this).attr({"id" : "checked" + i});
         $(this).next("label").attr("for", "checked" + i);
     });
-    function userRem(){
-        if($.cookie("username") && $.cookie("password") && $.cookie("remUser")){
-            var username = $.cookie("username");
-            var password = $.cookie("password");
-            $("#username").val(username);
-            $("#password").val(password);
-            $(".checkedNum").attr("checked", "true")
-        } else {
-            $("#username").val();
-            $("#password").val();
-        }
-
-    }
 
     $("form input").focus(function(){
         $('.form-msg').html(" ")
     })
-
-    userRem()
     $('#form').validate({
         rules : {
             username : {
@@ -67,8 +52,9 @@ $(function(){
 function login(){
     var user = {}
     user.username = $('#username').val();
-    user.password = $("#password").val();
-    var remember = $('.checkedNum').prop('checked')
+    user.password = hex_md5($("#password").val());
+    user.readmemberMe = $('.checkedNum').prop('checked');
+    // var remember = $('.checkedNum').prop('checked')
 
     console.info(user);
     $.ajax({
@@ -79,11 +65,6 @@ function login(){
             if(resData.code == "1"){
                 $(".form-msg").text(resData.msg)
             } else if(resData.code == "0"){
-                if(remember){
-                    $.cookie("username", user.username, {expires : 7});
-                    $.cookie("password", user.password, {expires : 7});
-                    $.cookie("remUser", "true", {expires : 7})
-                }
                 window.location.href = "/index"
             }
 

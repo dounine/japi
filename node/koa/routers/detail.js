@@ -69,14 +69,17 @@
                         $self.status = 408;
                     }
                 }));
-        }).get('/logout', function *(next){  //登出
+        }).get('/userlogout', function *(next){  //登出
             var token = this.cookies.get('token');
             var $self = this;
             yield (commonSer().logout(token)
                 .then((parsedBody) =>{
                     var responseText = JSON.parse(parsedBody);
                     $self.body = responseText;
-                    $self.cookies.set('token', "");
+                    $self.cookies.set('token', '');
+                    $self.cookies.set('username', '');
+                    $self.cookies.set('password', '');
+                    $self.cookies.set('readmemberMe', '');
                 }).catch((error) =>{
                     if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
                         $self.body = {'msg' : '请求错误！', errno : 3};

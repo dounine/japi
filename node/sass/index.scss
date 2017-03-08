@@ -268,25 +268,29 @@ header{
   }
 }
 #pages{
-  width:20%;
-  margin:30px auto;
-  display:flex;
-  justify-content:center;
-  button{
-    margin:0 20px;
-    background:none;
-    flex:0 0 60px;
+  display:none;
+  section{
+    width:20%;
+    margin:30px auto;
     display:flex;
-    &:hover{
-      color:#5ebbc2;
-      cursor:pointer;
-    }
-    &:active{
-      color:#000;
-    }
-    &.disabled{
-      color:#ccc;
-      cursor:default;
+    justify-content:center;
+    button{
+      margin:0 20px;
+      background:none;
+      flex:0 0 60px;
+      display:flex;
+      &:hover{
+        color:#5ebbc2;
+        cursor:pointer;
+      }
+      &:active{
+        color:#000;
+      }
+      &.disabled{
+        color:#ccc;
+        cursor:default;
+      }
     }
   }
+
 }

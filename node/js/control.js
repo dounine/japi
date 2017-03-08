@@ -247,10 +247,6 @@ function action(version){
             $.each(actionInfoDocs,function(index,item){
                 infoDocs+="<li>";
                 infoDocs+="<p><span>%{tagName}</span>：<span>%{tagval}</span></p>".format({tagName:item.tagName,tagval:item.tagValue})
-                // $.each(item,function(i,t){
-                //     infoDocs+="<p><span>%{docsKey}</span>：<span>%{docsVal}</span></p>".format({docsKey:i,docsVal:t})
-                // })
-                // }
                 infoDocs+="</li>"
             })
             infoDocs+="</ul>"
