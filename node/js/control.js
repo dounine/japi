@@ -11,6 +11,64 @@ function isLogin(){
     })
 }
 
+//刷新后回到页面
+function refresh(){
+    var refHashArr = location.hash.split("#")[1].split('/');
+    if(refHashArr.length!=1){
+        version.projectName=refHashArr[0];
+        version.packageName = refHashArr[1];
+        version.funName = refHashArr[2];
+        version.actionName = refHashArr[3];
+        version.versionName = refHashArr[4];
+        version.dateName = refHashArr[5];
+
+        $.ajax({
+            type : "post",
+            url : "/versions",
+            data : version,
+            success : function(data){
+
+                var cont, vNum;
+
+                cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
+                if(data.data.length == "1"){
+                    vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
+                } else {
+                    vNum = "版本：<select  class='version-list' onchange='verSel(version)'>";
+                    $.each(data.data, function(index, version){
+                        var hasStrs = location.hash.split("/");
+                        var selectedStr = "";
+                        if(hasStrs.length>1){
+                            if(version == hasStrs[hasStrs.length-2]){
+                                selectedStr = "selected='true'";
+                            }
+                        }
+                        vNum += "<option value='%{version}' %{selected}>%{version}</option>".format({version : version,selected:selectedStr})
+                    });
+                    vNum += "</select>";
+                }
+                cont += "</div><section class='section info'></section><section class='section infodous'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
+                    "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close' onclick='modalClose()'>关闭</a></div><div class='m-con'></div></section></div>"
+
+                $("#content").html(cont);
+                $(".v-num").html(vNum);
+                version.dateName = "";
+                verSel(version,true);
+                $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
+                // $('.time option[value="'+ aa +'"]').attr("selected",true);
+                $(".time option").each(function(){
+
+                if($(this).text() === aa){
+                    $(this).attr('selected', 'selected')
+                }
+            })
+            }
+        });
+
+    }
+
+
+}
 
 
 $(document).ready(function(){
@@ -52,51 +110,11 @@ $(document).ready(function(){
     //关注列表
    followLists()
 
+refresh()
 
 
-    //刷新后回到页面
-    function refresh(){
-        var refHashArr = location.hash.split("#")[1].split('/');
-        if(refHashArr.length!=1){
-            version.projectName=refHashArr[0];
-            version.packageName = refHashArr[1];
-            version.funName = refHashArr[2];
-            version.actionName = refHashArr[3];
-            version.versionName = refHashArr[4];
-            version.dateName = refHashArr[5];
-            $.ajax({
-                type : "post",
-                url : "/versions",
-                data : version,
-                success : function(data){
-
-                    var cont, vNum;
-
-                    cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
-                    if(data.data.length == "1"){
-                        vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
-                    } else {
-                        vNum = "版本：<select  class='version-list' onchange='verSel(version)'>";
-                        $.each(data.data, function(index, item){
-                            vNum += "<option value='%{version}'>%{version}</option>".format({version : item})
-                        });
-                        vNum += "</select>";
-                    }
-                    cont += "</div><section class='section info'></section><section class='section infodous'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
-                        "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close' onclick='modalClose()'>关闭</a></div><div class='m-con'></div></section></div>"
-
-                    $("#content").html(cont);
-                    $(".v-num").html(vNum)
-                    verSel(version);
-                     $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
-                }
-            });
-
-        }
 
 
-    }
-    refresh()
 
 
     //导航点击
@@ -106,7 +124,7 @@ $(document).ready(function(){
         version.packageName = $(this).parents('.root').find('.rootName').text();
         version.funName = $(this).parents('.sub').find('.subName').text();
         version.actionName = $(this).text();
-
+        version.dateName = "";
         $.ajax({
             type : "post",
             url : "/versions",
@@ -120,8 +138,15 @@ $(document).ready(function(){
                     vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
                 } else {
                     vNum = "版本：<select  class='version-list' onchange='verSel(version)'>";
-                    $.each(data.data, function(index, item){
-                        vNum += "<option value='%{version}'>%{version}</option>".format({version : item})
+                    $.each(data.data, function(index, version){
+                        var hasStrs = location.hash.split("/");
+                        var selectedStr = "";
+                        if(hasStrs.length>1){
+                            if(version == hasStrs[hasStrs.length-2]){
+                                selectedStr = "selected='true'";
+                            }
+                        }
+                        vNum += "<option value='%{version}' %{selected}>%{version}</option>".format({version : version,selected:selectedStr})
                     });
                     vNum += "</select>";
                 }
@@ -130,7 +155,9 @@ $(document).ready(function(){
 
                 $("#content").html(cont);
                 $(".v-num").html(vNum)
-                verSel(version)
+                version.dateName = "";
+                verSel(version);
+
             }
         })
     })
@@ -139,6 +166,7 @@ $(document).ready(function(){
 
 //版本选择
 function verSel(version){
+    var isRefresh = arguments[1];
     var verTag = document.getElementsByClassName('version-list')[0].tagName;
     if(verTag == "SPAN"){
         version.versionName = $('span.version-list').attr('data-value');
@@ -156,23 +184,21 @@ function verSel(version){
 
             } else {
                 verDate = "<select onchange='action(version)' class='time'>";
-                $.each(data.data, function(index, item){
-                    verDate += "<option value='%{verDates}'>%{verDates}</option>".format({verDates : item})
+                $.each(data.data, function(index, dateName){
+                    var hasStrs = location.hash.split("/");
+                    var selectedStr = "";
+                    if(hasStrs.length>1&&isRefresh){
+                        if(dateName == hasStrs[hasStrs.length-1]){
+                            selectedStr = "selected='true'";
+                        }
+                    }
+                    verDate += "<option value='%{dateName}' %{selected}>%{dateName}</option>".format({dateName : dateName,selected:selectedStr})
                 });
                 verDate += "</select>";
             }
 
             $('.v-time').html(verDate);
             action(version);
-            var hashArr=[];
-            $.each(version,function(i,t){
-                hashArr.push(t)
-            });
-            var newHash=hashArr.join('/');
-
-
-            location.hash=newHash
-
         }
     })
 }
@@ -201,9 +227,7 @@ function action(version){
             var actInfoUrls = resData.actionInfoRequest.urls;
             var actInfoMethods = resData.actionInfoRequest.methods;
             var actionInfoDocs = resData.actionInfoDocs;
-
-
-
+            console.info(resData);
             if(actInfoUrls.length == "1"){
                 info += "<span class='urls-select' data-value='%{url}'>%{url}</span>".format({url : actInfoUrls})
             } else {
@@ -235,7 +259,7 @@ function action(version){
 
             var requestFields = "<div class='sec-head'><h4>请求参数</h4></div><div class='sec-table'><div class='sec-table-wrap'>" +
                 "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
-                "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul><div id='req'>";
+                "<li class='col-1'>默认值</li><li class='col-2'>约束</li><li class='col-6'>描述</li></ul><div id='req'>";
 
             var reqArr = [];
             $.each(resData.requestFields, function(index, item){
@@ -271,7 +295,7 @@ function action(version){
                 requestFields += ("<div class='sec-table-list %{_open}' index='%{_index}'> <ul>" +
                 "<li class='col-2'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span class='itemName' " + _parentClickEventStr + "  data-ac='%{ac}'  style='text-indent:%{_indent1}px'>%{name}</span></li>" +
                 "<li class='col-1'>%{required}</li><li class='col-1'>%{type}</li>" +
-                "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
+                "<li class='col-1'>%{defaultValue}</li><li class='col-2'>%{constraint}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
             }
 
             requestFields += "</div></div></div>";
@@ -314,11 +338,17 @@ function action(version){
             responseFields += "</div></div></div>";
 
             $('.section.info').html(info);
-            var thod = actInfoMethods.join("||");
+            var thod = actInfoMethods.join(" / ");
             $('.method strong').text(thod)
             $('.section.reqtable').html(requestFields);
-            $('.section.restable').html(responseFields)
-            $('.section.infodous').html(infoDocs)
+            $('.section.restable').html(responseFields);
+            $('.section.infodous').html(infoDocs);
+            var hashArr=[];
+            $.each(version,function(i,t){
+                hashArr.push(t)
+            });
+            var newHash=hashArr.join('/');
+            location.hash=newHash
         }
     })
 
@@ -332,7 +362,7 @@ function _parent(self, _parent){
     $('#modalbg').show()
     var modalCon = "<div class='sec-table'><div class='sec-table-wrap'>" +
         "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
-        "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul>";
+        "<li class='col-1'>默认值</li><li class='col-2'>约束</li><li class='col-6'>描述</li></ul>";
 
 
     var level = new Object();
@@ -345,7 +375,7 @@ function _parent(self, _parent){
         modalCon += ("<div class='sec-table-list' index='%{_index}'> <ul>" +
         "<li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
         "<li class='col-1'>%{required}</li><li class='col-1'>%{type}</li>" +
-        "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
+        "<li class='col-1'>%{defaultValue}</li><li class='col-2'>%{constraint}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
     }
 
     modalCon += "</div></div>";

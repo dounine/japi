@@ -6,7 +6,6 @@ const session = require('koa-session');//cookie
 const koaBody = require('koa-body');
 const json = require('koa-json');
 const cors = require('koa-cors');
-const render = require('koa-ejs');
 const port = 7777;
 const routersPath = '/koa/routers/';
 
@@ -19,14 +18,7 @@ router.get('/', function *(next) {//根路由
     this.status = 301;
 });
 
-/**ejs**/
-// render(app, {
-//     root: path.join(__dirname, 'views'),
-//     layout: '',
-//     viewExt: 'html',
-//     cache: false,
-//     debug: true
-// });
+
 
 //============路由===========
 app.use(require(path.join(__dirname,routersPath,'login.js'))().routes());//登录路由
