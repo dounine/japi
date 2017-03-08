@@ -14,6 +14,7 @@
             }
         }).post('/login', function*(){     //获取登录数据
             var user = this.request.body;
+
             var $self = this;
             yield (server().login(user)
                 .then((parsedBody) =>{
