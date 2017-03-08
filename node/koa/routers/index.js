@@ -7,7 +7,7 @@ var commonSer = require(path.resolve('koa/server/common.js'));
 var server = require(path.resolve('koa/server/' + path.basename(__filename)));
 var config = require(path.resolve('plugins/read-config.js'));
 var fetch = require('node-fetch');
-module.exports = function(config){
+module.exports = function(){
     var router = new Router();
     //获取列表页面
     router.get('/index', function *(){
@@ -33,7 +33,7 @@ module.exports = function(config){
     }).get('/logo/:projectName', function *(next){
         var token = this.cookies.get('token');
         var $self = this;
-        yield (fetch('http://192.168.0.121:8080/project/' + this.params.projectName + '/logo', {
+        yield (fetch(config()['rurl']+'/project/' + this.params.projectName + '/logo', {
             method : 'GET',
             headers : {'token' : token}
         })
