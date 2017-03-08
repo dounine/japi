@@ -5,11 +5,12 @@ $.ajax({
     method : 'get',
     success : function(data){
         sizes = Math.ceil((data.data) / 8);
-        if(sizes == 1){
-            $('#pages').hide();
+        if(sizes != 1){
+            $('#pages').show();
         }
     }
 });
+
 $(document).ready(function(){
 
     $.ajax({
