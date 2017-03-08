@@ -45,7 +45,7 @@ module.exports = function(config){
             }));
     }).post('/pageSize', function*(){
         var token = this.cookies.get('token');
-        var page = this.request.body.pageSize;
+        var page = this.request.body.limit;
         var $self = this;
         yield (server().pageSizes(token, page)
             .then((parsedBody) =>{
