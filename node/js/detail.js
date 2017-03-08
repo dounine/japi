@@ -111,7 +111,7 @@ function copy(){
 function logout(){
     $.ajax({
         type : "get",
-        url : "/logout",
+        url : "/userlogout",
         success : function(data){
             window.location.href = "/login"
         },
