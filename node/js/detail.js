@@ -99,12 +99,12 @@ function copy(){
     aux.select();
     // 将内容复制到剪贴板
     document.execCommand("copy");
-    $('.copysuc').show();
+    $('.copysuc').fadeIn();
     $('.copy').attr("disabled");
     setTimeout(function(){
         $('.copy').removeAttr("disabled");
-        $('.copysuc').hide();
-    }, 2000)
+        $('.copysuc').fadeOut();
+    }, 3000)
 
 }
 

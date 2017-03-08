@@ -54,9 +54,6 @@ function login(){
     user.username = $('#username').val();
     user.password = hex_md5($("#password").val());
     user.readmemberMe = $('.checkedNum').prop('checked');
-    // var remember = $('.checkedNum').prop('checked')
-
-    console.info(user);
     $.ajax({
         type : "post",
         url : "/login",

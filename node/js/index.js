@@ -12,14 +12,12 @@ $.ajax({
 });
 
 $(document).ready(function(){
-
     $.ajax({
         url : "/islogin",
+        async : false,
         type : "get",
         success : function(data){
-            if(data.data == true){
-                return
-            } else {
+            if(!data.data){
                 location.href = "/login";
             }
         }
@@ -137,12 +135,10 @@ function pageBtn(self, name){
     var curPage = location.hash.split("=")[1];
 
     if(name == "first"){
-        console.info("first");
         pagination.limit = 1;
         $(self).attr("disabled", true).addClass('disabled').siblings().attr("disabled", false).removeClass('disabled')
         $("#pages .prevPage").attr("disabled", true).addClass("disabled");
     } else if(name == "prev"){
-        console.info("prev");
         pagination.limit = --curPage;
         $("#pages button").removeAttr("disabled").removeClass('disabled');
         if(pagination.limit <= 1){
@@ -153,7 +149,6 @@ function pageBtn(self, name){
         }
 
     } else if(name == "next"){
-        console.info("next");
         pagination.limit = ++curPage;
         $("#pages button").removeAttr("disabled").removeClass('disabled');
         if(pagination.limit >= sizes){
@@ -164,7 +159,6 @@ function pageBtn(self, name){
         }
 
     } else if(name == "end"){
-        console.info("end");
         pagination.limit = sizes;
         $(self).attr("disabled", true).addClass('disabled').siblings().attr("disabled", false).removeClass('disabled');
         $("#pages .nextPage").attr("disabled", true).addClass("disabled");
@@ -229,11 +223,11 @@ function follow(_this){
     if($(_this).hasClass('flwed')){
         $(_this).removeClass('flwed');
         $.ajax({
-            type : "post",
+            type : "POST",
             url : "/delFollow",
             data : data,
             success : function(data){
-                console.info(data);
+//                console.info(data);
             },
             error : function(data){
                 console.info(data);
@@ -246,7 +240,7 @@ function follow(_this){
             url : "/addFollow",
             data : data,
             success : function(data){
-                console.info();
+//                console.info();
             },
             error : function(data){
                 console.info(data);

@@ -2,11 +2,9 @@ var version = {};
 //判断是否登录
 function isLogin(){
     $.get("/islogin", function(data){
-        if(data.data == true){
-            return
-
-        } else {
+        if(!data.data){
             location.href = "/login";
+
         }
     })
 }
@@ -52,7 +50,6 @@ function refresh(){
 
                 $("#content").html(cont);
                 $(".v-num").html(vNum);
-                version.dateName = "";
                 verSel(version,true);
                 $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
                 // $('.time option[value="'+ aa +'"]').attr("selected",true);
@@ -154,8 +151,7 @@ refresh()
                     "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close' onclick='modalClose()'>关闭</a></div><div class='m-con'></div></section></div>"
 
                 $("#content").html(cont);
-                $(".v-num").html(vNum)
-                version.dateName = "";
+                $(".v-num").html(vNum);
                 verSel(version);
 
             }
@@ -196,7 +192,6 @@ function verSel(version){
                 });
                 verDate += "</select>";
             }
-
             $('.v-time').html(verDate);
             action(version);
         }
@@ -227,7 +222,6 @@ function action(version){
             var actInfoUrls = resData.actionInfoRequest.urls;
             var actInfoMethods = resData.actionInfoRequest.methods;
             var actionInfoDocs = resData.actionInfoDocs;
-            console.info(resData);
             if(actInfoUrls.length == "1"){
                 info += "<span class='urls-select' data-value='%{url}'>%{url}</span>".format({url : actInfoUrls})
             } else {
@@ -335,16 +329,13 @@ function action(version){
 
             $('.section.info').html(info);
             var thod = actInfoMethods.join(" / ");
-            $('.method strong').text(thod)
+            $('.method strong').text(thod);
             $('.section.reqtable').html(requestFields);
             $('.section.restable').html(responseFields);
             $('.section.infodous').html(infoDocs);
-            var hashArr=[];
-            $.each(version,function(i,t){
-                hashArr.push(t)
-            });
+            var hashArr=[version.projectName,version.packageName,version.funName,version.actionName,version.versionName,version.dateName];
             var newHash=hashArr.join('/');
-            location.hash=newHash
+            location.hash=newHash;
         }
     })
 
@@ -355,7 +346,7 @@ function action(version){
 function _parent(self, _parent){
 
     $('#modal').show();
-    $('#modalbg').show()
+    $('#modalbg').show();
     var modalCon = "<div class='sec-table'><div class='sec-table-wrap'>" +
         "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
         "<li class='col-1'>默认值</li><li class='col-2'>约束</li><li class='col-6'>描述</li></ul>";
