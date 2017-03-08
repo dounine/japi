@@ -205,8 +205,37 @@ public class JapiServer {
         return null;
     }
 
-    public void saveProjectInfo(String projectName, String fileName, InputStream is) {
-        File file = new File(projectsPath + "/" + projectName + "/" + fileName);
+    private void checkUUID(String projectName,String uuid){
+        if (StringUtils.isBlank(projectName)) {
+            throw new JapiException("projectName not empty.");
+        }
+        if(StringUtils.isBlank(uuid)){
+            throw new JapiException("服务器:"+projectName+"项目uuid不能为空,请检查.");
+        }
+        File uuidFile = new File(projectsPath+"/"+projectName+"/uuid.txt");
+        String _uuid = null;
+        if(uuidFile.exists()){
+            try {
+                _uuid = FileUtils.readFileToString(uuidFile,Charset.forName("utf-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            throw new JapiException("服务器:"+projectName+"项目uuid文件不存在,请检查.");
+        }
+
+
+        if(StringUtils.isBlank(_uuid)){
+            throw new JapiException("服务器:"+projectName+"项目uuid读取错误,请检查.");
+        }
+        if(!_uuid.trim().equals(uuid)){
+            throw new JapiException("服务器:"+projectName+"项目uuid不相同,请检查.");
+        }
+    }
+
+    public void saveProjectInfo(TransferInfo transferInfo, String fileName, InputStream is) {
+        checkUUID(transferInfo.getProjectName(),transferInfo.getUuid());
+        File file = new File(projectsPath + "/" + transferInfo.getProjectName() + "/" + fileName);
         try {
             FileUtils.copyInputStreamToFile(is, file);
         } catch (FileNotFoundException e) {
@@ -216,19 +245,37 @@ public class JapiServer {
         }
     }
 
-    public void createProjectFold(String projectName) {
-        File file = new File(projectsPath + "/" + projectName);
-        if (!file.exists()) {
-            file.mkdir();
+    public void createProjectFold(TransferInfo transferInfo) {
+        File fold = new File(projectsPath + "/" + transferInfo.getProjectName());
+        if (!fold.exists()) {
+            File uuidFile = new File(projectsPath+"/"+transferInfo.getProjectName()+"/uuid.txt");
+            fold.mkdir();
+            try {
+                FileUtils.writeStringToFile(uuidFile,transferInfo.getUuid(),"utf-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }else{
+            File uuidFile = new File(projectsPath+"/"+transferInfo.getProjectName()+"/uuid.txt");
+            String uuid = null;
+            try {
+                uuid = FileUtils.readFileToString(uuidFile,"utf-8");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(StringUtils.isBlank(uuid)){
+                throw new JapiException("服务器:"+transferInfo.getProjectName()+"项目uuid读取错误,请检查.");
+            }
+            if(!uuid.equals(transferInfo.getUuid())){
+                throw new JapiException("服务器:"+transferInfo.getProjectName()+"项目uuid不相同,请检查.");
+            }
         }
     }
 
 
-    public String getLogoMd5(String projectName) {
-        if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName not empty.");
-        }
-        File file = new File(projectsPath + "/" + projectName + "/logo-md5.txt");
+    public String getLogoMd5(TransferInfo transferInfo) {
+        checkUUID(transferInfo.getProjectName(),transferInfo.getUuid());
+        File file = new File(projectsPath + "/" + transferInfo.getProjectName() + "/logo-md5.txt");
         if (file.exists()) {
             try {
                 return FileUtils.readFileToString(file, Charset.forName("utf-8"));
@@ -239,11 +286,9 @@ public class JapiServer {
         return null;
     }
 
-    public String getProjectMd5(String projectName) {
-        if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName not empty.");
-        }
-        File file = new File(projectsPath + "/" + projectName + "/project-md5.txt");
+    public String getProjectMd5(TransferInfo transferInfo) {
+        checkUUID(transferInfo.getProjectName(),transferInfo.getUuid());
+        File file = new File(projectsPath + "/" + transferInfo.getProjectName() + "/project-md5.txt");
         if (file.exists()) {
             try {
                 return FileUtils.readFileToString(file, Charset.forName("utf-8"));
@@ -255,11 +300,9 @@ public class JapiServer {
     }
 
     public String getActionMd5(TransferInfo transferInfo) {
+        checkUUID(transferInfo.getProjectName(),transferInfo.getUuid());
         if (null == transferInfo) {
             throw new JapiException("projectName packageName funName actionName versionName dateName not empty.");
-        }
-        if (StringUtils.isBlank(transferInfo.getProjectName())) {
-            throw new JapiException("projectName not empty.");
         }
         if (StringUtils.isBlank(transferInfo.getPackageName())) {
             throw new JapiException("packageName not empty.");
@@ -291,10 +334,13 @@ public class JapiServer {
         if (null == transferInfo) {
             throw new JapiException("projectName not empty.");
         }
+        if (StringUtils.isBlank(transferInfo.getUuid())) {
+            throw new JapiException("application uuid not empty.");
+        }
         if (StringUtils.isBlank(transferInfo.getProjectName())) {
             throw new JapiException("projectName not empty.");
         }
-        createProjectFold(transferInfo.getProjectName());
+//        createProjectFold(transferInfo);
         String projectPath = projectsPath + "/" + transferInfo.getProjectName();
         for (JapiNavPackage japiNavPackage : japiNavRoot.getPackages()) {
             File packageFile = new File(projectPath + "/" + japiNavPackage.getName());
@@ -330,6 +376,7 @@ public class JapiServer {
     }
 
     public void saveActionInfo(TransferInfo transferInfo, String originalFilename, InputStream is) {
+        checkUUID(transferInfo.getProjectName(),transferInfo.getUuid());
         File file = new File(projectsPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName() + "/" + transferInfo.getDateName() + "/" + originalFilename);
         try {
             if (!file.getParentFile().exists()) {

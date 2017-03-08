@@ -23,7 +23,7 @@ public class TransferAct {
 
     @PostMapping("project")
     public Result createProject(TransferInfo transferInfo) throws JapiException {
-        japiServer.createProjectFold(transferInfo.getProjectName());
+        japiServer.createProjectFold(transferInfo);
         return new ResultImpl<Boolean>(null, Boolean.TRUE);
     }
 
@@ -38,7 +38,7 @@ public class TransferAct {
     public Result createProject(TransferInfo transferInfo, @RequestParam("file") MultipartFile file) throws JapiException {
         if (!file.isEmpty()) {
             try {
-                japiServer.saveProjectInfo(transferInfo.getProjectName(), file.getOriginalFilename(), file.getInputStream());
+                japiServer.saveProjectInfo(transferInfo, file.getOriginalFilename(), file.getInputStream());
                 return new ResultImpl<String>(null, "success");
             } catch (Exception e) {
                 ResultImpl<String> result = new ResultImpl("传输错误 " + e.getMessage());

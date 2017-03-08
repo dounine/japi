@@ -5,6 +5,7 @@ package com.dounine.japi.web;
  */
 public class TransferInfo {
 
+    private String uuid;
     private String projectName;
     private String packageName;
     private String funName;
@@ -58,5 +59,13 @@ public class TransferInfo {
 
     public void setDateName(String dateName) {
         this.dateName = dateName;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

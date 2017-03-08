@@ -85,13 +85,13 @@ public class ProjectAct {
         String md5 = null;
         switch (type) {
             case "logo":
-                md5 = japiServer.getLogoMd5(transferInfo.getProjectName());
+                md5 = japiServer.getLogoMd5(transferInfo);
                 break;
             case "action":
                 md5 = japiServer.getActionMd5(transferInfo);
                 break;
             case "project":
-                md5 = japiServer.getProjectMd5(transferInfo.getProjectName());
+                md5 = japiServer.getProjectMd5(transferInfo);
                 break;
             default:
                 throw new JapiException(type + " not find.");

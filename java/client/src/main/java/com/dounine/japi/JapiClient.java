@@ -9,6 +9,7 @@ import com.dounine.japi.core.impl.ProjectImpl;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by lake on 17-2-23.
@@ -81,6 +82,9 @@ public class JapiClient {
         }
     }
 
+    public static String getUUID(){
+        return UUID.randomUUID().toString().replace("-","");
+    }
 
     public static void setUseCache(boolean useCache) {
         JAPI_CLIENT.useCache = useCache;

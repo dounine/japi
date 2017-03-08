@@ -7,6 +7,7 @@ import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.transfer.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
@@ -75,7 +76,11 @@ public class JapiClientTransfer {
             try {
                 httpPost.setEntity(new UrlEncodedFormEntity(valuePairs, "utf-8"));
                 String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost, httpContext).getEntity(), Consts.UTF_8);
-                return JSON.parseObject(result, ResultImpl.class);
+                Result result1 = JSON.parseObject(result, ResultImpl.class);
+                if(result1.getCode()!=0){
+                    throw new JapiException(result1.getMsg());
+                }
+                return result1;
             } catch (IOException e) {
                 if (e instanceof HttpHostConnectException) {
                     tryCount++;
@@ -112,7 +117,11 @@ public class JapiClientTransfer {
                 multipartEntity.addBinaryBody("file", file);
                 httpPost.setEntity(multipartEntity.build());
                 String result = EntityUtils.toString(HTTP_CLIENT.execute(httpPost, httpContext).getEntity());
-                return JSON.parseObject(result, ResultImpl.class);
+                Result result1 = JSON.parseObject(result, ResultImpl.class);
+                if(result1.getCode()!=0){
+                    throw new JapiException(result1.getMsg());
+                }
+                return result1;
             } catch (IOException e) {
                 if (e instanceof HttpHostConnectException) {
                     tryCount++;
@@ -153,6 +162,7 @@ public class JapiClientTransfer {
         List<String[]> datas = new ArrayList<>();
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         datas.add(new String[]{"projectName", projectName});
+        datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
         String serverUrl = japiClientStorage.getProject().getProperties().get("japi.server");
         File logoFile = getLogoFile(japiClientStorage);
         if (logoFile.exists()) {
@@ -180,6 +190,7 @@ public class JapiClientTransfer {
         List<String[]> datas = new ArrayList<>();
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         datas.add(new String[]{"projectName", projectName});
+        datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
         String serverUrl = getServerPath(japiClientStorage);
         File projectFile = new File(prePath + "/project-info.txt");
         File projectMd5File = new File(prePath + "/project-md5.txt");
@@ -225,9 +236,10 @@ public class JapiClientTransfer {
                     List<String[]> datas = new ArrayList<>();
                     datas.add(new String[]{"username", japiClientStorage.getProject().getProperties().get("japi.server.username")});
                     datas.add(new String[]{"password", japiClientStorage.getProject().getProperties().get("japi.server.password")});
+                    datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
                     Result login = postValues(serverPath + "/user/login", datas);
                     if (login.getCode() != 0 || login.getData() == null) {
-                        throw new JapiException("登录失败.");
+                        throw new JapiException(login.getMsg());
                     } else {
                         return true;
                     }
@@ -249,6 +261,10 @@ public class JapiClientTransfer {
 
 
     public void autoTransfer(JapiClientStorage japiClientStorage) {
+        String applicationUUID = japiClientStorage.getProject().getProperties().get("japi.uuid");
+        if (StringUtils.isBlank(applicationUUID)) {
+            throw new JapiException("应用程度UUID不能为空");
+        }
         if (!checkServerLive(japiClientStorage)) {
             return;
         }
@@ -256,6 +272,7 @@ public class JapiClientTransfer {
         String projectName = japiClientStorage.getProject().getProperties().get("japi.name");
         List<String[]> datas = new ArrayList<>();
         datas.add(new String[]{"projectName", projectName});
+        datas.add(new String[]{"uuid",japiClientStorage.getProject().getProperties().get("japi.uuid")});
         Result result = postValues(serverUrl + "/project/exists", datas);
         if (!result.getData().equals(Boolean.TRUE)) {//project exist
             postValues(serverUrl + "/transfer/project", datas);
@@ -310,8 +327,8 @@ public class JapiClientTransfer {
         }
         if (japiNavRoot.getPackages().size() > 0) {
             datas.add(new String[]{"data", JSON.toJSONString(japiNavRoot)});
+            datas.add(new String[]{"uuid",japiClientStorage.getProject().getProperties().get("japi.uuid")});
             postValues(serverUrl + "/transfer/navs", datas);
-
             for (JapiNavPackage japiNavPackage : japiNavRoot.getPackages()) {
                 for (JapiNavFun japiNavFun : japiNavPackage.getFuns()) {
                     for (JapiNavAction japiNavAction : japiNavFun.getActions()) {
@@ -325,6 +342,7 @@ public class JapiClientTransfer {
                                 das.add(new String[]{"versionName", japiNavVersion.getName()});
                                 das.add(new String[]{"dateName", japiNavDate.getName()});
                                 das.add(new String[]{"type", "action"});
+                                das.add(new String[]{"uuid",japiClientStorage.getProject().getProperties().get("japi.uuid")});
                                 Result md5Result = postValues(serverUrl + "/project/md5", das);
                                 if (md5Result.getData() == null) {
                                     File infoFile = new File(projectPath + "/" + japiNavPackage.getName() + "/" + japiNavFun.getName() + "/" + japiNavAction.getName() + "/" + japiNavVersion.getName() + "/" + japiNavDate.getName() + "/info.txt");
@@ -332,7 +350,6 @@ public class JapiClientTransfer {
                                 }
                             }
                         }
-
                     }
                 }
             }

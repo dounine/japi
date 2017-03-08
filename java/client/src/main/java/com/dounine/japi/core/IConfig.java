@@ -30,5 +30,4 @@ public interface IConfig {
     String getPrefixPath();
 
     String getPostfixPath();
-
 }

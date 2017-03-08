@@ -67,5 +67,4 @@ public class ConfigImpl implements IConfig {
         this.postfixPath = postfixPath;
     }
 
-
 }
