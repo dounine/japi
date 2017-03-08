@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public class UserAuth {
     private String username;
     private String password;
+    private boolean isAdmin = false;
     private LocalDateTime liveTime;
 
     public UserAuth(){}
@@ -39,5 +40,13 @@ public class UserAuth {
 
     public void setLiveTime(LocalDateTime liveTime) {
         this.liveTime = liveTime;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 }

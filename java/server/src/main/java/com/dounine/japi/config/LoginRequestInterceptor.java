@@ -28,18 +28,6 @@ public class LoginRequestInterceptor implements HandlerInterceptor {
             tokenObject = httpServletRequest.getParameter("token");
         }
         if(null==tokenObject){
-            Cookie[] cookies = httpServletRequest.getCookies();
-            if(null!=cookies){
-                for(Cookie cookie : cookies){
-                    if(cookie.getName().equals("token")){
-                        tokenObject = cookie.getValue();
-                        break;
-                    }
-                }
-            }
-
-        }
-        if(null==tokenObject){
             throw new JapiException("请求头token不能为空");
         }
         String token = tokenObject.toString();

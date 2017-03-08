@@ -1,5 +1,7 @@
 package com.dounine.japi.web;
 
+import com.dounine.japi.act.Result;
+import com.dounine.japi.act.ResultImpl;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,12 +24,8 @@ import java.io.IOException;
 public class IndexAct {
 
     @GetMapping({"/", ""})
-    public void index(HttpServletResponse response) {
-        try {
-            response.getWriter().print("welcome to japi server home.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Result index(HttpServletResponse response) {
+        return new ResultImpl("welcome to japi server home.");
     }
 
 

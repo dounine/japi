@@ -1,5 +1,6 @@
 package com.dounine.japi.auth;
 
+import com.dounine.japi.entity.User;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
@@ -19,7 +20,6 @@ public class UserUtils {
     private static final Map<String, UserAuth> ONLINES = new ConcurrentHashMap<>();
     private static final List<UserAuth> SYSTEM_USERS = new ArrayList<>();
 
-
     static {
         String userProperties = UserUtils.class.getResource("/users.properties").getFile();
         String configProperties = UserUtils.class.getResource("/config.properties").getFile();
@@ -35,7 +35,13 @@ public class UserUtils {
                 for (String line : lines) {
                     UserAuth userAuth = new UserAuth();
                     userAuth.setUsername(line.split("=")[0]);
-                    userAuth.setPassword(line.split("=")[1]);
+                    String[] passwordAndRole = line.split("=")[1].split(" ");
+                    if(passwordAndRole.length==2&&"admin".equals(passwordAndRole[1])){
+                        userAuth.setAdmin(true);
+                        userAuth.setPassword(passwordAndRole[0]);
+                    }else{
+                        userAuth.setPassword(line.split("=")[1]);
+                    }
                     SYSTEM_USERS.add(userAuth);
                 }
                 if (configFile.exists()) {
@@ -80,8 +86,11 @@ public class UserUtils {
             }
             Iterator<UserAuth> userAuthIterator = ONLINES.values().iterator();
             while(userAuthIterator.hasNext()){
-                if (userAuthIterator.next().getLiveTime().plusSeconds(sessionTime).isBefore(LocalDateTime.now())) {
-                    userAuthIterator.remove();
+                UserAuth userAuth = userAuthIterator.next();
+                if(!userAuth.isAdmin()){
+                    if (userAuth.getLiveTime().plusSeconds(sessionTime).isBefore(LocalDateTime.now())) {
+                        userAuthIterator.remove();
+                    }
                 }
             }
         }
@@ -126,8 +135,13 @@ public class UserUtils {
         if (userIsAuth(userAuth)) {
             for (String token : ONLINES.keySet()) {
                 if (ONLINES.get(token).getUsername().equals(userAuth.getUsername())) {
-                    ONLINES.remove(token);
-                    break;
+                    if(!ONLINES.get(token).isAdmin()){
+                        ONLINES.remove(token);
+                        break;
+                    }else{
+                        userAuth.setLiveTime(LocalDateTime.now());
+                        return token;
+                    }
                 }
             }
             String token = TokenUtils.createToken();

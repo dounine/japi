@@ -1,15 +1,16 @@
 package com.dounine.japi.web;
 
-import com.dounine.japi.core.JapiServer;
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
+import com.dounine.japi.core.JapiServer;
+import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.transfer.JapiNavRoot;
 import com.dounine.japi.transfer.JapiProject;
-import com.dounine.japi.exception.JapiException;
+import com.dounine.japi.web.type.FollowEnum;
+import com.dounine.japi.web.type.SortTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,18 +34,6 @@ public class ProjectAct {
             tokenObject = httpServletRequest.getParameter("token");
         }
         if (null == tokenObject) {
-            Cookie[] cookies = httpServletRequest.getCookies();
-            if (null != cookies) {
-                for (Cookie cookie : cookies) {
-                    if (cookie.getName().equals("token")) {
-                        tokenObject = cookie.getValue();
-                        break;
-                    }
-                }
-            }
-
-        }
-        if (null == tokenObject) {
             throw new JapiException("请求头token不能为空");
         }
         return tokenObject.toString();
@@ -63,7 +52,7 @@ public class ProjectAct {
     }
 
     @DeleteMapping("follow/{projectName}")
-    public Result followDel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,@PathVariable String projectName) throws JapiException {
+    public Result followDel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable String projectName) throws JapiException {
         String token = getToken(httpServletRequest, httpServletResponse);
 
         ResultImpl result = new ResultImpl();
@@ -72,31 +61,6 @@ public class ProjectAct {
         }
         japiServer.follow(token, projectName, FollowEnum.DEL);
         result.setMsg("success");
-        return result;
-    }
-
-
-    @PostMapping("md5")
-    public Result md5(String type, TransferInfo transferInfo) throws JapiException {
-        ResultImpl result = new ResultImpl();
-        if (StringUtils.isBlank(type)) {
-            throw new JapiException("type not empty[logo,action,project].");
-        }
-        String md5 = null;
-        switch (type) {
-            case "logo":
-                md5 = japiServer.getLogoMd5(transferInfo);
-                break;
-            case "action":
-                md5 = japiServer.getActionMd5(transferInfo);
-                break;
-            case "project":
-                md5 = japiServer.getProjectMd5(transferInfo);
-                break;
-            default:
-                throw new JapiException(type + " not find.");
-        }
-        result.setData(md5);
         return result;
     }
 
@@ -146,7 +110,7 @@ public class ProjectAct {
         }
         ResultImpl rest = new ResultImpl();
         List<String> versions = japiServer.getActionVersions(transferInfo);
-        versions.sort((b,a)->{
+        versions.sort((b, a) -> {
             return new Integer(Integer.parseInt(a.substring(1))).compareTo(Integer.parseInt(b.substring(1)));
         });
         rest.setData(versions);
@@ -213,7 +177,7 @@ public class ProjectAct {
     }
 
     @GetMapping("lists/{offset}/{limit}")
-    public Result lists(@PathVariable Integer offset, @PathVariable Integer limit, String sortName, SortTypeEnum sortType,HttpServletRequest request,HttpServletResponse response) throws JapiException {
+    public Result lists(@PathVariable Integer offset, @PathVariable Integer limit, String sortName, SortTypeEnum sortType, HttpServletRequest request, HttpServletResponse response) throws JapiException {
 
         if (offset <= 0) {
             offset = 1;
@@ -254,12 +218,12 @@ public class ProjectAct {
             endIndex = projects.size();
         }
         List<JapiProject> japiProjects = projects.subList(beginIndex, endIndex);
-        String token = getToken(request,response);
+        String token = getToken(request, response);
         List<String> projectNames = japiServer.getFollows(token);
-        for(String projectName : projectNames){
+        for (String projectName : projectNames) {
             final String _projectName = projectName;
-            japiProjects.forEach(jp->{
-                if(jp.getName().equals(_projectName)){
+            japiProjects.forEach(jp -> {
+                if (jp.getName().equals(_projectName)) {
                     jp.setFollow(true);
                 }
             });
@@ -269,15 +233,6 @@ public class ProjectAct {
         return rest;
     }
 
-    @PostMapping("exists")
-    public Result exists(String projectName) throws JapiException {
-        if (StringUtils.isBlank(projectName)) {
-            throw new JapiException("projectName" + NOT_EMPTY_TIP);
-        }
-        List<JapiProject> projects = japiServer.getAllProjects();
-        ResultImpl<Boolean> result = new ResultImpl<>();
-        result.setData(projects.stream().filter(p -> p.getName().equals(projectName)).findAny().isPresent());
-        return result;
-    }
+
 
 }

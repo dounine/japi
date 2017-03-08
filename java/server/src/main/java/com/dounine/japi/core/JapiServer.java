@@ -5,7 +5,7 @@ import com.dounine.japi.auth.UserAuth;
 import com.dounine.japi.auth.UserUtils;
 import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.transfer.*;
-import com.dounine.japi.web.FollowEnum;
+import com.dounine.japi.web.type.FollowEnum;
 import com.dounine.japi.web.TransferInfo;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;

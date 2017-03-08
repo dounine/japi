@@ -1,4 +1,4 @@
-package com.dounine.japi.web;
+package com.dounine.japi.web.type;
 
 /**
  * Created by lake on 17-3-3.
