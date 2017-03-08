@@ -9,6 +9,7 @@ public class RequestImpl implements IRequest{
     private String name;
     private String type;
     private List<IRequest> fields;
+    private String constraint;
     private boolean required = false;
     private String defaultValue;
     private String description;
@@ -64,5 +65,14 @@ public class RequestImpl implements IRequest{
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public String getConstraint() {
+        return constraint;
+    }
+
+    public void setConstraint(String constraint) {
+        this.constraint = constraint;
     }
 }

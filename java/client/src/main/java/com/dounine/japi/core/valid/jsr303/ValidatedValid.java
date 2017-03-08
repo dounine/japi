@@ -8,6 +8,7 @@ import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
 import com.dounine.japi.core.valid.jsr303.list.NotNullValid;
+import com.dounine.japi.core.valid.jsr303.list.SizeValid;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
@@ -45,6 +46,10 @@ public class ValidatedValid implements IMVC {
         NotNullValid notNullValid = new NotNullValid();
         notNullValid.setJavaFilePath(javaFilePath);
         imvcs.add(notNullValid);
+
+        SizeValid sizeValid = new SizeValid();
+        sizeValid.setJavaFilePath(javaFilePath);
+        imvcs.add(sizeValid);
         return imvcs;
     }
 

@@ -10,6 +10,7 @@ public interface IRequest {
     String getName();
     String getType();
     List<IRequest> getFields();
+    String getConstraint();
     boolean getRequired();
     String getDefaultValue();
     String getDescription();

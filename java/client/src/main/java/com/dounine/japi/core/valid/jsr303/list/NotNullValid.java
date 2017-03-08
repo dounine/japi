@@ -95,6 +95,7 @@ public class NotNullValid implements IMVC {
         requestField.setType(TypeConvert.getHtmlType(typeStr));
         requestField.setDescription(description);
         requestField.setRequired(required);
+        requestField.setConstraint("非空字符串");
         requestField.setDefaultValue(defaultValue);
         requestField.setName(newNameStr);
         return requestField;

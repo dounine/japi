@@ -4,8 +4,8 @@ import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.TypeConvert;
-import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
+import com.dounine.japi.serial.request.RequestImpl;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -18,13 +18,13 @@ import java.util.regex.Pattern;
 /**
  * Created by lake on 17-2-17.
  */
-public class NotBlankValid implements IMVC {
+public class SizeValid implements IMVC {
 
     private String javaFilePath;
 
     @Override
     public String getRequestParamName() {
-        return "org.hibernate.validator.constraints.NotBlank";
+        return "javax.validation.constraints.Size";
     }
 
     private List<String> getInterfacePaths(List<String> interfaceGroups) {
@@ -95,7 +95,6 @@ public class NotBlankValid implements IMVC {
         requestField.setType(TypeConvert.getHtmlType(typeStr));
         requestField.setDescription(description);
         requestField.setRequired(required);
-        requestField.setConstraint("非空字符串");
         requestField.setDefaultValue(defaultValue);
         requestField.setName(newNameStr);
         return requestField;

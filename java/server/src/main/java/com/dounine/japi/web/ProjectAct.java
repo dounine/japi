@@ -212,14 +212,14 @@ public class ProjectAct {
         return rest;
     }
 
-    @GetMapping("lists/{page}/{size}")
-    public Result lists(@PathVariable Integer page, @PathVariable Integer size, String sortName, SortTypeEnum sortType,HttpServletRequest request,HttpServletResponse response) throws JapiException {
+    @GetMapping("lists/{offset}/{limit}")
+    public Result lists(@PathVariable Integer offset, @PathVariable Integer limit, String sortName, SortTypeEnum sortType,HttpServletRequest request,HttpServletResponse response) throws JapiException {
 
-        if (page == 0) {
-            page = 1;
+        if (offset <= 0) {
+            offset = 1;
         }
-        if (size == 0) {
-            size = 6;
+        if (limit <= 0) {
+            limit = 8;
         }
         List<JapiProject> projects = japiServer.getAllProjects();
         if (StringUtils.isNotBlank(sortName)) {
@@ -245,11 +245,11 @@ public class ProjectAct {
         }
 
         ResultImpl rest = new ResultImpl();
-        int beginIndex = size * (page - 1);
+        int beginIndex = limit * (offset - 1);
         if (beginIndex > projects.size()) {
             beginIndex = 0;
         }
-        int endIndex = beginIndex + size;
+        int endIndex = beginIndex + limit;
         if (endIndex > projects.size()) {
             endIndex = projects.size();
         }

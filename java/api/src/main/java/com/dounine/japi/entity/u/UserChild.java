@@ -1,7 +1,10 @@
 package com.dounine.japi.entity.u;
 
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Value;
+
+import javax.validation.constraints.Size;
 
 /**
  * 子用户的信息
@@ -17,6 +20,7 @@ public class UserChild {
     /**
      * 年龄
      */
+    @Size(min = 0,max = 100)
     private Integer age;
     /**
      * 年龄jj
