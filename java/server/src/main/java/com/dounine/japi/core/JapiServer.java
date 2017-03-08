@@ -142,6 +142,9 @@ public class JapiServer {
 
     public List<String> getActionVersions(TransferInfo transferInfo) {
         File actionFile = new File(projectsPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName());
+        if(!actionFile.exists()){
+            throw new JapiException(transferInfo.getActionName()+" 没有此方法");
+        }
         List<String> versions = new ArrayList<>();
         for (File vFile : actionFile.listFiles(FILE_FILTER)) {
             if (vFile.isHidden()) {
@@ -154,6 +157,9 @@ public class JapiServer {
 
     public List<String> getActionVerDates(TransferInfo transferInfo) {
         File actionFile = new File(projectsPath + "/" + transferInfo.getProjectName() + "/" + transferInfo.getPackageName() + "/" + transferInfo.getFunName() + "/" + transferInfo.getActionName() + "/" + transferInfo.getVersionName());
+        if(!actionFile.exists()){
+            throw new JapiException(transferInfo.getVersionName()+" 没有此版本.");
+        }
         List<String> versions = new ArrayList<>();
         Calendar calendar = Calendar.getInstance();
         for (File vFile : actionFile.listFiles(FILE_FILTER)) {
@@ -340,7 +346,6 @@ public class JapiServer {
         if (StringUtils.isBlank(transferInfo.getProjectName())) {
             throw new JapiException("projectName not empty.");
         }
-//        createProjectFold(transferInfo);
         String projectPath = projectsPath + "/" + transferInfo.getProjectName();
         for (JapiNavPackage japiNavPackage : japiNavRoot.getPackages()) {
             File packageFile = new File(projectPath + "/" + japiNavPackage.getName());
