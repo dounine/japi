@@ -1,8 +1,7 @@
-
     var Router = require('koa-router');
     var path = require('path');
     var sendfile = require('koa-sendfile');
-    var server = require(path.resolve('koa/server/server.js'));
+    var server = require(path.resolve('koa/server/' + path.basename(__filename)));
     var commonSer = require(path.resolve('koa/server/common.js'));
     var config = require(path.resolve('plugins/read-config.js'));
     var fetch = require('node-fetch');//url转发
