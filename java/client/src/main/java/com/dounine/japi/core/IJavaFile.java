@@ -1,5 +1,7 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.core.impl.SearchInfo;
+
 import java.io.File;
 
 /**
@@ -12,6 +14,6 @@ public interface IJavaFile {
      * @param javaTxt java内容关键字
      * @return 找到的文件
      */
-    File searchTxtJavaFileForProjectsPath(String javaTxt,String javaFilePath);
+    SearchInfo searchTxtJavaFileForProjectsPath(String javaTxt, String javaFilePath);
 
 }

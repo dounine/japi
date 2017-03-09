@@ -2,6 +2,7 @@ package com.dounine.japi.core.action.comm;
 
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
+import com.dounine.japi.core.IAction;
 import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.*;
 import org.springframework.validation.BindingResult;
@@ -18,15 +19,16 @@ public class TestAction {
 
     /**
      * 获取热闹新闻
+     *
      * @param user 用户信息
-     * @throws RuntimeException
-     * @deprecated yes
      * @return class User
+     * @throws RuntimeException
      * @version v1
+     * @deprecated yes
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "hots")
     @ResponseBody
-    public Result hots(@Validated User user, BindingResult bindingResult) throws RuntimeException {
+    public Result hots(@Validated({User.UserADD.class,User.UserDEL.class}) User user, BindingResult bindingResult) throws RuntimeException {
 
         return null;
     }
@@ -36,8 +38,8 @@ public class TestAction {
      *
      * @param id 用户
      * @throws RuntimeException
-     * @deprecated yes
      * @version v1
+     * @deprecated yes
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "list/{id}")
     @ResponseBody

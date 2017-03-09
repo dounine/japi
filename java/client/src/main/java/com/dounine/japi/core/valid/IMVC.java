@@ -3,6 +3,7 @@ package com.dounine.japi.core.valid;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.JavaFileImpl;
+import com.dounine.japi.core.impl.SearchInfo;
 import com.dounine.japi.core.valid.jsr303.list.*;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
@@ -67,23 +68,23 @@ public interface IMVC {
         return null;
     }
 
-    default IRequest getRequestFieldForAnno(String annoStr, String typeStr, String nameStr, List<IFieldDoc> fieldDocs, List<String> interfaceGroups){
+    default IRequest getRequestFieldForAnno(String annoStr, String typeStr, String nameStr, List<IFieldDoc> fieldDocs, List<SearchInfo> interfaceGroups){
         return null;
     }
 
-    default List<String> getInterfacePaths(List<String> interfaceGroups,String javaFilePath) {
-        List<String> paths = new ArrayList<>();
+    default List<SearchInfo> getInterfacePaths(List<String> interfaceGroups,String javaFilePath) {
+        List<SearchInfo> searchInfos = new ArrayList<>();
         for (String interfaceGroup : interfaceGroups) {
             String key = interfaceGroup.substring(0, interfaceGroup.lastIndexOf("."));
-            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key, javaFilePath);
-            if (null != file) {
-                paths.add(file.getAbsolutePath());
+            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key, javaFilePath);
+            if (null != searchInfo.getFile()) {
+                searchInfos.add(searchInfo);
             }
         }
-        return paths;
+        return searchInfos;
     }
 
-    default boolean isRequired(String annoStr,List<String> interfaceGroups,String javaFilePath){
+    default boolean isRequired(String annoStr,List<SearchInfo> interfaceGroups,String javaFilePath){
         boolean isRequire = true;
         List<String> myGroupInterfaces = new ArrayList<>();
         if (null != interfaceGroups && interfaceGroups.size() > 0) {
@@ -107,11 +108,11 @@ public interface IMVC {
             }
         }
 
-        List<String> myInterfaceGroupPaths = getInterfacePaths(myGroupInterfaces,javaFilePath);
+        List<SearchInfo> myInterfaceGroupPaths = getInterfacePaths(myGroupInterfaces,javaFilePath);
         if (null != myInterfaceGroupPaths && null != interfaceGroups) {
-            for (String myPath : myInterfaceGroupPaths) {
-                for (String actionPath : interfaceGroups) {
-                    if (myPath.equals(actionPath)) {
+            for (SearchInfo myPath : myInterfaceGroupPaths) {
+                for (SearchInfo searchInfo : interfaceGroups) {
+                    if (myPath.getFile().equals(searchInfo.getFile())&&myPath.getKey().equals(searchInfo.getKey())) {
                         isRequire = true;
                         break;
                     }

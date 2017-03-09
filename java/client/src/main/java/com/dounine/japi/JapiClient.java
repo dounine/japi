@@ -27,7 +27,7 @@ public class JapiClient {
     }
 
     public static void main(String[] args) {
-        JapiClient.setPrefixPath("/Users/huanghuanlai/dounine/github/japi/java/");//路径前缀
+        JapiClient.setPrefixPath("/home/lake/github/japi/java/");//路径前缀
         JapiClient.setpostfixPath("/src/main/java");
 
         JapiClient.setProjectJavaPath("client");

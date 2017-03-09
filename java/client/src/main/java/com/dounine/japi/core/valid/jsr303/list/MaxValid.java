@@ -2,6 +2,7 @@ package com.dounine.japi.core.valid.jsr303.list;
 
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IFieldDoc;
+import com.dounine.japi.core.impl.SearchInfo;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.valid.IMVC;
 import com.dounine.japi.serial.request.RequestImpl;
@@ -25,7 +26,7 @@ public class MaxValid implements IMVC {
     }
 
     @Override
-    public RequestImpl getRequestFieldForAnno(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<String> interfaceGroups) {
+    public RequestImpl getRequestFieldForAnno(String annoStr, String typeStr, String nameStr, List<IFieldDoc> docs, List<SearchInfo> interfaceGroups) {
         RequestImpl requestField = new RequestImpl();
         String newNameStr = nameStr;
         String defaultValue = "";

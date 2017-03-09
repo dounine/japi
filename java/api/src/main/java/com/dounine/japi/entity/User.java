@@ -14,18 +14,30 @@ import javax.validation.constraints.NotNull;
  */
 @RequestMapping
 public class User {
+    public interface UserADD {
+    }
+
+    public interface UserDEL {
+    }
+
+    public interface UserUPDATE {
+    }
+
+    public interface UserPUT {
+    }
 
     /**
      * 用户名
+     *
      * @reg 这是正则表达式
      * @des 这是描述信息
      */
-    @NotNull(message = "用户名不能为空",groups = {AddInterface.class})
+    @NotNull(message = "用户名不能为空", groups = {User.UserADD.class})
     protected String username;
     /**
      * 用户密码
      */
-    @NotBlank(message = "用户密码不能为空",groups = {AddInterface.class})
+    @NotBlank(message = "用户密码不能为空", groups = {AddInterface.class})
     private String password;
     /**
      * 测试子类

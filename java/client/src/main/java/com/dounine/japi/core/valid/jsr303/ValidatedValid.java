@@ -3,10 +3,7 @@ package com.dounine.japi.core.valid.jsr303;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IField;
-import com.dounine.japi.core.impl.BuiltInJavaImpl;
-import com.dounine.japi.core.impl.JavaFileImpl;
-import com.dounine.japi.core.impl.TypeConvert;
-import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.core.impl.*;
 import com.dounine.japi.core.valid.jsr303.list.MaxValid;
 import com.dounine.japi.core.valid.jsr303.list.NotNullValid;
 import com.dounine.japi.core.valid.jsr303.list.SizeValid;
@@ -51,7 +48,7 @@ public class ValidatedValid implements IMVC {
                 String[] interfaceArr = interfaceStr.split(",");
                 interfaces = Arrays.asList(interfaceArr);
             } else {//单组接口
-                Pattern pattern = JapiPattern.getPattern("[a-zA-Z0-9_]*[.]class");
+                Pattern pattern = JapiPattern.getPattern("[a-zA-Z0-9_.]*[.]class");
                 Matcher matcher = pattern.matcher(parameterStrExcTypeAndName);
                 if (matcher.find()) {
                     interfaces.add(matcher.group());
@@ -61,22 +58,22 @@ public class ValidatedValid implements IMVC {
         return interfaces;
     }
 
-    private List<String> getInterfacePaths(List<String> interfaceGroups) {
-        List<String> paths = new ArrayList<>();
+    private List<SearchInfo> getInterfacePaths(List<String> interfaceGroups) {
+        List<SearchInfo> searchInfos = new ArrayList<>();
         for (String interfaceGroup : interfaceGroups) {
             String key = interfaceGroup.substring(0, interfaceGroup.lastIndexOf("."));
-            File file = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key,javaFilePath);
-            if (null != file) {
-                paths.add(file.getAbsolutePath());
+            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key,javaFilePath);
+            if (searchInfo.getFile()!=null) {
+                searchInfos.add(searchInfo);
             }
         }
-        return paths;
+        return searchInfos;
     }
 
     @Override
     public IRequest getRequestField(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs, File javaFile) {
         List<String> interfaceGroups = getValidatedGroups(parameterStrExcTypeAndName);
-        List<String> interfaceGroupPaths = getInterfacePaths(interfaceGroups);
+        List<SearchInfo> interfaceGroupPaths = getInterfacePaths(interfaceGroups);
 
         RequestImpl requestField = new RequestImpl();
         requestField.setName(nameStr);
@@ -87,7 +84,7 @@ public class ValidatedValid implements IMVC {
             typeImpl.setJavaKeyTxt(typeStr);
 
             List<IField> fields = typeImpl.getFields();
-            List<IMVC> imvcs = getJSR303(javaFilePath);
+            List<IMVC> imvcs = getJSR303(typeImpl.getSearchFile().getAbsolutePath());
             requestField.setType("object");
             List<IRequest> requestFields = new ArrayList<>();
             if (fields.size() > 0) {

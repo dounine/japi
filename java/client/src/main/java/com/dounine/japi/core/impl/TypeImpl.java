@@ -54,7 +54,7 @@ public class TypeImpl implements IType {
 
     @Override
     public String getName() {
-        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
+        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath()).getFile();
 
         if (null == searchFile) {
             throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
@@ -147,7 +147,7 @@ public class TypeImpl implements IType {
         }
         javaKeyTxt = javaKeyTxt.contains("<") ? javaKeyTxt.substring(0, javaKeyTxt.indexOf("<")).trim() : javaKeyTxt;//remove generic str
 
-        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
+        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath()).getFile();
 
         if (null == searchFile) {
             throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
@@ -201,7 +201,7 @@ public class TypeImpl implements IType {
                 fieldImpl.setName(name);
                 fieldImpl.setType("object");
             } else if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
-                File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
+                File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath()).getFile();
                 if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
                     fieldImpl.setName(name);
                     fieldImpl.setType(MY_SELF_REF);
