@@ -12,7 +12,6 @@ import javax.validation.constraints.NotNull;
 /**
  * 用户类信息
  */
-@RequestMapping
 public class User {
     public interface UserADD {
     }

@@ -30,16 +30,6 @@ japiClientStorage.setProject(project);
 japiClientStorage.autoSaveToDisk();//自动使用到本地磁盘==> 用户目录/.japi-client/
 new JapiClientTransfer().autoTransfer(japiClientStorage);//文件传输到主服务器.
 ```
-springmvc配置版本
-```
-@Bean
-public RequestMappingHandlerMapping requestMappingHandlerMapping() {
-    RequestMappingHandlerMapping handlerMapping = new CustomRequestMappingHandlerMapping();
-    handlerMapping.setOrder(0);
-    handlerMapping.setInterceptors(getInterceptors());
-    return handlerMapping;
-}
-```
 ## springmvc 例子编写 
 **action包下不能直接写MVC类,还需要一层结构包**
 ```
@@ -64,7 +54,7 @@ package com.dounine.demo.action.article;
  * Created by huanghuanlai on 2017/1/18.
  */
 @RestController
-@RequestMapping("{version}/article")
+@RequestMapping("article")
 public class ArticleAction {
 ```
 **方法请求例子**
@@ -74,13 +64,45 @@ public class ArticleAction {
  * @param user 用户信息
  * @throws RuntimeException
  * @deprecated yes
+ * @version v1
  */
-@ApiVersion(1)
-@org.springframework.web.bind.annotation.GetMapping(value = "hots")
+@org.springframework.web.bind.annotation.GetMapping(value = "v1/hots")
 @ResponseBody
-public Result hots(@Validated User user, BindingResult bindingResult) throws RuntimeException {
-    //do something
+public Result hots(@Validated({User.UserDEL.class}) User user, BindingResult bindingResult) throws RuntimeException {
+    //包含分组验证时,User.UserDEL接口组必需跟@Validated({User.UserDEL.class})一模一样
+    //例如: @NotNull(message = "用户名不能为空", groups = {User.UserDEL.class})
     return null;
+}
+```
+User实体信息
+```
+/**
+ * 用户类信息
+ */
+public class User {
+    public interface UserADD {}//增加分组
+
+    public interface UserDEL {}//删除分组
+
+    public interface UserUPDATE {}//修改分组
+
+    public interface UserPUT {}//提交分组
+
+    /**
+     * 用户名
+     *
+     * @reg 这是正则表达式
+     * @des 这是描述信息
+     */
+    @NotNull(message = "用户名不能为空", groups = {User.UserADD.class})
+    protected String username;
+    /**
+     * 用户密码
+     */
+    @NotBlank(message = "用户密码不能为空", groups = {AddInterface.class})
+    private String password;
+    
+    //...
 }
 ```
 * 注释标签说明 
@@ -98,7 +120,7 @@ public Result hots(@Validated User user, BindingResult bindingResult) throws Run
         * @version
             * 用于标注方法版本号
             * demo
-                * @version 1
+                * @version v1
     * 其它注释标签可自定义
         * 使用说明 
             * 编写`doc-tags.txt`文件,存放在resources目录中，或者放esources/japi/在目录     
@@ -111,8 +133,3 @@ public Result hots(@Validated User user, BindingResult bindingResult) throws Run
                 customer 我是自定义标签 
                 customer. 我是自定义单标签 
               ```
-* 注解标签说明 
-    * 常规注解
-    * @ApiVersion(1)
-        * 用于标注此请求的版本号是多少,与@version功能是一样的
-        * 此注解的类上的@RequestMapping必需包含{version}替换的字符串 
