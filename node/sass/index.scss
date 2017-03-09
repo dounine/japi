@@ -81,9 +81,7 @@ header{
         font-family:"Microsoft YaHei";
 
         img{
-          width:30px;
-          height:27px;
-          margin-bottom:5px;
+          margin-bottom:1px;
         }
       }
       .user-wrap{
@@ -99,8 +97,6 @@ header{
           font-size:14px;
           font-family:"Microsoft YaHei";
           img{
-           width:23px;
-            height:27px;
             margin-bottom:5px;
           }
         }
@@ -266,9 +262,13 @@ header{
       }
     }
   }
+  .load{
+    display:flex;
+    justify-content:center;
+    margin-top:160px;
+  }
 }
 #pages{
-  display:none;
   section{
     width:20%;
     margin:30px auto;

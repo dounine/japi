@@ -6,7 +6,6 @@
     var server = require(path.resolve('koa/server/' + path.basename(__filename)));
     var config = require(path.resolve('plugins/read-config.js'));
     module.exports = function(config){
-
         var router = new Router();
         router.get('/login', function *(){      //获取登陆页面
             var $self = this;

@@ -46,6 +46,19 @@ $(function(){
             }
         },
     });
+
+    // $("#form input").blur(function(){
+    //      var usernameAria = $('#username').attr('aria-invalid');
+    //      var passwordAria = $('#password').attr('aria-invalid');
+    //     if(usernameAria=='false'&&passwordAria=='false'){
+    //         $('.subBtn').attr("disabled",false);
+    //
+    //     }
+    // })
+
+
+
+    
 });
 
 
@@ -62,7 +75,8 @@ function login(){
             if(resData.code == "1"){
                 $(".form-msg").text(resData.msg)
             } else if(resData.code == "0"){
-                window.location.href = "/index"
+                $.cookie("userName",user.username,{ expires: 7 })
+                window.location.href = "/index";
             }
 
         },
