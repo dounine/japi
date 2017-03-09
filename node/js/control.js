@@ -524,6 +524,6 @@ function listJump(self){
 
 //读取用户名
 function userName(){
-    var userName = $.cookie("username");
+    var userName = $.cookie("userName");
     $('.user strong').text(userName)
 }
