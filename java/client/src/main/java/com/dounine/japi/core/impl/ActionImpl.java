@@ -516,28 +516,12 @@ public class ActionImpl implements IAction {
         return new ActionRequest(newRequests, (null != methodTypeList && methodTypeList.length > 0) ? Arrays.asList(methodTypeList) : Arrays.asList(new RequestMethod[]{actionRequest.getMethod()}));
     }
 
-    private String getAnnosVersion(List<String> annotations) {
-        String version = null;
-        Pattern pattern = JapiPattern.getPattern("ApiVersion\\s*[(]\\s*\\d+\\s*[)]$");
-        for (String annoLine : annotations) {
-            Matcher apiVersionMatcher = pattern.matcher(annoLine);
-            if (apiVersionMatcher.find()) {
-                version = "v" + annoLine.substring(annoLine.indexOf("(") + 1, annoLine.lastIndexOf(")")).trim();
-                break;
-            }
-        }
-        return version;
-    }
-
     public List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods) {
         List<ActionInfo> actionInfos = new ArrayList<>();
         Pattern verstionPattern = JapiPattern.getPattern("[{]version[}]");
         for (IActionMethod actionMethod : actionMethods) {
             ActionInfo actionInfo = new ActionInfo();
-            String version = getAnnosVersion(actionMethod.getAnnotations());
-            if (null != version) {
-                actionInfo.setVersion(version);
-            }
+            String version = null;
             actionInfo.setActionName(actionMethod.getMethodDescription());
             List<IRequest> requestFields = new ArrayList<>();//TODO
             for (IParameter parameter : actionMethod.getParameters()) {
@@ -555,7 +539,7 @@ public class ActionImpl implements IAction {
                 }
                 if (doc.getName().equals("version")) {
                     if (null == version) {
-                        actionInfo.setVersion("v" + doc.getValue());
+                        actionInfo.setVersion(doc.getValue());
                     }
                 }
                 if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {

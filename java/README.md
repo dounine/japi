@@ -30,6 +30,16 @@ japiClientStorage.setProject(project);
 japiClientStorage.autoSaveToDisk();//自动使用到本地磁盘==> 用户目录/.japi-client/
 new JapiClientTransfer().autoTransfer(japiClientStorage);//文件传输到主服务器.
 ```
+springmvc配置版本
+```
+@Bean
+public RequestMappingHandlerMapping requestMappingHandlerMapping() {
+    RequestMappingHandlerMapping handlerMapping = new CustomRequestMappingHandlerMapping();
+    handlerMapping.setOrder(0);
+    handlerMapping.setInterceptors(getInterceptors());
+    return handlerMapping;
+}
+```
 ## springmvc 例子编写 
 **action包下不能直接写MVC类,还需要一层结构包**
 ```

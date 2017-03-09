@@ -2,7 +2,6 @@ package com.dounine.japi.core.action.comm;
 
 import com.dounine.japi.act.Result;
 import com.dounine.japi.act.ResultImpl;
-import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.*;
 import org.springframework.validation.BindingResult;
@@ -14,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
  * Created by huanghuanlai on 2017/1/18.
  */
 @RestController
-@RequestMapping("{version}/article")
+@RequestMapping("article")
 public class TestAction {
 
     /**
@@ -23,8 +22,8 @@ public class TestAction {
      * @throws RuntimeException
      * @deprecated yes
      * @return class User
+     * @version v1
      */
-    @ApiVersion(1)
     @org.springframework.web.bind.annotation.GetMapping(value = "hots")
     @ResponseBody
     public Result hots(@Validated User user, BindingResult bindingResult) throws RuntimeException {
@@ -38,8 +37,8 @@ public class TestAction {
      * @param id 用户
      * @throws RuntimeException
      * @deprecated yes
+     * @version v1
      */
-    @ApiVersion(1)
     @org.springframework.web.bind.annotation.GetMapping(value = "list/{id}")
     @ResponseBody
     public Result testUser(@PathVariable String id) throws RuntimeException {

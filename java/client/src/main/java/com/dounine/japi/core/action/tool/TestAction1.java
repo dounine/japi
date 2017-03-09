@@ -1,6 +1,5 @@
 package com.dounine.japi.core.action.tool;
 
-import com.dounine.japi.common.springmvc.ApiVersion;
 import com.dounine.japi.entity.AddInterface;
 import com.dounine.japi.entity.User;
 import org.springframework.validation.BindingResult;
@@ -23,9 +22,9 @@ public class TestAction1 {
      *
      * @param user 用户信息
      * @param cc 测试参数
+     * @version v1
      */
-    @org.springframework.web.bind.annotation.GetMapping(value = "list")
-    @ApiVersion(1)
+    @org.springframework.web.bind.annotation.GetMapping(value = "v1/list")
     @ResponseBody
     public User list(@Validated(value = {AddInterface.class}) User user, @RequestParam String cc, BindingResult bindingResult) {
 
@@ -36,9 +35,9 @@ public class TestAction1 {
      * 删除用户
      *
      * @param user 用户信息
+     * @version v1
      */
-    @org.springframework.web.bind.annotation.GetMapping(value = "del")
-    @ApiVersion(1)
+    @org.springframework.web.bind.annotation.GetMapping(value = "v1/del")
     @ResponseBody
     public User del(@Validated(value = {AddInterface.class}) User user, BindingResult bindingResult) {
 
@@ -49,9 +48,9 @@ public class TestAction1 {
      * 新增用户
      *
      * @param user 用户信息
+     * @version v1
      */
-    @org.springframework.web.bind.annotation.GetMapping(value = "add")
-    @ApiVersion(1)
+    @org.springframework.web.bind.annotation.GetMapping(value = "v1/add")
     @ResponseBody
     public User add(@Validated(value = {AddInterface.class}) User user, BindingResult bindingResult) {
 
