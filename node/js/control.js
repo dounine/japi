@@ -11,6 +11,8 @@ function isLogin(){
 
 //刷新后回到页面
 function refresh(){
+    var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
+    $("#content").html(load);
     var refHashArr = location.hash.split("#")[1].split('/');
     if(refHashArr.length!=1){
         version.projectName=refHashArr[0];
@@ -95,7 +97,7 @@ $(document).ready(function(){
                 }
             });
             nav += "</div>"
-            $("#nav .nav-list").append(nav);
+            $("#nav .nav-list").html(nav);
 
         },
         error : function(request){
@@ -116,6 +118,9 @@ refresh()
 
     //导航点击
     $("#nav").on("click", ".nav-list .acLi a", function(){
+        
+        var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
+        $("#content").html(load);
 
         version.projectName = window.location.hash.split("#")[1].split("/")[0];
         version.packageName = $(this).parents('.root').find('.rootName').text();
@@ -162,6 +167,8 @@ refresh()
 
 //版本选择
 function verSel(version){
+    var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
+    $(".reqtable").html(load);
     var isRefresh = arguments[1];
     var verTag = document.getElementsByClassName('version-list')[0].tagName;
     if(verTag == "SPAN"){
@@ -206,6 +213,9 @@ var responseFields1 = null;
 //参数
 
 function action(version){
+    var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
+    $(".reqtable").html(load);
+
     var actTag = document.getElementsByClassName('time')[0].tagName;
     if(actTag == "SPAN"){
         version.dateName = $('span.time').attr('data-index')
