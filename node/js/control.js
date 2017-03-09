@@ -135,7 +135,7 @@ refresh()
 
                 var cont, vNum;
 
-                cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
+                cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'></p></div>";
                 if(data.data.length == "1"){
                     vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
                 } else {
