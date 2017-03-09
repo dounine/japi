@@ -55,7 +55,7 @@ $(document).ready(function(){
 
             });
             list += "</div>";
-            $("#containal").html(list);
+            $("#containal").html(list).show();
             userName()
             //获取分页数
             location.hash = "page=" + page.pageSize;
@@ -188,7 +188,7 @@ function pageBtn(self, name){
 
             });
             list += "</div>";
-            $("#containal").html(list)
+            $("#containal").html(list).fadeIn()
             location.hash = "page=" + pagination.limit;
 
         },
