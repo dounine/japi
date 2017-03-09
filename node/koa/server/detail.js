@@ -50,6 +50,20 @@ module.exports = function(argvs, token){
         };
         return request(options);
     }
+    this.sso = function(argvs, token){
+        var rep = null;
+        var options = {
+            method : 'POST',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/navs',
+            form : argvs,
+            headers : {
+                token : token
+                /* 'content-type': 'application/x-www-form-urlencoded' */ // Set automatically
+            }
+        };
+        return request(options);
+    };
 
 
     return this;
