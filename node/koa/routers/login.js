@@ -29,10 +29,7 @@
                             $self.body = responseText;
                         }
                     }).catch((error) =>{
-                        if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                            $self.body = {'msg' : '请求错误！', errno : 3};
-                            $self.status = 408;
-                        }
+                            $self.body = {'msg' : error.error, errno : 3};
                     }));
             }else{
                 yield (sendfile(this, path.resolve('login.html')));
@@ -60,25 +57,24 @@
                         $self.body = responseText;
                     }
                 }).catch((error) =>{
-                    if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                        $self.body = {'msg' : '请求错误！', errno : 3};
-                        $self.status = 408;
-                    }
+                    $self.body = {'msg' : error.error, errno : 3};
                 }));
         }).get("/islogin", function*(){
             var token = this.cookies.get('token');
-            var isToken = {"token" : token};
-            var $self = this;
-            yield (commonSer().islogin(isToken)
-                .then((parsedBody) =>{
-                    var responseText = JSON.parse(parsedBody);
-                    $self.body = responseText;
-                }).catch((error) =>{
-                    if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                        $self.body = {'msg' : '请求错误！', errno : 3};
-                        $self.status = 408;
-                    }
-                }))
+            if(token){
+                var isToken = {"token" : token};
+                var $self = this;
+                yield (commonSer().islogin(isToken)
+                    .then((parsedBody) =>{
+                            var responseText = JSON.parse(parsedBody);
+                            $self.body = responseText;
+                    }).catch((error) =>{
+                            $self.body = {'msg' : error.error, errno : 3};
+                    }))
+            }else{
+                this.body = {code:1,msg:'nologin'};
+            }
+
         })
 
         return router;

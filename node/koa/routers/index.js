@@ -24,10 +24,7 @@ module.exports = function(){
                 $self.body = responseText;
 
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).get('/logo/:projectName', function *(next){
         var token = this.cookies.get('token');
@@ -51,10 +48,7 @@ module.exports = function(){
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).get('/sizes', function*(){
         var token = this.cookies.get('token');
@@ -64,25 +58,8 @@ module.exports = function(){
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
-    }).get("/islogin", function*(){
-        var token = this.cookies.get('token');
-        var isToken = {"token" : token};
-        var $self = this;
-        yield (commonSer().islogin(isToken)
-            .then((parsedBody) =>{
-                var responseText = JSON.parse(parsedBody);
-                $self.body = responseText;
-            }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
-            }))
     }).post("/addFollow", function*(){
         var token = this.cookies.get('token');
         var adFollow = this.request.body;
@@ -92,10 +69,7 @@ module.exports = function(){
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }))
     }).post("/delFollow", function*(){
         var token = this.cookies.get('token');
@@ -106,10 +80,7 @@ module.exports = function(){
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).get("/followList", function*(){
         var token = this.cookies.get('token');
@@ -120,10 +91,7 @@ module.exports = function(){
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).post("/sortList", function*(){
         var token = this.cookies.get('token');
@@ -135,10 +103,7 @@ module.exports = function(){
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
             }).catch((error) =>{
-                if(error.error && error.error.code && error.error.code == 'ETIMEDOUT'){//登录超时
-                    $self.body = {'msg' : '请求错误！', errno : 3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     });
 

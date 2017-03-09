@@ -29,10 +29,7 @@ module.exports = function (config) {
                 // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
-                    $self.body = {'msg':'请求错误！',errno:3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).get('/logo/:projectName', function *(next){
 
@@ -60,10 +57,7 @@ module.exports = function (config) {
                 // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
-                    $self.body = {'msg':'请求错误！',errno:3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).post('/versions',function*(){
         let token = this.cookies.get('token');
@@ -73,13 +67,9 @@ module.exports = function (config) {
         yield (server().version(ver,token)
             .then( (parsedBody)=> {
                 let responseText = JSON.parse(parsedBody);
-                // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
-                    $self.body = {'msg':'请求错误！',errno:3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).post('/date',function*(){
         let token = this.cookies.get('token');
@@ -91,10 +81,7 @@ module.exports = function (config) {
                 // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
-                    $self.body = {'msg':'请求错误！',errno:3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
     }).post('/action',function*(){
         let token = this.cookies.get('token');
@@ -103,28 +90,10 @@ module.exports = function (config) {
         yield (server().verActions(verAction,token)
             .then( (parsedBody)=> {
                 let responseText = JSON.parse(parsedBody);
-                // console.info("后台数据：",responseText);
                 $self.body = responseText;
             }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
-                    $self.body = {'msg':'请求错误！',errno:3};
-                    $self.status = 408;
-                }
+                $self.body = {'msg' : error.error, errno : 3};
             }));
-    }).get("/islogin",function*(){
-        let token = this.cookies.get('token');
-        let isToken={"token":token};
-        let $self = this;
-        yield (server().islogin(isToken)
-            .then( (parsedBody)=> {
-                let responseText = JSON.parse(parsedBody);
-                $self.body = responseText;
-            }).catch((error)=> {
-                if (error.error && error.error.code && error.error.code =='ETIMEDOUT') {//登录超时
-                    $self.body = {'msg':'请求错误！',errno:3};
-                    $self.status = 408;
-                }
-            }))
     })
 
     return router;
