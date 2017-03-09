@@ -11,8 +11,8 @@ function isLogin(){
 
 //刷新后回到页面
 function refresh(){
-    var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
-    $("#content").html(load);
+    // var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
+    // $("#content").html(load);
     var refHashArr = location.hash.split("#")[1].split('/');
     if(refHashArr.length!=1){
         version.projectName=refHashArr[0];
@@ -30,7 +30,7 @@ function refresh(){
 
                 var cont, vNum;
 
-                cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'>更新时间：</p></div>";
+                cont = "<div><h3>基本信息</h3><div class='version'><p class='v-num'></p><p class='v-time'></p></div>";
                 if(data.data.length == "1"){
                     vNum = "版本：<span class='version-list' data-value=%{version}>%{version}</span>".format({version : data.data})
                 } else {
@@ -50,8 +50,8 @@ function refresh(){
                 cont += "</div><section class='section info'></section><section class='section infodous'></section><section class='section reqtable'></section><section class='section restable'></section><section id='modal'>" +
                     "<div class='header'><h3>信息</h3><a href='javascript:void(0)' class='close' onclick='modalClose()'>关闭</a></div><div class='m-con'></div></section></div>"
 
-                $("#content").html(cont);
-                $(".v-num").html(vNum);
+                $("#content").hide().html(cont).fadeIn();
+                $(".v-num").hide().html(vNum).fadeIn();
                 verSel(version,true);
                 $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
                 // $('.time option[value="'+ aa +'"]').attr("selected",true);
@@ -97,7 +97,7 @@ $(document).ready(function(){
                 }
             });
             nav += "</div>"
-            $("#nav .nav-list").html(nav);
+            $("#nav .nav-list").hide().html(nav).fadeIn();
 
         },
         error : function(request){
@@ -204,7 +204,6 @@ function verSel(version){
         }
     })
 }
-
 
 var rootShowMySelf = new Object();
 var rootShowMySelfRes = new Object();
@@ -337,12 +336,12 @@ function action(version){
 
             responseFields += "</div></div></div>";
 
-            $('.section.info').html(info);
+            $('.section.info').hide().html(info).fadeIn();
             var thod = actInfoMethods.join(" / ");
             $('.method strong').text(thod);
-            $('.section.reqtable').html(requestFields);
-            $('.section.restable').html(responseFields);
-            $('.section.infodous').html(infoDocs);
+            $('.section.reqtable').hide().html(requestFields).fadeIn();
+            $('.section.restable').hide().html(responseFields).fadeIn();
+            $('.section.infodous').hide().html(infoDocs).fadeIn();
             var hashArr=[version.projectName,version.packageName,version.funName,version.actionName,version.versionName,version.dateName];
             var newHash=hashArr.join('/');
             location.hash=newHash;
@@ -377,7 +376,7 @@ function _parent(self, _parent){
 
     modalCon += "</div></div>";
 
-    $('.m-con').html(modalCon)
+    $('.m-con').hide().html(modalCon).fadeIn()
 }
 
 function _parentRes(self, _parent){
@@ -405,7 +404,7 @@ function _parentRes(self, _parent){
 
     modalCon += "</div></div>";
 
-    $('.m-con').html(modalCon)
+    $('.m-con').hide().html(modalCon).fadeIn();
 }
 
 
