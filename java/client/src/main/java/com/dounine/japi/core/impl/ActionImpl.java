@@ -572,6 +572,10 @@ public class ActionImpl implements IAction {
             }
             if(StringUtils.isBlank(actionInfo.getVersion())){
                 throw new JapiException("[ "+actionInfo.getActionName()+" ] 版本号不能为空");
+            }else{
+                if(!actionInfo.getVersion().matches("v\\d+")){
+                    throw new JapiException("[ "+actionInfo.getVersion()+" ] 版本号不符合规范");
+                }
             }
             if(StringUtils.isBlank(actionInfo.getActionName())){
                 throw new JapiException("请求方法名不能为空");
