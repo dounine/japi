@@ -64,7 +64,19 @@ module.exports = function(argvs, token){
         };
         return request(options);
     };
-
+    this.tip = function( token){
+        var rep = null;
+        var options = {
+            method : 'GET',
+            timeout : 3000,
+            uri : config()['rurl'] + '/project/tip',
+            headers : {
+                token : token
+                /* 'content-type': 'application/x-www-form-urlencoded' */ // Set automatically
+            }
+        };
+        return request(options);
+    };
 
     return this;
 }
