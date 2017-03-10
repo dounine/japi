@@ -78,5 +78,16 @@ public class TestAction {
         return null;
     }
 
+    /**
+     * 获取没有参数的
+     * @throws RuntimeException
+     * @version v1
+     */
+    @org.springframework.web.bind.annotation.PostMapping(value = "v1/list1")
+    @ResponseBody
+    public Result testUser3() throws RuntimeException {
+
+        return null;
+    }
 
 }

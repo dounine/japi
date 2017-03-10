@@ -383,14 +383,14 @@ public class ActionImpl implements IAction {
             if (requestAnnoLeftMatcher.find()) {
                 requestAnnosOrigin.add(annotationLine);
                 requestAnnos.add(StringUtils.substring(requestAnnoLeftMatcher.group(), 0, -1));
-            }else if(requestAnnoMatcher.find()){
+            } else if (requestAnnoMatcher.find()) {
                 requestAnnosOrigin.add(annotationLine);
                 requestAnnos.add(StringUtils.substring(requestAnnoMatcher.group(), 0, -1));
             }
         }
 
         IActionRequest actionRequest = null;
-        String requestAnnoOrign = null,requestAnno = null;
+        String requestAnnoOrign = null, requestAnno = null;
         if (requestAnnos.size() > 0) {
             for (int index = 0, len = requestAnnos.size(); index < len; index++) {
                 String _requestAnno = requestAnnos.get(index);
@@ -534,8 +534,9 @@ public class ActionImpl implements IAction {
             actionInfo.setActionInfoRequest(actionInfoRequest);
             actionInfo.setRequestFields(requestFields);//TODO
             boolean hasReturnDoc = false;
+            boolean parserReturnDoc = false;
             for (IActionMethodDoc doc : actionMethod.getDocs()) {
-                if (doc.getName().equals("return")) {
+                if (!hasReturnDoc && doc.getName().equals("return")) {
                     hasReturnDoc = true;
                 }
                 if (doc.getName().equals("version")) {
@@ -543,58 +544,82 @@ public class ActionImpl implements IAction {
                         actionInfo.setVersion(doc.getValue());
                     }
                 }
-                Matcher restfulMatcher = resutlFunPattern.matcher(doc.getValue());
-                if(restfulMatcher.find()){
-                    if(doc.getValue().trim().startsWith("[")){//数组
-                        List<ResponseImpl> responses = JSON.parseArray(doc.getValue(),ResponseImpl.class);
-                        if(null!=actionInfo.getResponseFields()){
-                            actionInfo.getResponseFields().addAll(responses);
-                        }else{
-                            actionInfo.setResponseFields((List)responses);
+
+                if (hasReturnDoc && !parserReturnDoc) {
+                    parserReturnDoc = true;
+                    Matcher restfulMatcher = resutlFunPattern.matcher(doc.getValue());
+                    if (restfulMatcher.find()) {
+                        if (doc.getValue().trim().startsWith("[")) {//数组
+                            List<ResponseImpl> responses = JSON.parseArray(doc.getValue(), ResponseImpl.class);
+                            if (null != actionInfo.getResponseFields()) {
+                                actionInfo.getResponseFields().addAll(responses);
+                            } else {
+                                actionInfo.setResponseFields((List) responses);
+                            }
+                        } else if (doc.getValue().trim().startsWith("{")) {
+                            IResponse response = JSON.parseObject(doc.getValue(), ResponseImpl.class);
+                            if (null != actionInfo.getResponseFields()) {
+                                actionInfo.getResponseFields().add(response);
+                            } else {
+                                actionInfo.setResponseFields(Arrays.asList(response));
+                            }
                         }
-                    }else{
-                        IResponse response = JSON.parseObject(doc.getValue(),ResponseImpl.class);
-                        if(null!=actionInfo.getResponseFields()){
-                            actionInfo.getResponseFields().add(response);
-                        }else{
-                            actionInfo.setResponseFields(Arrays.asList(response));
+                    } else if (doc.getValue().split(" ")[0].equals("class")) {
+                        if(doc.getValue().split(" ").length==1){
+                            throw new JapiException("@return class 后面请接上实体类.");
                         }
+                        IType returnType = getType(doc.getValue().split(" ")[1]);
+                        if (null == actionInfo.getResponseFields()) {
+                            actionInfo.setResponseFields(getChildFields(returnType.getFields()));
+                        } else {
+                            actionInfo.getResponseFields().addAll(getChildFields(returnType.getFields()));
+                        }
+                    } else if (StringUtils.isBlank(doc.getValue())) {
+                        throw new JapiException("方法[ " + actionInfo.getActionName() + " ] @return 注释不能为空.");
+                    } else {
+                        throw new JapiException("方法[ " + actionInfo.getActionName() + " ] @return " + doc.getValue() + " 注释不符合规范,请检查.");
                     }
 
-                }else if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
-                    IType returnType = getType(doc.getValue().split(" ")[1]);
-                    if(null==actionInfo.getResponseFields()){
-                        actionInfo.setResponseFields(getChildFields(returnType.getFields()));
-                    }else{
-                        actionInfo.getResponseFields().addAll(getChildFields(returnType.getFields()));
-                    }
                 } else {
                     if (!ExcludesActionImpl.getInstance().isExcludesTag(doc.getName())) {
                         ActionInfoDoc actionInfoDoc = new ActionInfoDoc();
-                        actionInfoDoc.setTagName(doc.getDocType());
-                        actionInfoDoc.setTagValue(doc.getValue());
+                        if(StringUtils.isBlank(doc.getDocType())){
+                            actionInfoDoc.setTagName(doc.getName());
+                            actionInfoDoc.setTagValue(doc.getValue()+" "+doc.getDes()==null?"":doc.getDes());
+                        }else{
+                            actionInfoDoc.setTagName(doc.getDocType());
+                            actionInfoDoc.setTagValue(doc.getValue());
+                        }
                         actionInfo.getActionInfoDocs().add(actionInfoDoc);
                     }
                 }
             }
             if (!hasReturnDoc) {//use action return default type
-                List<IResponse> responses = getChildFields(actionMethod.getType().getFields());
-                if(null!=responses&&responses.size()>0){
-                    if(null==actionInfo.getResponseFields()){
-                        actionInfo.setResponseFields(responses);
-                    }else{
-                        actionInfo.getResponseFields().addAll(responses);
+
+                if (BuiltInJavaImpl.getInstance().isBuiltInType(actionMethod.getType().getName())) {
+                    throw new JapiException("方法[ " + actionMethod.getMethodDescription() + " ] 反回值不支持java内置对象,请检查.");
+                } else if ("void".equals(actionMethod.getType().getName())) {
+                    throw new JapiException("方法[ " + actionMethod.getMethodDescription() + " ] 没有反回值,注释也没有标注@return,请检查.");
+                } else {
+                    List<IResponse> responses = getChildFields(actionMethod.getType().getFields());
+                    if (null != responses && responses.size() > 0) {
+                        if (null == actionInfo.getResponseFields()) {
+                            actionInfo.setResponseFields(responses);
+                        } else {
+                            actionInfo.getResponseFields().addAll(responses);
+                        }
                     }
                 }
+
             }
-            if(StringUtils.isBlank(actionInfo.getVersion())){
-                throw new JapiException("[ "+actionInfo.getActionName()+" ] 版本号不能为空");
-            }else{
-                if(!actionInfo.getVersion().matches("v\\d+")){
-                    throw new JapiException("[ "+actionInfo.getVersion()+" ] 版本号不符合规范");
+            if (StringUtils.isBlank(actionInfo.getVersion())) {
+                throw new JapiException("方法[ " + actionInfo.getActionName() + " ] 版本号不能为空");
+            } else {
+                if (!actionInfo.getVersion().matches("v\\d+")) {
+                    throw new JapiException("方法[ " + actionInfo.getVersion() + " ] 版本号不符合规范");
                 }
             }
-            if(StringUtils.isBlank(actionInfo.getActionName())){
+            if (StringUtils.isBlank(actionInfo.getActionName())) {
                 throw new JapiException("请求方法名不能为空");
             }
             actionInfos.add(actionInfo);
@@ -640,8 +665,8 @@ public class ActionImpl implements IAction {
                         break;
                     }
                 }
-                if(name.contains("/")||name.contains(" ")||name.contains(",")){
-                    throw new JapiException("类名注释[ "+name+" ] 不能有特殊符号['/',' ',',']");
+                if (name.contains("/") || name.contains(" ") || name.contains(",")) {
+                    throw new JapiException("类名注释[ " + name + " ] 不能有特殊符号['/',' ',',']");
                 }
                 return name;
             }

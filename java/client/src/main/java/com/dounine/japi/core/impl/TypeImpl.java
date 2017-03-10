@@ -54,6 +54,14 @@ public class TypeImpl implements IType {
 
     @Override
     public String getName() {
+
+        if(BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt)){
+            return javaKeyTxt;
+        }
+        if("void".equals(javaKeyTxt)){
+            return javaKeyTxt;
+        }
+
         searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath()).getFile();
 
         if (null == searchFile) {
