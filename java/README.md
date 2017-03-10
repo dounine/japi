@@ -62,13 +62,14 @@ public class ArticleAction {
 /**
  * 获取热闹新闻
  * @param user 用户信息
+ * @param customCon2 {des:"测试参数2",req:true,def:"love",con:"只能为字符串"}
  * @throws RuntimeException
  * @deprecated yes
  * @version v1
  */
 @org.springframework.web.bind.annotation.GetMapping(value = "v1/hots")
 @ResponseBody
-public Result hots(@Validated({User.UserDEL.class}) User user, BindingResult bindingResult) throws RuntimeException {
+public Result hots(@Validated({User.UserDEL.class}) User user,String customCon2, BindingResult bindingResult) throws RuntimeException {
     //包含分组验证时,User.UserDEL接口组必需跟@Validated({User.UserDEL.class})一模一样
     //例如: @NotNull(message = "用户名不能为空", groups = {User.UserDEL.class})
     return null;
