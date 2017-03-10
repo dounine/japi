@@ -92,10 +92,11 @@ public class User {
     /**
      * 用户名
      *
-     * @reg 这是正则表达式
-     * @des 这是描述信息
+     * @req true
+     * @def 默认值为admin123
+     * @con 约束,只能为英文加数字
      */
-    @NotNull(message = "用户名不能为空", groups = {User.UserADD.class})
+ 
     protected String username;
     /**
      * 用户密码
