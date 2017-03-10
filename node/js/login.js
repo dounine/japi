@@ -47,18 +47,7 @@ $(function(){
         },
     });
 
-    // $("#form input").blur(function(){
-    //      var usernameAria = $('#username').attr('aria-invalid');
-    //      var passwordAria = $('#password').attr('aria-invalid');
-    //     if(usernameAria=='false'&&passwordAria=='false'){
-    //         $('.subBtn').attr("disabled",false);
-    //
-    //     }
-    // })
 
-
-
-    
 });
 
 
