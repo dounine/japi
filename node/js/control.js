@@ -11,8 +11,6 @@ function isLogin(){
 
 //刷新后回到页面
 function refresh(){
-    // var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
-    // $("#content").html(load);
     var refHashArr = location.hash.split("#")[1].split('/');
     if(refHashArr.length!=1){
         version.projectName=refHashArr[0];
@@ -21,7 +19,6 @@ function refresh(){
         version.actionName = refHashArr[3];
         version.versionName = refHashArr[4];
         version.dateName = refHashArr[5];
-
         $.ajax({
             type : "post",
             url : "/versions",
@@ -53,22 +50,18 @@ function refresh(){
                 $("#content").hide().html(cont).fadeIn();
                 $(".v-num").hide().html(vNum).fadeIn();
                 verSel(version,true);
+                $('.nav-head').removeClass('active');
                 $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
-                // $('.time option[value="'+ aa +'"]').attr("selected",true);
-                $(".time option").each(function(){
-
-                if($(this).text() === aa){
-                    $(this).attr('selected', 'selected')
-                }
-            })
+                
             }
         });
 
+    }else {
+        description()
     }
 
 
 }
-
 
 $(document).ready(function(){
     isLogin()
@@ -96,7 +89,7 @@ $(document).ready(function(){
                     nav += "</div>"
                 }
             });
-            nav += "</div>"
+            nav += "</div>";
             $("#nav .nav-list").hide().html(nav).fadeIn();
 
         },
@@ -535,4 +528,19 @@ function listJump(self){
 function userName(){
     var userName = $.cookie("userName");
     $('.user strong').text(userName)
+}
+
+//文档说明
+function description(){
+    var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
+    $("#content").html(load);
+    $.get('/tip',function(data){
+        var tip="<div class='tip'> <h1>温馨提示</h1>"
+       $.each(data.data,function(index,item){
+        tip+="<p><span>%{index}、</span> %{item}</p>".format({item:item,index:index+1})
+       });
+        tip+="</div>"
+       $('#content').html(tip);
+        location.hash=location.hash.split("/")[0];
+    })
 }

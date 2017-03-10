@@ -8,11 +8,14 @@ $(document).ready(function(){
         }
     });
     $("#nav").on("click", ".acLi", function(){
-        // $("#nav a").parent().removeClass('active')
-        $('.nav-list').find('.acLi').removeClass('active')
+        $('.nav-head').removeClass('active')
+        $('.nav-list').find('.acLi').removeClass('active');
         $(this).addClass('active');
     });
-
+    $('.nav-head').on("click","a",function(){
+        $('.nav-list').find('.acLi').removeClass('active');
+        $(this).parent().addClass("active")
+    });
     $("#nav").on("click", ".icon", function(){
         if(!$(this).hasClass('ac')){
             $(this).addClass('ac');
