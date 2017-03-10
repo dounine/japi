@@ -239,6 +239,7 @@ public class JapiClientTransfer {
         List<String[]> datas = new ArrayList<>();
         datas.add(new String[]{"projectName", projectName});
         datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
+        datas.add(new String[]{"clientVersion", JapiClient.CLIENT_VERSION+""});
         Result result = postValues(serverUrl + "/transfer/project/exists", datas);
         if (!result.getData().equals(Boolean.TRUE)) {//project exist
             postValues(serverUrl + "/transfer/project", datas);

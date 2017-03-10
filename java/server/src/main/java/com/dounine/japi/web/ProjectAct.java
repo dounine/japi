@@ -28,6 +28,20 @@ public class ProjectAct {
     private static final String NOT_EMPTY_TIP = " 不能为空.";
 
     private JapiServer japiServer = new JapiServer();
+    private static final List<String> TIPS = new ArrayList<>();
+
+    static {
+        TIPS.add("支持http测试.");
+        TIPS.add("支持json,txt文件等测试.");
+        TIPS.add("支持form-data,x-www-form-urlencoded,raw,binary上传格式.");
+        TIPS.add("支持rest地址,http://japi.dounine.com/test/{id}.json 这样的地址会自动替换id.");
+        TIPS.add("由于浏览器跨域访问限制,为了更好的测试服务,请下载安装chrome扩展:<a href='https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?utm_source=chrome-app-launcher-info-dialog'>postman</a>进行接口调试.");
+        TIPS.add("为了规范API请求,所有JSON请求返回的格式都为{code:0,msg:null,data:null},code为响应编码,0默认为正确,msg为错误消息,data为正确响应数据.");
+        TIPS.add("为了便于观查,响应参数只要不是{code:0,msg:null,data:null}此格式,响应参数都将默认填充于data字段中.");
+        TIPS.add("为了接口安全,JAPI中的所有接口都为相对地扯,真实地扯会通知给相关人员进行调试使用.");
+        TIPS.add("请使用接口的最新更新的时间版本为主,更新时间列表只是为了对比接口所作的更改.");
+        TIPS.add("建议使用稳定版本的接口,默认会显示最稳定版本的接口版本.");
+    }
 
     private String getToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
         Object tokenObject = httpServletRequest.getHeader("token");
@@ -43,18 +57,7 @@ public class ProjectAct {
     @GetMapping("tip")
     public Result tip(){
         ResultImpl result = new ResultImpl();
-        List<String> tips = new ArrayList<>();
-        tips.add("支持http测试.");
-        tips.add("支持json,txt文件等测试.");
-        tips.add("支持form-data,x-www-form-urlencoded,raw,binary上传格式.");
-        tips.add("支持rest地址,http://japi.dounine.com/test/{id}.json 这样的地址会自动替换id.");
-        tips.add("由于浏览器跨域访问限制,为了更好的测试服务,请下载安装chrome扩展:<a href='https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?utm_source=chrome-app-launcher-info-dialog'>postman</a>进行接口调试.");
-        tips.add("为了规范API请求,所有JSON请求返回的格式都为{code:0,msg:null,data:null},code为响应编码,0默认为正确,msg为错误消息,data为正确响应数据.");
-        tips.add("为了便于观查,响应参数只要不是{code:0,msg:null,data:null}此格式,响应参数都将默认填充于data字段中.");
-        tips.add("为了接口安全,JAPI中的所有接口都为相对地扯,真实地扯会通知给相关人员进行调试使用.");
-        tips.add("请使用接口的最新更新的时间版本为主,更新时间列表只是为了对比接口所作的更改.");
-        tips.add("建议使用稳定版本的接口,默认会显示最稳定版本的接口版本.");
-        result.setData(tips);
+        result.setData(TIPS);
         return result;
     }
 

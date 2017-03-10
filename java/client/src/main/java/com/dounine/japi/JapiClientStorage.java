@@ -27,6 +27,7 @@ import java.util.Map;
  * Created by lake on 17-2-24.
  */
 public class JapiClientStorage {
+
     private String japiPath = null;
     private IProject project;
     private static final String[] TIPS = new String[]{" 不能为空.", " name forbid '/',',' symbol."};

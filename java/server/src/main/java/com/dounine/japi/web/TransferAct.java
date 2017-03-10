@@ -100,10 +100,11 @@ public class TransferAct {
     }
 
     @PostMapping("project/exists")
-    public Result exists(String projectName) throws JapiException {
+    public Result exists(String projectName,Integer clientVersion) throws JapiException {
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("projectName 不能为空.");
         }
+        japiServer.checkClientVersion(clientVersion);
         List<JapiProject> projects = japiServer.getAllProjects();
         ResultImpl<Boolean> result = new ResultImpl<>();
         result.setData(projects.stream().filter(p -> p.getName().equals(projectName)).findAny().isPresent());

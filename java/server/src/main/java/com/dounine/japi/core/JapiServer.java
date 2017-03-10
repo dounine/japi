@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
  * Created by lake on 17-2-24.
  */
 public class JapiServer {
+    private static final Integer VERSION = 1;
+
     private static String projectsPath = null;
     private static String usersPath = null;
     private final static DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SS");
@@ -466,6 +468,15 @@ public class JapiServer {
                     e.printStackTrace();
                 }
             }
+        }
+    }
+
+    public void checkClientVersion(Integer clientVersion) throws JapiException{
+        if(null==clientVersion){
+            throw new JapiException("您的JAPI客户端过低,请更新升级后再使用.");
+        }
+        if(clientVersion<VERSION){
+            throw new JapiException("您的JAPI客户端过低,请更新升级后再使用.");
         }
     }
 }
