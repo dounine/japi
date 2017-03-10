@@ -1,5 +1,6 @@
 package com.dounine.japi.core.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.dounine.japi.JapiClient;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.*;
@@ -518,7 +519,7 @@ public class ActionImpl implements IAction {
 
     public List<ActionInfo> getActionInfos(List<IActionMethod> actionMethods) {
         List<ActionInfo> actionInfos = new ArrayList<>();
-        Pattern verstionPattern = JapiPattern.getPattern("[{]version[}]");
+        Pattern resutlFunPattern = JapiPattern.getPattern("[{]\\s*[a-zA-Z0-9_]*\\s*[:]\\s*");
         for (IActionMethod actionMethod : actionMethods) {
             ActionInfo actionInfo = new ActionInfo();
             String version = null;
@@ -542,9 +543,31 @@ public class ActionImpl implements IAction {
                         actionInfo.setVersion(doc.getValue());
                     }
                 }
-                if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
+                Matcher restfulMatcher = resutlFunPattern.matcher(doc.getValue());
+                if(restfulMatcher.find()){
+                    if(doc.getValue().trim().startsWith("[")){//数组
+                        List<ResponseImpl> responses = JSON.parseArray(doc.getValue(),ResponseImpl.class);
+                        if(null!=actionInfo.getResponseFields()){
+                            actionInfo.getResponseFields().addAll(responses);
+                        }else{
+                            actionInfo.setResponseFields((List)responses);
+                        }
+                    }else{
+                        IResponse response = JSON.parseObject(doc.getValue(),ResponseImpl.class);
+                        if(null!=actionInfo.getResponseFields()){
+                            actionInfo.getResponseFields().add(response);
+                        }else{
+                            actionInfo.setResponseFields(Arrays.asList(response));
+                        }
+                    }
+
+                }else if (hasReturnDoc && doc.getValue().split(" ")[0].equals("class")) {
                     IType returnType = getType(doc.getValue().split(" ")[1]);
-                    actionInfo.setResponseFields(getChildFields(returnType.getFields()));
+                    if(null==actionInfo.getResponseFields()){
+                        actionInfo.setResponseFields(getChildFields(returnType.getFields()));
+                    }else{
+                        actionInfo.getResponseFields().addAll(getChildFields(returnType.getFields()));
+                    }
                 } else {
                     if (!ExcludesActionImpl.getInstance().isExcludesTag(doc.getName())) {
                         ActionInfoDoc actionInfoDoc = new ActionInfoDoc();
@@ -557,17 +580,11 @@ public class ActionImpl implements IAction {
             if (!hasReturnDoc) {//use action return default type
                 List<IResponse> responses = getChildFields(actionMethod.getType().getFields());
                 if(null!=responses&&responses.size()>0){
-                    actionInfo.setResponseFields(responses);
-                }
-            }
-            List<String> versionUrls = new ArrayList<>(actionInfo.getActionInfoRequest().getUrls().size());
-            for (String url : actionInfo.getActionInfoRequest().getUrls()) {
-                if (verstionPattern.matcher(url).find()) {
-                    if(StringUtils.isNotBlank(actionInfo.getVersion())){
-                        versionUrls.add(url.replace("{version}", actionInfo.getVersion()));
+                    if(null==actionInfo.getResponseFields()){
+                        actionInfo.setResponseFields(responses);
+                    }else{
+                        actionInfo.getResponseFields().addAll(responses);
                     }
-                } else {
-                    versionUrls.add(url);
                 }
             }
             if(StringUtils.isBlank(actionInfo.getVersion())){
@@ -580,7 +597,6 @@ public class ActionImpl implements IAction {
             if(StringUtils.isBlank(actionInfo.getActionName())){
                 throw new JapiException("请求方法名不能为空");
             }
-            actionInfo.getActionInfoRequest().setUrls(versionUrls);
             actionInfos.add(actionInfo);
         }
 

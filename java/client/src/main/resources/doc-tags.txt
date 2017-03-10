@@ -2,3 +2,4 @@ return. 返回值
 param 参数
 deprecated. 过时
 version. 版本
+stable. 稳定版本

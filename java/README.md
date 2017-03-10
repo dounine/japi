@@ -111,8 +111,7 @@ public class User {
             * 用于请求响应返回对象
             * demo
                 * 返回对象类型的数据 @return class User
-                * 返回基本类型的数据 String userName '默认值' '描述'
-                * 返回`RESTFul`格式数据 {name:'testName',type:'string',defaultValue:'0',description:'this is des.'}
+                * 返回`RESTFul`格式数据 {name:'testName',type:'string',defaultValue:'',description:'this is des.'}
         * @param
             * 用于参数注释
             * demo
