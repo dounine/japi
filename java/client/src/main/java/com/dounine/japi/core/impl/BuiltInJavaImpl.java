@@ -68,9 +68,13 @@ public class BuiltInJavaImpl implements IBuiltIn {
         } else {
             String builtInPath = builtInFile.getAbsolutePath();
             try {
-                String typesStr = FileUtils.readFileToString(new File(builtInPath), Charset.forName("utf-8"));
-                typesStr = typesStr.replaceAll("\\s", "");//去掉回车
-                types = new ArrayList<>(Arrays.asList(typesStr.split(",")));
+                File file = new File(builtInPath);
+                if(file.exists()){
+                    String typesStr = FileUtils.readFileToString(file, Charset.forName("utf-8"));
+                    typesStr = typesStr.replaceAll("\\s", "");//去掉回车
+                    types = new ArrayList<>(Arrays.asList(typesStr.split(",")));
+                }
+
             } catch (IOException e) {
                 throw new JapiException(e.getMessage());
             }

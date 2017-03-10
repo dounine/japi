@@ -56,7 +56,10 @@ public class ExcludesActionImpl {
         } else {
             String excludesPath = excludesFile.getAbsolutePath();
             try {
-                types = FileUtils.readLines(new File(excludesPath), Charset.forName("utf-8"));
+                File file= new File(excludesPath);
+                if (file.exists()){
+                    types = FileUtils.readLines(file, Charset.forName("utf-8"));
+                }
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());
             }

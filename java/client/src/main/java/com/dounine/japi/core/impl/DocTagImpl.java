@@ -54,12 +54,16 @@ public class DocTagImpl implements IDocTag {
         } else {
             String builtInPath = docTagFile.getAbsolutePath();
             try {
-                types = new HashMap<>();
-                List<String> tagDocs = FileUtils.readLines(new File(builtInPath), Charset.forName("utf-8"));
-                tagDocs.forEach(td -> {
-                    String[] tds = td.split(StringUtils.SPACE);
-                    types.put(tds[0], tds[1]);
-                });
+                File file = new File(builtInPath);
+                if(file.exists()){
+                    types = new HashMap<>();
+                    List<String> tagDocs = FileUtils.readLines(file, Charset.forName("utf-8"));
+                    tagDocs.forEach(td -> {
+                        String[] tds = td.split(StringUtils.SPACE);
+                        types.put(tds[0], tds[1]);
+                    });
+                }
+
             } catch (IOException e) {
                 throw new JapiException(e.getMessage());
             }
