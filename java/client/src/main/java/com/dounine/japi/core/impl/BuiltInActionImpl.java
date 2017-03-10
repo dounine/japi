@@ -1,5 +1,6 @@
 package com.dounine.japi.core.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.dounine.japi.JapiClient;
 import com.dounine.japi.core.IBuiltIn;
 import com.dounine.japi.exception.JapiException;
@@ -21,66 +22,66 @@ import java.util.List;
 public class BuiltInActionImpl implements IBuiltIn {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuiltInActionImpl.class);
 
-    private static String[] builtInPaths;
-    private static List<String> types;
-    private static File builtInFile;
+    private List<String> types;
     private static final BuiltInActionImpl builtIn = new BuiltInActionImpl();
 
-    private BuiltInActionImpl() {
-        if (null == builtInFile) {
-            URL url = JapiClient.class.getResource("/action-builtIn-types.txt");
-            builtInFile = new File(url.getFile());
-            if (!builtInFile.exists()) {
-                url = JapiClient.class.getResource("/japi/action-builtIn-types.txt");
-                builtInFile = new File(url.getFile());
-            }
-            if(!builtInFile.exists()){
-                String err = url.getFile() + " 文件不存在";
-                LOGGER.error(err);
-                throw new JapiException(err);
-            }
-            builtInPaths = new String[]{url.getFile()};
+    static {
+        List<String> _types = new ArrayList<>();
+        _types.add("org.springframework.validation.BindingResult");
+        _types.add("javax.servlet.http.HttpServletRequest");
+        _types.add("javax.servlet.http.HttpServletResponse");
+        _types.add("org.springframework.web.multipart.MultipartFile");
+        if(null==builtIn.types){
+            builtIn.types = _types;
+        }else{
+            builtIn.types.removeAll(_types);
+            builtIn.types.addAll(_types);
         }
     }
 
-    public static BuiltInActionImpl getInstance(){
+    private BuiltInActionImpl() {
+        URL url = JapiClient.class.getResource("/action-builtIn-types.txt");
+        File builtInFile = null;
+        if (null != url) {
+            builtInFile = new File(url.getFile());
+        } else {
+            url = JapiClient.class.getResource("/japi/action-builtIn-types.txt");
+            if (null != url) {
+                builtInFile = new File(url.getFile());
+            }
+        }
+        if (url == null) {
+//            LOGGER.warn("action-builtIn-types.txt 文件不存在,使用默认参数.");
+        } else {
+            String builtInFilePath = builtInFile.getAbsolutePath();
+            try {
+                String typesStr = FileUtils.readFileToString(new File(builtInFilePath), Charset.forName("utf-8"));
+                typesStr = typesStr.replaceAll("\\s", "");//去掉回车
+                types = new ArrayList<>(Arrays.asList(typesStr.split(",")));
+            } catch (IOException e) {
+                throw new JapiException(e.getMessage());
+            }
+        }
+    }
+
+    public static BuiltInActionImpl getInstance() {
         return builtIn;
     }
 
-    @Override
-    public List<String> getBuiltInTypes() {
-        if (null == builtInPaths || (null != builtInPaths && builtInPaths.length == 0)) {
-            String err = "builtInPaths 不能为空,至少有一个文件";
-            LOGGER.error(err);
-            throw new JapiException(err);
-        }
-        if (null != types) {
-            return types;
-        }
-        try {
-            types = new ArrayList<>();
-            String typesStr = FileUtils.readFileToString(builtInFile, Charset.forName("utf-8"));
-            typesStr = typesStr.replaceAll("\\s", "");//去掉回车
-            types.addAll(Arrays.asList(typesStr.split(",")));
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
+    private List<String> getBuiltInTypes() {
         return types;
     }
 
+    @Override
     public boolean isBuiltInType(String keyType) {
         List<String> keyTypes = getBuiltInTypes();
         boolean isBuiltIn = false;
-        for(String key : keyTypes){
-            if(key.equals(keyType)||key.endsWith(keyType)){
+        for (String key : keyTypes) {
+            if (key.equals(keyType) || key.endsWith(keyType)) {
                 isBuiltIn = true;
                 break;
             }
         }
         return isBuiltIn;
-    }
-
-    public void setBuiltInPaths(String[] builtInPaths) {
-        this.builtInPaths = builtInPaths;
     }
 }

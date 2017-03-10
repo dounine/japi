@@ -18,14 +18,16 @@ public class TestAction {
      * 获取热闹新闻
      *
      * @param user 用户信息
-     * @return [{name:'testName',type:'string',defaultValue:'',description:'this is des.'}]
+     * @return [{name:"testName",type:"string",defaultValue:"",description:"this is des."}]
+     * @param customCon 自定义参数
+     * @param customCon2 {des:"测试参数2",req:true,def:"love",con:"只能为字符串"}
      * @throws RuntimeException
      * @version v1
      * @deprecated yes
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "v1/hots")
     @ResponseBody
-    public Result hots(@Validated({User.UserADD.class, User.UserDEL.class}) User user, BindingResult bindingResult) throws RuntimeException {
+    public Result hots(@Validated({User.UserADD.class, User.UserDEL.class}) User user,String customCon2,String customCon, BindingResult bindingResult) throws RuntimeException {
 
         return null;
     }
@@ -48,15 +50,15 @@ public class TestAction {
     /**
      * 获取冷门新闻
      *
-     * @param id 新闻编号
+     * @param articleId 新闻编号
      * @return class com.dounine.japi.entity.User
      * @throws RuntimeException
      * @version v2
      * @stable yes
      */
-    @org.springframework.web.bind.annotation.PostMapping(value = "v2/list/{id}")
+    @org.springframework.web.bind.annotation.PostMapping(value = "v2/list/{articleId}")
     @ResponseBody
-    public Result testUser1(@PathVariable String id) throws RuntimeException {
+    public Result testUser1(@PathVariable String articleId) throws RuntimeException {
 
         return null;
     }

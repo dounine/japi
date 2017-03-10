@@ -7,7 +7,7 @@ package com.dounine.japi.entity.u;
 public class JJ {
 
     /**
-     * jjName
+     * jj名字
      */
     private String jjName;
 

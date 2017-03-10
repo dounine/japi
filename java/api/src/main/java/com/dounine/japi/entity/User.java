@@ -27,16 +27,16 @@ public class User {
 
     /**
      * 用户名
-     *
-     * @reg 这是正则表达式
-     * @des 这是描述信息
+     * @des 优先级大于用户名
+     * @req true
+     * @def 这是默认值
+     * @con 这是约束条件
      */
-    @NotNull(message = "用户名不能为空", groups = {User.UserADD.class})
     protected String username;
     /**
      * 用户密码
      */
-    @NotBlank(message = "用户密码不能为空", groups = {AddInterface.class})
+    @NotBlank(message = "用户密码不能为空", groups = {User.UserADD.class})
     private String password;
     /**
      * 测试子类

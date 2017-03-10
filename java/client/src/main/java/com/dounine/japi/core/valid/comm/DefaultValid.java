@@ -10,6 +10,7 @@ import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.ParameterImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
@@ -60,11 +61,18 @@ public class DefaultValid implements IValid {
         if (BuiltInJavaImpl.getInstance().isBuiltInType(typeAndName[0])) {
             List<IRequest> requestFields = new ArrayList<>();
             RequestImpl requestField = new RequestImpl();
+            if (description.trim().startsWith("{")) {
+                DocObj docObj = JSON.parseObject(description, DocObj.class);
+                requestField.setConstraint(docObj.getCon());
+                requestField.setDefaultValue(docObj.getDef());
+                requestField.setDescription(docObj.getDes());
+                requestField.setRequired(docObj.isReq());
+            } else {
+                requestField.setRequired(false);
+                requestField.setDescription(description);
+                requestField.setDefaultValue("");
+            }
             requestField.setName(typeAndName[1]);
-            requestField.setRequired(false);
-
-            requestField.setDescription(description);
-            requestField.setDefaultValue("");
             requestField.setType(typeAndName[0].toLowerCase());
             requestFields.add(requestField);
             parameter.setRequestFields(requestFields);
@@ -73,17 +81,25 @@ public class DefaultValid implements IValid {
             type.setJavaFile(new File(javaFilePath));
             type.setJavaKeyTxt(typeAndName[0]);
 
-            RequestImpl request = new RequestImpl();
-            request.setName(typeAndName[1]);
-            request.setRequired(false);
-            request.setType(typeAndName[0].toLowerCase());
-            request.setDefaultValue("");
-            if(StringUtils.isBlank(description)){
-                request.setDescription(type.getName());
+            RequestImpl requestField = new RequestImpl();
+            if (description.trim().startsWith("{")) {
+                DocObj docObj = JSON.parseObject(description, DocObj.class);
+                requestField.setConstraint(docObj.getCon());
+                requestField.setDefaultValue(docObj.getDef());
+                requestField.setDescription(docObj.getDes());
+                requestField.setRequired(docObj.isReq());
+            }else{
+                requestField.setRequired(false);
+                requestField.setDefaultValue("");
+                if (StringUtils.isBlank(description)) {
+                    requestField.setDescription(type.getName());
+                }
             }
-            request.setFields(getChildFields(type.getFields()));
+            requestField.setName(typeAndName[1]);
+            requestField.setType(typeAndName[0].toLowerCase());
+            requestField.setFields(getChildFields(type.getFields()));
             List<IRequest> requestFields = new ArrayList<>();
-            requestFields.add(request);
+            requestFields.add(requestField);
             parameter.setRequestFields(requestFields);
         }
         return parameter;
@@ -92,13 +108,15 @@ public class DefaultValid implements IValid {
     private List<IRequest> getChildFields(List<IField> iFields) {
         List<IRequest> requests = new ArrayList<>();
         for (IField iField : iFields) {
-            RequestImpl request = new RequestImpl();
+            RequestImpl requestField = new RequestImpl();
             String description = "";
-            request.setName(iField.getName());
+            requestField.setName(iField.getName());
+            requestField.setDefaultValue("");
+            requestField.setRequired(false);
             if (!"$this".equals(iField.getType())) {
-                request.setType(TypeConvert.getHtmlType(iField.getType()));
+                requestField.setType(TypeConvert.getHtmlType(iField.getType()));
             } else {
-                request.setType("$this");
+                requestField.setType("$this");
             }
             for (IFieldDoc fieldDoc : iField.getDocs()) {
                 if (StringUtils.isBlank(fieldDoc.getValue())) {
@@ -106,13 +124,27 @@ public class DefaultValid implements IValid {
                     break;
                 }
             }
-            request.setDescription(description);
-            request.setDefaultValue("");
-            request.setRequired(false);
-            if (iField.getFields() != null) {
-                request.setFields(getChildFields(iField.getFields()));
+            for (IFieldDoc fieldDoc : iField.getDocs()) {
+                if (fieldDoc.getName().equals("req")) {
+                    if (StringUtils.isBlank(fieldDoc.getValue())) {
+                        throw new JapiException("* @req 注释不能为空[true,false]");
+                    } else if (!"true".equals(fieldDoc.getValue()) && !"false".equals(fieldDoc.getValue())) {
+                        throw new JapiException("* @req 注释只能为true|false");
+                    }
+                    requestField.setRequired(Boolean.parseBoolean(fieldDoc.getValue()));
+                } else if (fieldDoc.getName().equals("des")) {
+                    description = fieldDoc.getValue();
+                } else if (fieldDoc.getName().equals("def")) {
+                    requestField.setDefaultValue(fieldDoc.getValue());
+                } else if (fieldDoc.getName().equals("con")) {
+                    requestField.setConstraint(fieldDoc.getValue());
+                }
             }
-            requests.add(request);
+            requestField.setDescription(description);
+            if (iField.getFields() != null) {
+                requestField.setFields(getChildFields(iField.getFields()));
+            }
+            requests.add(requestField);
         }
         return requests;
     }

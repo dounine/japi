@@ -22,51 +22,52 @@ public class DocTagImpl implements IDocTag {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocTagImpl.class);
 
-    private static String[] builtInPaths;
-    private static Map<String,String> types;
-    private static File docTagFile;
+    private Map<String, String> types;
     private static final DocTagImpl DOC_TAG = new DocTagImpl();
 
-    public static DocTagImpl getInstance(){
+    static {
+        DOC_TAG.types = new HashMap<>();
+        DOC_TAG.types.put("return.", "返回值");
+        DOC_TAG.types.put("param", "参数");
+        DOC_TAG.types.put("deprecated.", "过时");
+        DOC_TAG.types.put("version.", "版本");
+        DOC_TAG.types.put("stable.", "稳定版本");
+    }
+
+    public static DocTagImpl getInstance() {
         return DOC_TAG;
     }
 
     private DocTagImpl() {
-        if (null == docTagFile) {
-            URL url = JapiClient.class.getResource("/doc-tags.txt");
+        URL url = JapiClient.class.getResource("/doc-tags.txt");
+        File docTagFile = null;
+        if (null != url) {
             docTagFile = new File(url.getFile());
-            if (!docTagFile.exists()) {
-                url = JapiClient.class.getResource("/japi/doc-tags.txt");
+        } else {
+            url = JapiClient.class.getResource("/japi/doc-tags.txt");
+            if (null != url) {
                 docTagFile = new File(url.getFile());
             }
-            if(!docTagFile.exists()){
-                String err = url.getFile() + " 文件不存在";
-                LOGGER.error(err);
-                throw new JapiException(err);
+        }
+        if (null == url) {
+//            LOGGER.warn("doc-tags.txt 文件不存在,使用默认参数.");
+        } else {
+            String builtInPath = docTagFile.getAbsolutePath();
+            try {
+                types = new HashMap<>();
+                List<String> tagDocs = FileUtils.readLines(new File(builtInPath), Charset.forName("utf-8"));
+                tagDocs.forEach(td -> {
+                    String[] tds = td.split(StringUtils.SPACE);
+                    types.put(tds[0], tds[1]);
+                });
+            } catch (IOException e) {
+                throw new JapiException(e.getMessage());
             }
-            builtInPaths = new String[]{url.getFile()};
         }
     }
 
-    private Map<String,String> getDocTags() {
-        if (null != types) {
-            return types;
-        }
-        try {
-            List<String> tagDocs = FileUtils.readLines(docTagFile,Charset.forName("utf-8"));
-            types = new HashMap<>(tagDocs.size());
-            tagDocs.forEach(td->{
-                String[] tds = td.split(StringUtils.SPACE);
-                types.put(tds[0],tds[1]);
-            });
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-        }
+    private Map<String, String> getDocTags() {
         return types;
-    }
-
-    public void setBuiltInPaths(String[] builtInPaths) {
-        this.builtInPaths = builtInPaths;
     }
 
     @Override

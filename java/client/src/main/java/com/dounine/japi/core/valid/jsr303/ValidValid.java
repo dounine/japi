@@ -3,9 +3,11 @@ package com.dounine.japi.core.valid.jsr303;
 import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IField;
+import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.BuiltInJavaImpl;
 import com.dounine.japi.core.impl.TypeConvert;
 import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import com.dounine.japi.core.valid.IMVC;
@@ -26,6 +28,7 @@ import java.util.regex.Pattern;
 public class ValidValid implements IMVC {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ValidValid.class);
+    private static final String METHOD_NAME_DOC = "* @methodName ";
 
     private String javaFilePath;
 
@@ -49,7 +52,7 @@ public class ValidValid implements IMVC {
             typeImpl.setJavaKeyTxt(typeStr);
 
             List<IField> fields = typeImpl.getFields();
-            List<IMVC> imvcs = getJSR303(javaFilePath);
+            List<IMVC> imvcs = getJSR303(typeImpl.getSearchFile().getAbsolutePath());
             requestField.setType("object");
             List<IRequest> requestFields = new ArrayList<>();
             if (fields.size() > 0) {
@@ -80,7 +83,14 @@ public class ValidValid implements IMVC {
                         } else {
                             if (!"$this".equals(iField.getType())) {
                                 List<String> _docs = new ArrayList<>();
-                                _docs.add("* @param "+iField.getName()+" "+iField.getDocs().get(0).getName());
+                                _docs.add(METHOD_NAME_DOC + iField.getName() + " " + iField.getDocs().get(0).getName());
+                                for (IFieldDoc fieldDoc : iField.getDocs()) {
+                                    if (fieldDoc.getValue() == null) {
+
+                                    } else {
+                                        _docs.add("* @" + fieldDoc.getName() + " " + fieldDoc.getValue() + (fieldDoc.getDes() == null ? "" : (" " + fieldDoc.getDes())));
+                                    }
+                                }
                                 RequestImpl _requestField = getRequestField(null,iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
                                 if(null!=_requestField){
                                     requestFields.add(_requestField);
@@ -104,12 +114,39 @@ public class ValidValid implements IMVC {
 //            }
             requestField.setDefaultValue("");
             if (null != docs && docs.size() > 0) {
+                Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr + "\\s+");//找到action传进来的注解信息
                 for (String doc : docs) {
-                    Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr);//找到action传进来的注解信息
                     Matcher matcher = pattern.matcher(doc);
                     if (matcher.find()) {
-                        description = doc.substring(matcher.end()).trim();
-                        break;
+                        String val = matcher.group();
+                        if (val.startsWith(METHOD_NAME_DOC)) {
+                            description = doc.substring(matcher.end()).trim();
+                            break;
+                        }
+                    }
+                }
+                for (String doc : docs) {
+                    Pattern reqDefConPattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*[a-zA-Z0-9_]\\s+");//找到action传进来的注解信息
+                    Matcher matcher = reqDefConPattern.matcher(doc);
+                    if (matcher.find()) {
+                        String str = matcher.group();
+                        if (str.startsWith("* @req")) {
+                            String value = (doc.substring(matcher.end()).trim()).trim();
+                            if (StringUtils.isBlank(value)) {
+                                throw new JapiException("* @req 注释不能为空[true,false]");
+                            } else if (!"true".equals(value) && !"false".equals(value)) {
+                                throw new JapiException("* @req 注释只能为true|false");
+                            }
+                            requestField.setRequired(Boolean.parseBoolean(value));
+                        } else if (str.startsWith("* @des")) {
+                            description = (doc.substring(matcher.end()).trim()).trim();
+                        } else if (str.startsWith("* @def")) {
+                            String value = (doc.substring(matcher.end()).trim()).trim();
+                            requestField.setDefaultValue(value);
+                        } else if (str.startsWith("* @con")) {
+                            String value = (doc.substring(matcher.end()).trim()).trim();
+                            requestField.setConstraint(value);
+                        }
                     }
                 }
             }
