@@ -43,6 +43,10 @@ public class User {
      */
     private UserChild userChild;
     /**
+     * 测试enum类型
+     */
+    private TestType testType;
+    /**
      * 我是我
      */
     private User user;
@@ -79,4 +83,11 @@ public class User {
         this.user = user;
     }
 
+    public TestType getTestType() {
+        return testType;
+    }
+
+    public void setTestType(TestType testType) {
+        this.testType = testType;
+    }
 }

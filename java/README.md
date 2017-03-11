@@ -75,6 +75,19 @@ public Result hots(@Validated({User.UserDEL.class}) User user,String customCon2,
     return null;
 }
 ```
+enum枚举类型注释必需为以下格式
+```
+public enum TestType {
+    /**
+     * 增加
+     */
+    ADD,
+    /**
+     * 删除
+     */
+    DEL
+}
+```
 User实体信息
 ```
 /**

@@ -1,5 +1,7 @@
 package com.dounine.japi.core.impl;
 
+import com.dounine.japi.core.impl.types.ClassType;
+
 import java.io.File;
 
 /**
@@ -8,6 +10,7 @@ import java.io.File;
 public class SearchInfo {
     private File file;
     private String key = "";
+    private ClassType classType;
 
     public File getFile() {
         return file;
@@ -23,5 +26,13 @@ public class SearchInfo {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public ClassType getClassType() {
+        return classType;
+    }
+
+    public void setClassType(ClassType classType) {
+        this.classType = classType;
     }
 }

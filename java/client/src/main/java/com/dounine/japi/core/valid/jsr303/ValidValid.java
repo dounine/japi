@@ -4,9 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
-import com.dounine.japi.core.impl.BuiltInJavaImpl;
-import com.dounine.japi.core.impl.TypeConvert;
-import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.core.impl.*;
+import com.dounine.japi.core.impl.types.ClassType;
 import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
@@ -47,72 +46,83 @@ public class ValidValid implements IMVC {
         requestField.setName(nameStr);
         String description = "";
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
+            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(typeStr,javaFile.getAbsolutePath());
+
             TypeImpl typeImpl = new TypeImpl();
             typeImpl.setJavaFile(javaFile);
             typeImpl.setJavaKeyTxt(typeStr);
 
-            List<IField> fields = typeImpl.getFields();
-            List<IMVC> imvcs = getJSR303(typeImpl.getSearchFile().getAbsolutePath());
-            requestField.setType("object");
-            List<IRequest> requestFields = new ArrayList<>();
-            if (fields.size() > 0) {
-                for (IField iField : fields) {
-                    IMVC mvc = null;
-                    String anno = null;
-                    for (IMVC imvc : imvcs) {
-                        List<String> annotations = iField.getAnnotations();
-                        for (String annotation : annotations) {
-                            String _anno = null;
-                            if (-1 != annotation.indexOf("(")) {
-                                _anno = annotation.substring(0, annotation.indexOf("("));
-                            } else {
-                                _anno = annotation;
-                            }
-                            if (_anno.equals(imvc.getRequestParamName()) || imvc.getRequestParamName().endsWith(_anno)) {
-                                anno = annotation;
-                                mvc = imvc;
-                                break;
+            if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
+                requestField.setType("string");
+                requestField.setDefaultValue("");
+                requestField.setConstraint(EnumParser.getInstance().getTypes(searchInfo.getFile()));
+            }else{
+                List<IField> fields = typeImpl.getFields();
+                List<IMVC> imvcs = getJSR303(typeImpl.getSearchFile().getAbsolutePath());
+                requestField.setType("object");
+                List<IRequest> requestFields = new ArrayList<>();
+                if (fields.size() > 0) {
+                    for (IField iField : fields) {
+                        IMVC mvc = null;
+                        String anno = null;
+                        for (IMVC imvc : imvcs) {
+                            List<String> annotations = iField.getAnnotations();
+                            for (String annotation : annotations) {
+                                String _anno = null;
+                                if (-1 != annotation.indexOf("(")) {
+                                    _anno = annotation.substring(0, annotation.indexOf("("));
+                                } else {
+                                    _anno = annotation;
+                                }
+                                if (_anno.equals(imvc.getRequestParamName()) || imvc.getRequestParamName().endsWith(_anno)) {
+                                    anno = annotation;
+                                    mvc = imvc;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (null != mvc) {//找到对应jsr303注解
-                        requestFields.add(mvc.getRequestFieldForAnno(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
-                    } else {//其它注没有注解
-                        if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
-                            System.out.println(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");
-                        } else {
-                            if (!"$this".equals(iField.getType())) {
-                                List<String> _docs = new ArrayList<>();
-                                _docs.add(METHOD_NAME_DOC + iField.getName() + " " + iField.getDocs().get(0).getName());
-                                for (IFieldDoc fieldDoc : iField.getDocs()) {
-                                    if (fieldDoc.getValue() == null) {
+                        if (null != mvc) {//找到对应jsr303注解
+                            requestFields.add(mvc.getRequestFieldForAnno(anno, iField.getType(), iField.getName(), iField.getDocs(),null));
+                        } else {//其它注没有注解
+                            if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
+                                System.out.println(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");
+                            } else {
+                                if (!"$this".equals(iField.getType())) {
+                                    List<String> _docs = new ArrayList<>();
+                                    _docs.add(METHOD_NAME_DOC + iField.getName() + " " + iField.getDocs().get(0).getName());
+                                    for (IFieldDoc fieldDoc : iField.getDocs()) {
+                                        if (fieldDoc.getValue() == null) {
 
-                                    } else {
-                                        _docs.add("* @" + fieldDoc.getName() + " " + fieldDoc.getValue() + (fieldDoc.getDes() == null ? "" : (" " + fieldDoc.getDes())));
+                                        } else {
+                                            _docs.add("* @" + fieldDoc.getName() + " " + fieldDoc.getValue() + (fieldDoc.getDes() == null ? "" : (" " + fieldDoc.getDes())));
+                                        }
                                     }
-                                }
-                                RequestImpl _requestField = getRequestField(null,iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
-                                if(null!=_requestField){
+                                    RequestImpl _requestField = getRequestField(null,iField.getType(), iField.getName(), _docs,typeImpl.getSearchFile());
+                                    if(null!=_requestField){
+                                        requestFields.add(_requestField);
+                                    }
+                                } else {
+                                    RequestImpl _requestField = new RequestImpl();
+                                    _requestField.setName(iField.getName());
+                                    _requestField.setType("$this");
+                                    _requestField.setDescription("自身对象");
+                                    _requestField.setRequired(false);
+                                    _requestField.setDefaultValue("");
                                     requestFields.add(_requestField);
                                 }
-                            } else {
-                                RequestImpl _requestField = new RequestImpl();
-                                _requestField.setName(iField.getName());
-                                _requestField.setType("$this");
-                                _requestField.setDescription("自身对象");
-                                _requestField.setRequired(false);
-                                _requestField.setDefaultValue("");
-                                requestFields.add(_requestField);
                             }
                         }
                     }
+                    requestField.setFields(requestFields);
                 }
-                requestField.setFields(requestFields);
+                requestField.setDefaultValue("");
             }
+
+
 //            if (StringUtils.join(fieldBuffer.toArray(), ",").contains("required:true")) {
 //                sb.append(",required:true");
 //            }
-            requestField.setDefaultValue("");
+
             if (null != docs && docs.size() > 0) {
                 Pattern pattern = JapiPattern.getPattern("[*]\\s*[@]\\S*\\s*" + nameStr + "\\s+");//找到action传进来的注解信息
                 for (String doc : docs) {

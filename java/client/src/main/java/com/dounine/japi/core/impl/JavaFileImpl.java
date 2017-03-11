@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.dounine.japi.JapiClient;
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IJavaFile;
+import com.dounine.japi.core.impl.types.ClassType;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FileFilterUtils;
@@ -103,6 +104,7 @@ public class JavaFileImpl implements IJavaFile {
         }
 
         searchInfo.setFile(javaFile);
+        searchInfo.setClassType(getType(javaFile));
         return searchInfo;
     }
 
@@ -263,5 +265,39 @@ public class JavaFileImpl implements IJavaFile {
     private String getEndSplitPath(String path) {
         String splitChar = path.endsWith("/") ? "" : "/";
         return path + splitChar;
+    }
+
+    private ClassType getType(File file) {
+        ClassType classType = null;
+        if (null != file && file.exists()) {
+            try {
+                Pattern[] patterns = new Pattern[]{
+                        JapiPattern.getPattern("enum\\s+[a-zA-Z0-9_]*\\s*"),//enum
+                        JapiPattern.getPattern("class\\s+[a-zA-Z0-9_]*\\s*"),//class
+                        JapiPattern.getPattern("interface\\s+[a-zA-Z0-9_]*\\s*"),//interface
+                        JapiPattern.getPattern("@interface\\s+[a-zA-Z0-9_]*")//anno
+                };
+                List<String> lines = FileUtils.readLines(file, Charset.forName("utf-8"));
+
+                for (String line : lines) {
+                    if (patterns[0].matcher(line).find()) {
+                        classType = ClassType.ENUM;
+                    } else if (patterns[1].matcher(line).find()) {
+                        classType = ClassType.CLASS;
+                    } else if (patterns[2].matcher(line).find()) {
+                        classType = ClassType.INTERFACE;
+                    } else if (patterns[3].matcher(line).find()) {
+                        classType = ClassType.ANNO;
+                    }
+                    if (null != classType) {
+                        break;
+                    }
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return classType;
     }
 }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 public final class JapiPattern {
     private JapiPattern(){}//@Pa_sdf() asdf asdf
 
-    public static final String[] MATCH_CHARTS = {"public ", "class ", "interface ", "@interface ", "enum ", "abstract ", "@interface "};
+    public static final String[] MATCH_CHARTS = {"public ", "class ", "interface ", "enum ", "abstract ", "@interface "};
     /**
      * 注释单个值
      */
