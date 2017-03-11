@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * Created by lake on 17-2-24.
  */
 public class JapiServer {
-    private static final Integer VERSION = 2;
+    private static final Integer VERSION = 3;
 
     private static String projectsPath = null;
     private static String usersPath = null;
