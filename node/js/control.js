@@ -51,8 +51,14 @@ function refresh(){
                 $(".v-num").hide().html(vNum).fadeIn();
                 verSel(version,true);
                 $('.nav-head').removeClass('active');
+
                 $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
-                
+                var navHeight = $('.nav-list').children().height();
+                if(navHeight>600){
+                    var navAc = $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")")
+                    var navAcHeight = navAc.offset().top-500;
+                    $('.nav-list').scrollTop(navAcHeight);
+                }
             }
         });
 
@@ -82,7 +88,7 @@ $(document).ready(function(){
                         nav += "<li class='sub'><span class='mainbav open'><a href='javascript:void(0)' class='subName'>%{twoNav}</a></span><ul class='nav-section'>".format({twoNav : twoNavs[inx].name})
                         for(var i in twoNavs[inx].actions){
                             var listNavs = twoNavs[inx].actions
-                            nav += "<li class='acLi'><a href='javascript:void(0)'>%{lastNav}</a></li>".format({lastNav : listNavs[i].name})
+                            nav += "<li class='acLi'><a href='javascript:void(0)' title='%{lastNav}'>%{lastNav}</a></li>".format({lastNav : listNavs[i].name})
                         }
                         nav += "</ul></li>"
                     }
