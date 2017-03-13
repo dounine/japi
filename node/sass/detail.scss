@@ -10,6 +10,24 @@ b, u, i,input, dl, dt, dd, ol, ul, li{
   border: 0;
   vertical-align: baseline;
 }
+*{
+  /*chrome滚动条样式*/
+  ::-webkit-scrollbar {
+    width:6px;
+    height:6px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color:#c2c2c2;
+    background-clip:padding-box;
+    border:1px solid #979797;
+    min-height:28px;
+    border-radius:3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    border:1px solid #636363;
+    background-color:#929292;
+  }
+}
 html,body{
   font:{
     size: 14px;
@@ -182,14 +200,15 @@ header{
   display:flex;
   margin-top:80px;
   #nav{
-    flex:0 0 200px;
+    width:200px;
+    //flex:0 0 200px;
     border-right:2px solid #ccc;
     margin:5px;
     a{
       line-height:35px;
       height:35px;
       display:inline-block;
-      width:90%;
+      width:86%;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -226,6 +245,8 @@ header{
       }
     }
     .nav-list{
+      max-height:600px;
+      overflow-y:auto;
       .nav-section{
         .mainbav{
           a{
