@@ -29,6 +29,8 @@ public class BuiltInJavaImpl implements IBuiltIn {
         _types.add("int");
         _types.add("Integer");
         _types.add("String");
+        _types.add("Boolean");
+        _types.add("boolean");
         _types.add("long");
         _types.add("Long");
         _types.add("float");
