@@ -1,3 +1,9 @@
+//改变宽高
+$(window).resize(function(){
+    var windowHeight = $(this).height();
+    $('.nav-list').height(windowHeight-120)
+});
+
 $(document).ready(function(){
     $('#nav ').on("click", ".mainbav", function(e){
         if($(this).hasClass('open')){
@@ -27,7 +33,9 @@ $(document).ready(function(){
             $(".nav-list .nav-section .mainbav").removeClass("open")
         }
     });
-
+    //导航高度;
+    var bodyHeight = $(window).height();
+    $('.nav-list').height(bodyHeight-120)
 
 });
 
