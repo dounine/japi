@@ -73,8 +73,8 @@ public class ProjectAct {
         return result;
     }
 
-    @DeleteMapping("follow/{projectName}")
-    public Result followDel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @PathVariable String projectName) throws JapiException {
+    @PostMapping("delFollow")
+    public Result followDel(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, String projectName) throws JapiException {
         String token = getToken(httpServletRequest, httpServletResponse);
 
         ResultImpl result = new ResultImpl();
