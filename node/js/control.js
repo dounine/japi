@@ -54,7 +54,8 @@ function refresh(){
 
                 $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
                 var navHeight = $('.nav-list').children().height();
-                if(navHeight>600){
+                var navListH = $('.nav-list').height();
+                if(navHeight>navListH){
                     var navAc = $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")")
                     var navAcHeight = navAc.offset().top-500;
                     $('.nav-list').scrollTop(navAcHeight);
