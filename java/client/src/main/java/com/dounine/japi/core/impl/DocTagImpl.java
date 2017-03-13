@@ -30,6 +30,7 @@ public class DocTagImpl implements IDocTag {
         DOC_TAG.types.put("return.", "返回值");
         DOC_TAG.types.put("param", "参数");
         DOC_TAG.types.put("deprecated.", "过时");
+        DOC_TAG.types.put("des.", "描述");
         DOC_TAG.types.put("version.", "版本");
         DOC_TAG.types.put("stable.", "稳定版本");
     }
