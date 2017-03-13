@@ -5,6 +5,7 @@ import com.dounine.japi.core.IConfig;
 import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IType;
+import com.dounine.japi.core.impl.types.ClassType;
 import com.dounine.japi.exception.JapiException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -155,7 +156,11 @@ public class TypeImpl implements IType {
         }
         javaKeyTxt = javaKeyTxt.contains("<") ? javaKeyTxt.substring(0, javaKeyTxt.indexOf("<")).trim() : javaKeyTxt;//remove generic str
 
-        searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath()).getFile();
+        SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
+        if(searchInfo.getClassType().equals(ClassType.ENUM)){//枚          return null;
+        }
+
+        searchFile = searchInfo.getFile();
 
         if (null == searchFile) {
             throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
@@ -209,16 +214,20 @@ public class TypeImpl implements IType {
                 fieldImpl.setName(name);
                 fieldImpl.setType("object");
             } else if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
-                File childTypeFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath()).getFile();
-                if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
-                    fieldImpl.setName(name);
-                    fieldImpl.setType(MY_SELF_REF);
-                } else {
-                    TypeImpl returnTypeImpl = new TypeImpl();
-                    returnTypeImpl.setJavaFile(searchFile.getAbsoluteFile());
-                    returnTypeImpl.setJavaKeyTxt(type);
-                    fieldImpl.setFields(returnTypeImpl.getFields());
+                SearchInfo searchInfo1 =JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
+                File childTypeFile = searchInfo1.getFile();
+                if(null!=childTypeFile){
+                    if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
+                        fieldImpl.setName(name);
+                        fieldImpl.setType(MY_SELF_REF);
+                    } else {
+                        TypeImpl returnTypeImpl = new TypeImpl();
+                        returnTypeImpl.setJavaFile(searchFile.getAbsoluteFile());
+                        returnTypeImpl.setJavaKeyTxt(type);
+                        fieldImpl.setFields(returnTypeImpl.getFields());
+                    }
                 }
+
             }
 
 
@@ -324,7 +333,11 @@ public class TypeImpl implements IType {
             if (typeStr.split(" ").length == 2) {
                 returnType = typeStr.substring(0, typeStr.trim().lastIndexOf(" "));
             } else {
-                returnType = typeStr.substring(typeStr.indexOf(StringUtils.SPACE), typeStr.lastIndexOf(StringUtils.SPACE));
+                if(typeStr.contains(" ")){
+                    returnType = typeStr.substring(typeStr.indexOf(StringUtils.SPACE), typeStr.lastIndexOf(StringUtils.SPACE));
+                }else{
+                    returnType = typeStr;
+                }
             }
             returnType = returnType.trim();
         }

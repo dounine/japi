@@ -7,9 +7,16 @@ public enum TestType {
     /**
      * 增加
      */
-    ADD,
+    ADD("0"),
     /**
      * 删除
      */
-    DEL
+    DEL("1");
+
+    private String code;
+
+    TestType(String code){
+        this.code = code;
+    }
+
 }

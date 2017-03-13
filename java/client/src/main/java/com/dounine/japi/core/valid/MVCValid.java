@@ -79,39 +79,6 @@ public class MVCValid implements IValid {
         return requestFields;
     }
 
-//    private List<String> getRequestInfos(String parameterStrExcTypeAndName, String typeStr, String nameStr, List<String> docs) {
-//        Matcher singleAnnoMatcher = JapiPattern.getPattern("@[a-zA-Z0-9_]*").matcher(parameterStrExcTypeAndName);
-//        List<String> annos = new ArrayList<>();
-//        int preIndex = -1, nextIndex = -1;
-//        while (singleAnnoMatcher.find()) {
-//            nextIndex = singleAnnoMatcher.start();
-//            if (-1 != preIndex) {
-//                annos.add(parameterStrExcTypeAndName.substring(preIndex, nextIndex).trim());
-//                preIndex = nextIndex;
-//            } else {
-//                preIndex = 0;
-//            }
-//        }
-//        if (nextIndex != -1) {
-//            annos.add(parameterStrExcTypeAndName.substring(nextIndex).trim());
-//        }
-//        List<String> requestInfos = new ArrayList<>();
-//        for (String annoStr : annos) {
-//            if (isValid(annoStr)) {//全部使用默认值
-//                IMVC imvc = getValid(annoStr.substring(1));
-//                if (null != imvc) {
-//                    String requestInfo = imvc.getRequestInfo(parameterStrExcTypeAndName, typeStr, nameStr, docs,new File(javaFilePath));
-//                    if (StringUtils.isNotBlank(requestInfo)) {
-//                        requestInfos.add(requestInfo);
-//                    }
-//                }
-//            } else {
-//                LOGGER.warn(annoStr + " 不在MVCValid识别范围内.");
-//            }
-//        }
-//        return requestInfos;
-//    }
-
     public String getJavaFilePath() {
         return javaFilePath;
     }
