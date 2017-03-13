@@ -73,7 +73,7 @@ module.exports = function(){
             }))
     }).post("/delFollow", function*(){
         var token = this.cookies.get('token');
-        var delFollow = this.request.body.projectName;
+        var delFollow = this.request.body;
         var $self = this;
         yield (server().deleteFollow(delFollow,token)
             .then((parsedBody) =>{
