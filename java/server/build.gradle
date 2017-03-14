@@ -8,6 +8,11 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
     }
 }
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.dounine.japi.Application'
+    }
+}
 apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'idea'
