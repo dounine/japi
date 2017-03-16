@@ -7,6 +7,8 @@ import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IType;
 import com.dounine.japi.core.impl.types.ClassType;
 import com.dounine.japi.exception.JapiException;
+import com.dounine.japi.serial.request.IRequest;
+import com.dounine.japi.serial.request.RequestImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -158,6 +160,18 @@ public class TypeImpl implements IType {
 
         SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
         if(searchInfo.getClassType().equals(ClassType.ENUM)){//枚          return null;
+            if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
+                RequestImpl requestField = new RequestImpl();
+                requestField.setType("string");
+                requestField.setDefaultValue("");
+                requestField.setConstraint(EnumParser.getInstance().getTypes(searchInfo.getFile()));
+                List<IField> fields = new ArrayList<>();
+                FieldImpl field = new FieldImpl();
+                field.setRequest(requestField);
+                field.setEnumType(true);
+                fields.add(field);
+                return fields;
+            }
         }
 
         searchFile = searchInfo.getFile();

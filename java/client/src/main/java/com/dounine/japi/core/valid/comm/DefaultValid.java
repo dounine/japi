@@ -6,10 +6,8 @@ import com.dounine.japi.core.IField;
 import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.IParameter;
 import com.dounine.japi.core.IType;
-import com.dounine.japi.core.impl.BuiltInJavaImpl;
-import com.dounine.japi.core.impl.ParameterImpl;
-import com.dounine.japi.core.impl.TypeConvert;
-import com.dounine.japi.core.impl.TypeImpl;
+import com.dounine.japi.core.impl.*;
+import com.dounine.japi.core.impl.types.ClassType;
 import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
@@ -108,43 +106,59 @@ public class DefaultValid implements IValid {
     private List<IRequest> getChildFields(List<IField> iFields) {
         List<IRequest> requests = new ArrayList<>();
         for (IField iField : iFields) {
-            RequestImpl requestField = new RequestImpl();
-            String description = "";
-            requestField.setName(iField.getName());
-            requestField.setDefaultValue("");
-            requestField.setRequired(false);
-            if (!"$this".equals(iField.getType())) {
-                requestField.setType(TypeConvert.getHtmlType(iField.getType()));
-            } else {
-                requestField.setType("$this");
-            }
-            for (IFieldDoc fieldDoc : iField.getDocs()) {
-                if (StringUtils.isBlank(fieldDoc.getValue())) {
-                    description = fieldDoc.getName();
-                    break;
-                }
-            }
-            for (IFieldDoc fieldDoc : iField.getDocs()) {
-                if (fieldDoc.getName().equals("req")) {
+            if(null!=iField.getFields()&&iField.getFields().size()==1&&iField.getFields().get(0).isEnumType()){
+                String description = "";
+                for (IFieldDoc fieldDoc : iField.getDocs()) {
                     if (StringUtils.isBlank(fieldDoc.getValue())) {
-                        throw new JapiException("* @req 注释不能为空[true,false]");
-                    } else if (!"true".equals(fieldDoc.getValue()) && !"false".equals(fieldDoc.getValue())) {
-                        throw new JapiException("* @req 注释只能为true|false");
+                        description = fieldDoc.getName();
+                        break;
                     }
-                    requestField.setRequired(Boolean.parseBoolean(fieldDoc.getValue()));
-                } else if (fieldDoc.getName().equals("des")) {
-                    description = fieldDoc.getValue();
-                } else if (fieldDoc.getName().equals("def")) {
-                    requestField.setDefaultValue(fieldDoc.getValue());
-                } else if (fieldDoc.getName().equals("con")) {
-                    requestField.setConstraint(fieldDoc.getValue());
                 }
+                RequestImpl request = (RequestImpl) iField.getFields().get(0).enumRequest();
+                request.setDescription(description);
+                request.setName(iField.getName());
+                requests.add(request);
+            }else{
+                RequestImpl requestField = new RequestImpl();
+                String description = "";
+                requestField.setName(iField.getName());
+                requestField.setDefaultValue("");
+                requestField.setRequired(false);
+                if (!"$this".equals(iField.getType())) {
+                    requestField.setType(TypeConvert.getHtmlType(iField.getType()));
+                } else {
+                    requestField.setType("$this");
+                }
+                for (IFieldDoc fieldDoc : iField.getDocs()) {
+                    if (StringUtils.isBlank(fieldDoc.getValue())) {
+                        description = fieldDoc.getName();
+                        break;
+                    }
+                }
+                for (IFieldDoc fieldDoc : iField.getDocs()) {
+                    if (fieldDoc.getName().equals("req")) {
+                        if (StringUtils.isBlank(fieldDoc.getValue())) {
+                            throw new JapiException("* @req 注释不能为空[true,false]");
+                        } else if (!"true".equals(fieldDoc.getValue()) && !"false".equals(fieldDoc.getValue())) {
+                            throw new JapiException("* @req 注释只能为true|false");
+                        }
+                        requestField.setRequired(Boolean.parseBoolean(fieldDoc.getValue()));
+                    } else if (fieldDoc.getName().equals("des")) {
+                        description = fieldDoc.getValue();
+                    } else if (fieldDoc.getName().equals("def")) {
+                        requestField.setDefaultValue(fieldDoc.getValue());
+                    } else if (fieldDoc.getName().equals("con")) {
+                        requestField.setConstraint(fieldDoc.getValue());
+                    }
+                }
+                requestField.setDescription(description);
+                if (iField.getFields() != null) {
+                    requestField.setFields(getChildFields(iField.getFields()));
+                }
+                requests.add(requestField);
             }
-            requestField.setDescription(description);
-            if (iField.getFields() != null) {
-                requestField.setFields(getChildFields(iField.getFields()));
-            }
-            requests.add(requestField);
+
+
         }
         return requests;
     }
