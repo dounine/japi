@@ -1,5 +1,7 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.serial.request.IRequest;
+
 import java.util.List;
 
 /**
@@ -16,4 +18,8 @@ public interface IField {
     String getType();
 
     List<IFieldDoc> getDocs();
+
+    boolean isEnumType();
+
+    IRequest enumRequest();
 }

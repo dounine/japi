@@ -1,5 +1,8 @@
 package com.dounine.japi.core;
 
+import com.dounine.japi.serial.request.IRequest;
+import com.dounine.japi.serial.request.RequestImpl;
+
 import java.util.List;
 
 /**
@@ -10,4 +13,5 @@ public interface IType {
     List<IField> getFields();
 
     String getName();
+
 }
