@@ -196,7 +196,7 @@ public class JapiClientStorage {
     }
 
     public void autoSaveToDisk() {
-        if (!JapiClient.isUseCache()) {
+        if (!JapiClient.isSaveHistory()) {
             File file = new File(JAPI_CLIENT_STORAGE.japiPath + project.getProperties().get("japi.name"));
             if (file.exists()) {
                 try {

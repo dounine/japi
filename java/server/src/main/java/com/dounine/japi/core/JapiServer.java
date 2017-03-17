@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * Created by lake on 17-2-24.
  */
 public class JapiServer {
-    private static final Integer VERSION = 6;
+    private static final Integer VERSION = 7;
 
     private static String projectsPath = null;
     private static String usersPath = null;
@@ -477,6 +477,13 @@ public class JapiServer {
         }
         if(clientVersion<VERSION){
             throw new JapiException("您的JAPI客户端过低,请更新升级后再使用.");
+        }
+    }
+
+    public void flush(TransferInfo transferInfo) {
+        File projectFold = new File(projectsPath+transferInfo.getProjectName());
+        if(projectFold.exists()){
+            FileUtils.deleteQuietly(projectFold);
         }
     }
 }

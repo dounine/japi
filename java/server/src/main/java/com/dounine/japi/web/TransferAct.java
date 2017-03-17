@@ -38,6 +38,13 @@ public class TransferAct {
         return new ResultImpl<Boolean>(null, Boolean.TRUE);
     }
 
+    @PostMapping("project/flush")
+    public Result flush(TransferInfo transferInfo, Integer clientVersion) throws JapiException {
+        japiServer.checkClientVersion(clientVersion);
+        japiServer.flush(transferInfo);
+        return new ResultImpl<String>(null, "success");
+    }
+
     @PostMapping("project/info")
     public Result createProject(TransferInfo transferInfo, @RequestParam("file") MultipartFile file) throws JapiException {
         if (!file.isEmpty()) {
@@ -100,7 +107,7 @@ public class TransferAct {
     }
 
     @PostMapping("project/exists")
-    public Result exists(String projectName,Integer clientVersion) throws JapiException {
+    public Result exists(String projectName, Integer clientVersion) throws JapiException {
         if (StringUtils.isBlank(projectName)) {
             throw new JapiException("projectName 不能为空.");
         }

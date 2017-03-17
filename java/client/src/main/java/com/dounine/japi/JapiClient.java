@@ -15,11 +15,13 @@ import java.util.UUID;
  * Created by lake on 17-2-23.
  */
 public class JapiClient {
-    public static final Integer CLIENT_VERSION = 6;
+    public static final Integer CLIENT_VERSION = 7;
     private static final JapiClient JAPI_CLIENT = new JapiClient();
 
     private ConfigImpl config = new ConfigImpl();
-    private boolean useCache = false;
+    private boolean saveHistory = false;
+    private boolean flushServer = false;
+
     private JapiClient(){}
 
     public static final IConfig getConfig(){
@@ -34,7 +36,8 @@ public class JapiClient {
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
         JapiClient.setIncludeProjectJavaPath(new String[]{"api"});
         JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//可以准确快速搜索
-        JapiClient.setUseCache(true);//
+        JapiClient.saveHistory(true);//保留本地历史版本
+        JapiClient.setFlushServer(false);//强制同步服务器所有版版本
 
         IProject project = ProjectImpl.init();
         JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
@@ -86,10 +89,18 @@ public class JapiClient {
         return UUID.randomUUID().toString().replace("-","");
     }
 
-    public static void setUseCache(boolean useCache) {
-        JAPI_CLIENT.useCache = useCache;
+    public static void saveHistory(boolean save) {
+        JAPI_CLIENT.saveHistory = save;
     }
-    public static boolean isUseCache(){
-        return JAPI_CLIENT.useCache;
+    public static boolean isSaveHistory(){
+        return JAPI_CLIENT.saveHistory;
+    }
+
+    public static boolean isFlushServer(){
+        return JAPI_CLIENT.flushServer;
+    }
+
+    public static void setFlushServer(boolean flushServer) {
+        JAPI_CLIENT.flushServer = flushServer;
     }
 }

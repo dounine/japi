@@ -39,13 +39,12 @@ import java.util.concurrent.TimeUnit;
 public class JapiClientTransfer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JapiClientTransfer.class);
     private static final int reties = 3;
-    private static final String TOKEN_NOT_EMPTY = "请求头token不能为空";
     private static final FileFilter FILE_FILTER = DirectoryFileFilter.DIRECTORY;
     private static String token = null;
     /**
      * seconds
      */
-    private static final int tryTime = 3;
+    private static final int tryTime = 10;
     private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
 
     private Result postValues(String url, String[] datas) {
@@ -138,7 +137,6 @@ public class JapiClientTransfer {
         }
         if (!logoFile.exists()) {
             logoFile = new File(prePath + "/logo.gif");
-            ;
         }
         return logoFile;
     }
@@ -242,6 +240,9 @@ public class JapiClientTransfer {
         datas.add(new String[]{"clientVersion", JapiClient.CLIENT_VERSION+""});
         Result result = postValues(serverUrl + "/transfer/project/exists", datas);
         if (!result.getData().equals(Boolean.TRUE)) {//project exist
+            if(JapiClient.isFlushServer()){
+                postValues(serverUrl + "/transfer/project/flush", datas);
+            }
             postValues(serverUrl + "/transfer/project", datas);
         }
 
