@@ -38,7 +38,7 @@ public class EnumParser {
                 boolean headerBegin = false;
                 List<String> singleEnum = null;
                 for (String line : lines) {
-                    if (!headerBegin && enumHeaderPattern.matcher(line).find()&&!line.endsWith(";")) {
+                    if (!headerBegin && enumHeaderPattern.matcher(line).find()&&!line.startsWith("import\\s+")) {
                         headerBegin = true;
                     }
                     if (headerBegin) {
