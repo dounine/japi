@@ -52,7 +52,16 @@ function refresh(){
                 verSel(version,true);
                 $('.nav-head').removeClass('active');
 
-                $('.nav-list .rootName:contains('+ version.packageName +')').parent().siblings("ul").find(".subName:contains("+version.funName +")").parent().siblings(".nav-section").find("a:contains("+ version.actionName +")").parent().addClass('active');
+                var rName =  $('.rootName').filter(function(index) {
+                    return version.packageName==$(this).text();
+                });
+                var sName = rName.parent().siblings('ul').find($('.subName')).filter(function(index){
+                    return version.funName==$(this).text();
+                });
+                var lName = sName.parent().siblings('ul').find($('.lastName')).filter(function(index){
+                    return version.actionName==$(this).text();
+                });
+                lName.parent().addClass('active');
                 var navHeight = $('.nav-list').children().height();
                 var navListH = $('.nav-list').height();
                 if(navHeight>navListH){
@@ -89,7 +98,7 @@ $(document).ready(function(){
                         nav += "<li class='sub'><span class='mainbav open'><a href='javascript:void(0)' class='subName'>%{twoNav}</a></span><ul class='nav-section'>".format({twoNav : twoNavs[inx].name})
                         for(var i in twoNavs[inx].actions){
                             var listNavs = twoNavs[inx].actions
-                            nav += "<li class='acLi'><a href='javascript:void(0)' title='%{lastNav}'>%{lastNav}</a></li>".format({lastNav : listNavs[i].name})
+                            nav += "<li class='acLi'><a href='javascript:void(0)' class='lastName' title='%{lastNav}'>%{lastNav}</a></li>".format({lastNav : listNavs[i].name})
                         }
                         nav += "</ul></li>"
                     }

@@ -64,12 +64,12 @@ module.exports = function(a){
         };
         return request(options);
     };
-    this.deleteFollow = function(projectName,token){
+    this.deleteFollow = function(delFollow,token){
         var options = {
-            method : 'DELETE',
+            method : 'POST',
             timeout : 3000,
-            uri : config()['rurl'] + '/project/follow/'+projectName,
-            // form : argvs,
+            uri : config()['rurl'] + '/project/delFollow',
+            form : delFollow,
             headers : {
                 token : token
             }

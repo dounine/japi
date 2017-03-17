@@ -219,7 +219,6 @@ function logout(){
 function follow(_this){
     var data = {};
     data.projectName = $(_this).parents('.item').children('.item-title').children().text();
-
     if($(_this).hasClass('flwed')){
         $(_this).removeClass('flwed');
         $.ajax({
@@ -227,7 +226,7 @@ function follow(_this){
             url : "/delFollow",
             data : data,
             success : function(data){
-//                console.info(data);
+               console.info(data);
             },
             error : function(data){
                 console.info(data);
