@@ -159,6 +159,11 @@ public class TypeImpl implements IType {
         javaKeyTxt = javaKeyTxt.contains("<") ? javaKeyTxt.substring(0, javaKeyTxt.indexOf("<")).trim() : javaKeyTxt;//remove generic str
 
         SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath());
+        searchFile = searchInfo.getFile();
+
+        if (null == searchFile) {
+            throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
+        }
         if(searchInfo.getClassType().equals(ClassType.ENUM)){//枚          return null;
             if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
                 RequestImpl requestField = new RequestImpl();
@@ -174,11 +179,7 @@ public class TypeImpl implements IType {
             }
         }
 
-        searchFile = searchInfo.getFile();
 
-        if (null == searchFile) {
-            throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
-        }
         List<String> javaFileLines = null;
         try {
             javaFileLines = FileUtils.readLines(searchFile, Charset.forName("utf-8"));
