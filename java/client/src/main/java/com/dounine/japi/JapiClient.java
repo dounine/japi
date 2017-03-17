@@ -36,8 +36,8 @@ public class JapiClient {
         JapiClient.setActionReletivePath("com/dounine/japi/core/action");
         JapiClient.setIncludeProjectJavaPath(new String[]{"api"});
         JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//可以准确快速搜索
-        JapiClient.saveHistory(false);//保留本地历史版本
-        JapiClient.setFlushServer(true);//强制同步本地与服务器所有版本
+        JapiClient.saveHistory(true);//保留本地历史版本
+        JapiClient.setFlushServer(false);//强制同步本地与服务器所有版本
 
         IProject project = ProjectImpl.init();
         JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
