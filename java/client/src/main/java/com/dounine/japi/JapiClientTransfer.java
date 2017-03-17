@@ -239,7 +239,9 @@ public class JapiClientTransfer {
         datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
         datas.add(new String[]{"clientVersion", JapiClient.CLIENT_VERSION+""});
         if(JapiClient.isFlushServer()){
+            LOGGER.info("强制清空服务器历史版本中...");
             postValues(serverUrl + "/transfer/project/flush", datas);
+            LOGGER.info("强制清空服务器历史版本完成");
         }
         Result result = postValues(serverUrl + "/transfer/project/exists", datas);
         if (!result.getData().equals(Boolean.TRUE)) {//project exist
