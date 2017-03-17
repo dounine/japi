@@ -199,6 +199,10 @@ header{
 #containal {
   display:flex;
   margin-top:80px;
+  .pro-title{
+    font-size:18px;
+    margin-top:20px;
+  }
   #nav{
     width:200px;
     //flex:0 0 200px;
