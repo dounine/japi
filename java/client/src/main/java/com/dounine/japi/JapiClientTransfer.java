@@ -238,13 +238,14 @@ public class JapiClientTransfer {
         datas.add(new String[]{"projectName", projectName});
         datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
         datas.add(new String[]{"clientVersion", JapiClient.CLIENT_VERSION+""});
+        if(JapiClient.isFlushServer()){
+            postValues(serverUrl + "/transfer/project/flush", datas);
+        }
         Result result = postValues(serverUrl + "/transfer/project/exists", datas);
         if (!result.getData().equals(Boolean.TRUE)) {//project exist
-            if(JapiClient.isFlushServer()){
-                postValues(serverUrl + "/transfer/project/flush", datas);
-            }
             postValues(serverUrl + "/transfer/project", datas);
         }
+
 
         transferProjectLogo(japiClientStorage);//project logo
         transferProjectInfo(japiClientStorage);//project info
