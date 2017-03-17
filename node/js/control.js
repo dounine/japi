@@ -181,6 +181,7 @@ refresh()
 function verSel(version){
     var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
     $(".reqtable").html(load);
+    $(".restable").hide();
     var isRefresh = arguments[1];
     var verTag = document.getElementsByClassName('version-list')[0].tagName;
     if(verTag == "SPAN"){
@@ -269,8 +270,8 @@ function action(version){
             /*******请求参数********/
 
             var requestFields = "<div class='sec-head'><h4>请求参数</h4></div><div class='sec-table'><div class='sec-table-wrap'>" +
-                "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
-                "<li class='col-1'>默认值</li><li class='col-2'>约束</li><li class='col-6'>描述</li></ul><div id='req'>";
+                "<ul class='sec-table-head'><li class='col-3'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
+                "<li class='col-1'>默认值</li><li class='col-3'>约束</li><li class='col-6'>描述</li></ul><div id='req'>";
 
             var reqArr = [];
             $.each(resData.requestFields, function(index, item){
@@ -304,9 +305,9 @@ function action(version){
                 }
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"] + 2;
                 requestFields += ("<div class='sec-table-list %{_open}' index='%{_index}'> <ul>" +
-                "<li class='col-2'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span class='itemName' " + _parentClickEventStr + "  data-ac='%{ac}'  style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+                "<li class='col-3'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span class='itemName' " + _parentClickEventStr + "  data-ac='%{ac}'  style='text-indent:%{_indent1}px'>%{name}</span></li>" +
                 "<li class='col-1'>%{required}</li><li class='col-1'>%{type}</li>" +
-                "<li class='col-1'>%{defaultValue}</li><li class='col-2'>%{constraint}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
+                "<li class='col-1'>%{defaultValue}</li><li class='col-3'>%{constraint}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
             }
 
             requestFields += "</div></div></div>";
@@ -314,7 +315,7 @@ function action(version){
             /*****响应参数*****/
 
             var responseFields = "<div class='sec-head'><h4>响应参数</h4></div><div class='sec-table'><div class='sec-table-wrap'>" +
-                "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>类型</li>" +
+                "<ul class='sec-table-head'><li class='col-3'>参数名称</li><li class='col-1'>类型</li>" +
                 "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul><div id='res'>";
 
             $.each(resData.responseFields, function(index, obj){
@@ -341,7 +342,7 @@ function action(version){
                 }
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"] + 2;
                 responseFields += ("<div class='sec-table-list %{_open}' index='%{_index}'> <ul>" +
-                "<li class='col-2'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span class='itemName' " + _parentClickEventStr + "  data-ac='%{ac}'  style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+                "<li class='col-3'><i onclick='iconSubClick(this)' class='%{_sub}' style='left:%{_indent}px'></i> <span class='itemName' " + _parentClickEventStr + "  data-ac='%{ac}'  style='text-indent:%{_indent1}px'>%{name}</span></li>" +
                 "<li class='col-1'>%{type}</li>" +
                 "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
             }
@@ -369,8 +370,8 @@ function _parent(self, _parent){
     $('#modal').show();
     $('#modalbg').show();
     var modalCon = "<div class='sec-table'><div class='sec-table-wrap'>" +
-        "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
-        "<li class='col-1'>默认值</li><li class='col-2'>约束</li><li class='col-6'>描述</li></ul>";
+        "<ul class='sec-table-head'><li class='col-3'>参数名称</li><li class='col-1'>是否必须</li><li class='col-1'>类型</li>" +
+        "<li class='col-1'>默认值</li><li class='col-3'>约束</li><li class='col-6'>描述</li></ul>";
 
 
     var level = new Object();
@@ -381,9 +382,9 @@ function _parent(self, _parent){
     for(var subIndex in level.datas){
         level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"] + 2;
         modalCon += ("<div class='sec-table-list' index='%{_index}'> <ul>" +
-        "<li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+        "<li class='col-3'><i class='%{_sub}' style='left:%{_indent}px'></i><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
         "<li class='col-1'>%{required}</li><li class='col-1'>%{type}</li>" +
-        "<li class='col-1'>%{defaultValue}</li><li class='col-2'>%{constraint}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
+        "<li class='col-1'>%{defaultValue}</li><li class='col-3'>%{constraint}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
     }
 
     modalCon += "</div></div>";
@@ -396,7 +397,7 @@ function _parentRes(self, _parent){
     $('#modalbg').show();
 
     var modalCon = "<div class='sec-table'><div class='sec-table-wrap'>" +
-        "<ul class='sec-table-head'><li class='col-2'>参数名称</li><li class='col-1'>类型</li>" +
+        "<ul class='sec-table-head'><li class='col-3'>参数名称</li><li class='col-1'>类型</li>" +
         "<li class='col-1'>默认值</li><li class='col-6'>描述</li></ul>";
 
     var item = responseFields1;
@@ -409,7 +410,7 @@ function _parentRes(self, _parent){
     for(var subIndex in level.datas){
         level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"] + 4;
         modalCon += ("<div class='sec-table-list' index='%{_index}'> <ul>" +
-        "<li class='col-2'><i class='%{_sub}' style='left:%{_indent}px'></i><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
+        "<li class='col-3'><i class='%{_sub}' style='left:%{_indent}px'></i><span style='text-indent:%{_indent1}px'>%{name}</span></li>" +
         "<li class='col-1'>%{type}</li>" +
         "<li class='col-1'>%{defaultValue}</li><li class=' col-6'>%{description}</li></ul></div>").format(level.datas[subIndex])
     }
