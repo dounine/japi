@@ -48,6 +48,10 @@ public class ValidValid implements IMVC {
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
             SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(typeStr,javaFile.getAbsolutePath());
 
+            if(null==searchInfo.getFile()){
+                throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + typeStr + ".java");
+            }
+
             TypeImpl typeImpl = new TypeImpl();
             typeImpl.setJavaFile(javaFile);
             typeImpl.setJavaKeyTxt(typeStr);

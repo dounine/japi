@@ -68,7 +68,7 @@ public class TypeImpl implements IType {
         searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath()).getFile();
 
         if (null == searchFile) {
-            throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
+            throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java");
         }
         List<String> javaFileLines = null;
         try {
@@ -162,7 +162,7 @@ public class TypeImpl implements IType {
         searchFile = searchInfo.getFile();
 
         if (null == searchFile) {
-            throw new JapiException("找不到相关文件：" + javaKeyTxt + ".java");
+            throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java");
         }
         if(searchInfo.getClassType().equals(ClassType.ENUM)){//枚          return null;
             if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
@@ -241,6 +241,8 @@ public class TypeImpl implements IType {
                         returnTypeImpl.setJavaKeyTxt(type);
                         fieldImpl.setFields(returnTypeImpl.getFields());
                     }
+                }else {
+                    throw new JapiException(searchFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java");
                 }
 
             }

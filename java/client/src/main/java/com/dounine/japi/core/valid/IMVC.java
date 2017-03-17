@@ -5,6 +5,7 @@ import com.dounine.japi.core.IFieldDoc;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.SearchInfo;
 import com.dounine.japi.core.valid.jsr303.list.*;
+import com.dounine.japi.exception.JapiException;
 import com.dounine.japi.serial.request.IRequest;
 import com.dounine.japi.serial.request.RequestImpl;
 import org.apache.commons.lang3.StringUtils;
@@ -79,6 +80,8 @@ public interface IMVC {
             SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key, javaFilePath);
             if (null != searchInfo.getFile()) {
                 searchInfos.add(searchInfo);
+            }else{
+                throw new JapiException(javaFilePath+" 找不到相关文件：" + key + ".java");
             }
         }
         return searchInfos;

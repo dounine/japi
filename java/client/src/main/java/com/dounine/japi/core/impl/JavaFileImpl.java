@@ -55,6 +55,7 @@ public class JavaFileImpl implements IJavaFile {
         if (StringUtils.isBlank(javaFilePath)) {
             throw new JapiException("javaFilePath 主文件路径不能为空");
         }
+        javaTxt = javaTxt.trim();
         SearchInfo searchInfo = new SearchInfo();
         File javaFile = null;
         if (javaTxt.contains(".")) {//查找关键字包含点的
@@ -98,7 +99,7 @@ public class JavaFileImpl implements IJavaFile {
         if (null == javaFile || (null != javaFile && !javaFile.exists())) {
             SearchInfo searchInfo1 = getFileInterface(javaTxt, javaFilePath);
             if (null != searchInfo1.getFile() && StringUtils.isNotBlank(searchInfo1.getKey())) {
-                searchInfo.setFile(searchInfo1.getFile());
+                javaFile = searchInfo1.getFile();
                 searchInfo.setKey(searchInfo1.getKey());
             }
         }
