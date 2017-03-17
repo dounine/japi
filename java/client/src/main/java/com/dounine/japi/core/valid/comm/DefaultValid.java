@@ -56,6 +56,8 @@ public class DefaultValid implements IValid {
             }
         }
 
+
+
         if (BuiltInJavaImpl.getInstance().isBuiltInType(typeAndName[0])) {
             List<IRequest> requestFields = new ArrayList<>();
             RequestImpl requestField = new RequestImpl();
@@ -75,30 +77,58 @@ public class DefaultValid implements IValid {
             requestFields.add(requestField);
             parameter.setRequestFields(requestFields);
         } else {
+            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(typeAndName[0], javaFilePath);
             TypeImpl type = new TypeImpl();
             type.setJavaFile(new File(javaFilePath));
             type.setJavaKeyTxt(typeAndName[0]);
 
-            RequestImpl requestField = new RequestImpl();
-            if (description.trim().startsWith("{")) {
-                DocObj docObj = JSON.parseObject(description, DocObj.class);
-                requestField.setConstraint(docObj.getCon());
-                requestField.setDefaultValue(docObj.getDef());
-                requestField.setDescription(docObj.getDes());
-                requestField.setRequired(docObj.isReq());
-            }else{
-                requestField.setRequired(false);
+            if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
+                RequestImpl requestField = new RequestImpl();
+                requestField.setName(typeAndName[1]);
+                requestField.setType("string");
                 requestField.setDefaultValue("");
-                if (StringUtils.isBlank(description)) {
-                    requestField.setDescription(type.getName());
+                requestField.setConstraint(EnumParser.getInstance().getTypes(searchInfo.getFile()));
+
+                if (description.trim().startsWith("{")) {
+                    DocObj docObj = JSON.parseObject(description, DocObj.class);
+                    requestField.setConstraint(docObj.getCon());
+                    requestField.setDefaultValue(docObj.getDef());
+                    requestField.setDescription(docObj.getDes());
+                    requestField.setRequired(docObj.isReq());
+                }else{
+                    requestField.setRequired(false);
+                    if (StringUtils.isBlank(description)) {
+                        requestField.setDescription(type.getName());
+                    }
                 }
+
+                List<IRequest> requestFields = new ArrayList<>();
+                requestFields.add(requestField);
+                parameter.setRequestFields(requestFields);
+            }else{
+                RequestImpl requestField = new RequestImpl();
+                if (description.trim().startsWith("{")) {
+                    DocObj docObj = JSON.parseObject(description, DocObj.class);
+                    requestField.setConstraint(docObj.getCon());
+                    requestField.setDefaultValue(docObj.getDef());
+                    requestField.setDescription(docObj.getDes());
+                    requestField.setRequired(docObj.isReq());
+                }else{
+                    requestField.setRequired(false);
+                    requestField.setDefaultValue("");
+                    if (StringUtils.isBlank(description)) {
+                        requestField.setDescription(type.getName());
+                    }
+                }
+                requestField.setName(typeAndName[1]);
+                requestField.setType(typeAndName[0].toLowerCase());
+                requestField.setFields(getChildFields(type.getFields()));
+                List<IRequest> requestFields = new ArrayList<>();
+                requestFields.add(requestField);
+                parameter.setRequestFields(requestFields);
             }
-            requestField.setName(typeAndName[1]);
-            requestField.setType(typeAndName[0].toLowerCase());
-            requestField.setFields(getChildFields(type.getFields()));
-            List<IRequest> requestFields = new ArrayList<>();
-            requestFields.add(requestField);
-            parameter.setRequestFields(requestFields);
+
+
         }
         return parameter;
     }

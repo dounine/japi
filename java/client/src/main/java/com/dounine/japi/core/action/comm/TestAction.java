@@ -27,7 +27,7 @@ public class TestAction {
      */
     @org.springframework.web.bind.annotation.GetMapping(value = "v1/hots")
     @ResponseBody
-    public Result hots(@Validated({User.UserADD.class, User.UserDEL.class}) User user,String customCon2,String customCon, BindingResult bindingResult) throws RuntimeException {
+    public Result hots(@Validated({User.UserADD.class, User.UserDEL.class}) User user,String customCon2,TestType customCon, BindingResult bindingResult) throws RuntimeException {
         return null;
     }
 
