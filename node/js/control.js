@@ -278,7 +278,7 @@ function action(version){
                 if(item.fields){
                     for(var i in item.fields){
                         var obj = item.fields[i];
-                        if(obj.type == '$this'){
+                        if(obj.type == '$this'||obj.type == '$this[]'){
                             obj._parent = item;
                             obj.ac = "ac"
                         }
@@ -301,7 +301,13 @@ function action(version){
                 if(_parent){
                     rootShowMySelf[subIndex] = _parent;
                     _parentClickEventStr = "onclick=_parent(this," + subIndex + ")";
-                    level.datas[subIndex]['type'] = 'object';
+
+                    if(level.datas[subIndex]['type']=='$this'){
+                        level.datas[subIndex]['type'] = 'object';
+                    }else if(level.datas[subIndex]['type']=='$this[]'){
+                        level.datas[subIndex]['type'] = 'object[]';
+                    }
+
                 }
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"] + 2;
                 requestFields += ("<div class='sec-table-list %{_open}' index='%{_index}'> <ul>" +
