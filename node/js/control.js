@@ -565,12 +565,16 @@ function description(){
     var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
     $("#content").html(load);
     $.get('/tip',function(data){
-        var tip="<div class='tip'> <h1>温馨提示</h1>"
+        var tip="<div class='tip'> <h1>温馨提示</h1> <p class='absurl'> 请求地址：<span></span></p>";
        $.each(data.data,function(index,item){
         tip+="<p><span>%{index}、</span> %{item}</p>".format({item:item,index:index+1})
        });
         tip+="</div>"
        $('#content').html(tip);
         location.hash=location.hash.split("/")[0];
+
+            var absUrl = $.cookie("absUrl");
+            $('.absurl span').html(absUrl)
+
     })
 }
