@@ -36,11 +36,11 @@ $(document).ready(function(){
 
             var list = "<div class='item-list'>";
             $.each(data.data, function(index, item){
-                list += ("<div class='item'><div class='icon'><a href='/detail#%{name}'  onmouseover='des(this)' onmouseout='_des(this)' >" +
+                list += ("<div class='item'><div class='icon'><a href='/detail#%{name}' data-url='%{url}' onclick='absUrl(this)'  onmouseover='des(this)' onmouseout='_des(this)' >" +
                 "<img src='%{icon}' alt='图片未找到'></a></div>" +
                 "<div class='item-title'><strong>%{name}</strong></div><div>作者：%{author}</div>" +
                 "<div class='item-info'><span class='version'>%{version}</span><span class='time'>%{date}<br/>%{time}</span></div>" +
-                "<div class='detailed'><a href='/detail#%{name}'>文档</a></div><div class='des'>%{detailed}</div>" +
+                "<div class='detailed'><a href='/detail#%{name}' data-url='%{url}' onclick='absUrl(this)'>文档</a></div><div class='des'>%{detailed}</div>" +
                 "<div class='follow'><a href='javascript:void(0)' class='%{flwed}' onclick='follow(this)' data-name='%{name}' data-follow='%{follow}' ></a></div></div>").format({
                     icon : '/logo/' + item.name,
                     name : item.name,
@@ -50,13 +50,14 @@ $(document).ready(function(){
                     time : item.createTime.split(" ")[1],
                     date : item.createTime.split(" ")[0],
                     detailed : item.description,
-                    follow : item.follow
+                    follow : item.follow,
+                    url:item.url
                 })
 
             });
             list += "</div>";
             $("#containal").html(list).show();
-            userName()
+            userName();
             //获取分页数
             location.hash = "page=" + page.pageSize;
             if(window.location.hash.split("=")[1] == "1"){
@@ -171,10 +172,11 @@ function pageBtn(self, name){
         success : function(data){
             var list = "<div class='item-list'>"
             $.each(data.data, function(index, item){
-                list += ("<div class='item'><div class='icon'><a href='/detail#%{name}'><img src='%{icon}' alt='图片未找到'></a></div>" +
+                list += ("<div class='item'><div class='icon'><a href='/detail#%{name}' data-url='%{url}' onclick='absUrl(this)'><img src='%{icon}' alt='图片未找到'></a></div>" +
                 "<div class='item-title'><strong>%{name}</strong></div><div>作者：%{author}</div>" +
                 "<div class='item-info'><span class='version'>%{version}</span><span class='time'>%{date}<br/>%{time}</span></div>" +
-                "<div class='follow'><a href='javascript:void(0)' class='%{flwed}' onclick='follow(this)' data-follow='%{follow}'></a></div><div class='detailed'><a href='/detail#%{name}'>文档</a></div></div>").format({
+                "<div class='follow'><a href='javascript:void(0)' class='%{flwed}' onclick='follow(this)' data-follow='%{follow}'></a></div>" +
+                "<div class='detailed'><a href='/detail#%{name}' data-url='%{url}' onclick='absUrl(this)'>文档</a></div></div>").format({
                     icon : '/logo/' + item.name,
                     name : item.name,
                     author : item.author,
@@ -183,7 +185,8 @@ function pageBtn(self, name){
                     date : item.createTime.split(" ")[0],
                     flwed : ((item.follow == true) ? 'flwed' : ''),
                     detailed : item.description,
-                    follow : item.follow
+                    follow : item.follow,
+                    url:item.url
                 })
 
             });
@@ -293,6 +296,11 @@ function folSort(self){
        error:function(data){
        }
    })
+}
+
+function absUrl(self){
+    var absUrl = $(self).attr("data-url");
+    $.cookie("absUrl",absUrl,{ expires: 7 })
 }
 
 
