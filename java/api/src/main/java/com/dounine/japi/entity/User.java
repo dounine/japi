@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,14 @@ public class User {
      * @con 这是约束条件
      */
     protected String username;
+
+    /**
+     * 验证带正则字符串
+     */
+    @Pattern(regexp = "IKE\\d{6}",message = "员工编号为IKE开头,后面为6位数字")
+    private String peopleNumber;
+
+
     /**
      * 用户密码
      */
@@ -104,5 +113,13 @@ public class User {
 
     public void setUserList(User[] userList) {
         this.userList = userList;
+    }
+
+    public String getPeopleNumber() {
+        return peopleNumber;
+    }
+
+    public void setPeopleNumber(String peopleNumber) {
+        this.peopleNumber = peopleNumber;
     }
 }

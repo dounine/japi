@@ -34,6 +34,10 @@ public interface IMVC {
         notNullValid.setJavaFilePath(javaFilePath);
         imvcs.add(notNullValid);
 
+        PatternValid patternValid = new PatternValid();
+        patternValid.setJavaFilePath(javaFilePath);
+        imvcs.add(patternValid);
+
         SizeValid sizeValid = new SizeValid();
         sizeValid.setJavaFilePath(javaFilePath);
         imvcs.add(sizeValid);
