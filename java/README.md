@@ -22,8 +22,9 @@ JapiClient.setProjectJavaPath("client");//主项目地扯
 JapiClient.setActionReletivePath("com/dounine/japi/core/action");//相对主项目action包所在路径
 JapiClient.setIncludeProjectJavaPath(new String[]{"api"});//主项目中关联的其它包路径
 JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//关联的包,用于准确快速搜索
-JapiClient.setUseCache(true);//不使用缓存则删除原来生成的目录文件 
-
+JapiClient.saveHistory(true);//保留本地历史版本
+JapiClient.setFlushServer(false);//强制同步本地与服务器所有版本
+ 
 IProject project = ProjectImpl.init();
 JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
 japiClientStorage.setProject(project);
@@ -85,7 +86,7 @@ public enum TestType {
     /**
      * 删除
      */
-    DEL
+    DEL(0) 或者 DEL("DEL")
 }
 ```
 User实体信息
