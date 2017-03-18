@@ -154,10 +154,10 @@ public class DefaultValid implements IValid {
                 requestField.setName(iField.getName());
                 requestField.setDefaultValue("");
                 requestField.setRequired(false);
-                if (!"$this".equals(iField.getType())) {
+                if (!"$this".equals(iField.getType())&&!"$this[]".equals(iField.getType())) {
                     requestField.setType(TypeConvert.getHtmlType(iField.getType()));
                 } else {
-                    requestField.setType("$this");
+                    requestField.setType(iField.getType());
                 }
                 for (IFieldDoc fieldDoc : iField.getDocs()) {
                     if (StringUtils.isBlank(fieldDoc.getValue())) {

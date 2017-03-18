@@ -714,11 +714,7 @@ public class ActionImpl implements IAction {
             ResponseImpl response = new ResponseImpl();
             String description = "";
             response.setName(iField.getName());
-            if (!"$this".equals(iField.getType())) {
-                response.setType(TypeConvert.getHtmlType(iField.getType()));
-            } else {
-                response.setType("$this");
-            }
+
             for (IFieldDoc fieldDoc : iField.getDocs()) {
                 if (StringUtils.isBlank(fieldDoc.getValue())) {
                     description = fieldDoc.getName();
@@ -726,9 +722,25 @@ public class ActionImpl implements IAction {
                 }
             }
             response.setDescription(description);
-            response.setDefaultValue("");
-            if (iField.getFields() != null) {
-                response.setFields(getChildFields(iField.getFields()));
+
+            if(null!=iField.getFields()&&iField.getFields().size()==1&&iField.getFields().get(0).isEnumType()){
+                IRequest request = iField.getFields().get(0).enumRequest();
+                response.setType("string");
+                if(null!=response.getDescription()){
+                    response.setDescription(response.getDescription()+" { "+request.getConstraint()+" } ");
+                }else{
+                    response.setDescription(request.getConstraint());
+                }
+            }else{
+                if (!"$this".equals(iField.getType())&&!"$this[]".equals(iField.getType())) {
+                    response.setType(TypeConvert.getHtmlType(iField.getType()));
+                } else {
+                    response.setType(iField.getType());
+                }
+                response.setDefaultValue("");
+                if (iField.getFields() != null) {
+                    response.setFields(getChildFields(iField.getFields()));
+                }
             }
             responses.add(response);
         }

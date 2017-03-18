@@ -69,8 +69,8 @@ public class ValidatedValid implements IMVC {
             SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(key, javaFilePath);
             if (searchInfo.getFile() != null) {
                 searchInfos.add(searchInfo);
-            }else{
-                throw new JapiException(javaFilePath+" 找不到相关文件：" + key + ".java");
+            } else {
+                throw new JapiException(javaFilePath + " 找不到相关文件：" + key + ".java");
             }
         }
         return searchInfos;
@@ -84,25 +84,42 @@ public class ValidatedValid implements IMVC {
         RequestImpl requestField = new RequestImpl();
         requestField.setName(nameStr);
         String description = "";
+        boolean isArray = typeStr.startsWith("array ");
+        if (isArray) {
+            typeStr = typeStr.split(" ")[1];
+        }
+        if (typeStr.endsWith("[]")) {
+            isArray = true;
+            typeStr = typeStr.split("\\[\\]")[0];
+        }
         if (!BuiltInJavaImpl.getInstance().isBuiltInType(typeStr)) {
-            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(typeStr,javaFile.getAbsolutePath());
 
-            if(null==searchInfo.getFile()){
-                throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + typeStr + ".java");
+            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(typeStr, javaFile.getAbsolutePath());
+
+            if (null == searchInfo.getFile()) {
+                throw new JapiException(javaFile.getAbsolutePath() + " 找不到相关文件：" + typeStr + ".java");
             }
 
             TypeImpl typeImpl = new TypeImpl();
             typeImpl.setJavaFile(javaFile);
             typeImpl.setJavaKeyTxt(typeStr);
 
-            if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
-                requestField.setType("string");
+            if (null != searchInfo.getFile() && ClassType.ENUM.equals(searchInfo.getClassType())) {
+                if (isArray) {
+                    requestField.setType("string[]");
+                } else {
+                    requestField.setType("string");
+                }
                 requestField.setDefaultValue("");
                 requestField.setConstraint(EnumParser.getInstance().getTypes(searchInfo.getFile()));
-            }else{
+            } else {
                 List<IField> fields = typeImpl.getFields();
                 List<IMVC> imvcs = getJSR303(typeImpl.getSearchFile().getAbsolutePath());
-                requestField.setType("object");
+                if (isArray) {
+                    requestField.setType("object[]");
+                } else {
+                    requestField.setType("object");
+                }
                 List<IRequest> requestFields = new ArrayList<>();
                 if (fields.size() > 0) {
                     for (IField iField : fields) {
@@ -130,7 +147,7 @@ public class ValidatedValid implements IMVC {
                             if (null != iField.getAnnotations() && iField.getAnnotations().size() > 0) {
                                 LOGGER.warn(JSON.toJSONString(iField.getAnnotations()) + "这些注解我都不认识噢.");
                             } else {
-                                if (!"$this".equals(iField.getType())) {
+                                if (!"$this".equals(iField.getType()) && !"$this[]".equals(iField.getType())) {
                                     List<String> _docs = new ArrayList<>();
                                     _docs.add(METHOD_NAME_DOC + iField.getName() + " " + iField.getDocs().get(0).getName());
                                     for (IFieldDoc fieldDoc : iField.getDocs()) {
@@ -147,7 +164,7 @@ public class ValidatedValid implements IMVC {
                                 } else {
                                     RequestImpl _requestField = new RequestImpl();
                                     _requestField.setName(iField.getName());
-                                    _requestField.setType("$this");
+                                    _requestField.setType(iField.getType());
                                     _requestField.setDescription("自身对象");
                                     _requestField.setRequired(false);
                                     _requestField.setDefaultValue("");
@@ -179,7 +196,11 @@ public class ValidatedValid implements IMVC {
                 description = typeImpl.getName();
             }
         } else {
-            requestField.setType(TypeConvert.getHtmlType(typeStr));
+            if (isArray) {
+                requestField.setType(TypeConvert.getHtmlType(typeStr) + "[]");
+            } else {
+                requestField.setType(TypeConvert.getHtmlType(typeStr));
+            }
             requestField.setDefaultValue("");
             requestField.setRequired(false);
             if (null != docs && docs.size() > 0) {

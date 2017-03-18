@@ -36,6 +36,7 @@ public class TestAction {
      *
      * @param id 新闻编号
      * @throws RuntimeException
+     * @return class User
      * @version v1
      * @deprecated yes
      */

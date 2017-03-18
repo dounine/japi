@@ -7,7 +7,7 @@ dependencies {
     compile "org.springframework:spring-webmvc:4.3.5.RELEASE"
     compile group: 'org.hibernate', name: 'hibernate-validator', version: '5.4.0.Final'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
-
+    String[]
 }
 
 

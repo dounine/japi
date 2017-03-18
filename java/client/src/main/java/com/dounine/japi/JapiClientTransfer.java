@@ -32,6 +32,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Created by lake on 17-2-24.
@@ -41,6 +42,8 @@ public class JapiClientTransfer {
     private static final int reties = 3;
     private static final FileFilter FILE_FILTER = DirectoryFileFilter.DIRECTORY;
     private static String token = null;
+    private static final Pattern URL_PATTERN = Pattern.compile("^([hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://)(([A-Za-z0-9-~]+).)+([A-Za-z0-9-~\\/])+$");
+
     /**
      * seconds
      */
@@ -186,12 +189,14 @@ public class JapiClientTransfer {
             datas.add(new String[]{"type", "project"});
             Result md5Result = postValues(serverUrl + "/transfer/project/md5", datas);
             if (md5Result.getData() == null) {
+                LOGGER.info("传输创建项目配置文件");
                 postFile(serverUrl + "/transfer/project/info", datas, projectFile);
                 postFile(serverUrl + "/transfer/project/info", datas, projectMd5File);
             } else {
                 try {
                     String logoFileMd5Str = FileUtils.readFileToString(projectMd5File, Charset.forName("utf-8"));
                     if (!logoFileMd5Str.equals(md5Result.getData().toString())) {
+                        LOGGER.info("传输修改的项目配置文件");
                         postFile(serverUrl + "/transfer/project/info", datas, projectFile);
                         postFile(serverUrl + "/transfer/project/info", datas, projectMd5File);
                     }
@@ -200,6 +205,7 @@ public class JapiClientTransfer {
                 }
             }
         } else {
+            LOGGER.info("传输创建项目配置文件");
             postFile(serverUrl + "/transfer/project/info", datas, projectFile);
             postFile(serverUrl + "/transfer/project/info", datas, projectMd5File);
         }
@@ -227,7 +233,14 @@ public class JapiClientTransfer {
     public void autoTransfer(JapiClientStorage japiClientStorage) {
         String applicationUUID = japiClientStorage.getProject().getProperties().get("japi.uuid");
         if (StringUtils.isBlank(applicationUUID)) {
-            throw new JapiException("应用程度UUID不能为空");
+            throw new JapiException("应用程序UUID唯一编号不能为空.");
+        }
+        String applicationUrl = japiClientStorage.getProject().getProperties().get("japi.url");
+        if (StringUtils.isBlank(applicationUrl)) {
+            throw new JapiException("应用程序URL访问地扯不能为空.");
+        }
+        if(!URL_PATTERN.matcher(applicationUrl).find()){
+            throw new JapiException("japi.url请填写正确的url地扯,例如:japi.url=hs://192.168.0.179:6666 或者 https://api.bjike.com");
         }
         if (!autoLogin(japiClientStorage)) {
             return;
@@ -239,12 +252,13 @@ public class JapiClientTransfer {
         datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
         datas.add(new String[]{"clientVersion", JapiClient.CLIENT_VERSION+""});
         if(JapiClient.isFlushServer()){
-            LOGGER.info("强制清空服务器历史版本中...");
+            LOGGER.info("强制清空服务器历史版本.");
             postValues(serverUrl + "/transfer/project/flush", datas);
-            LOGGER.info("强制清空服务器历史版本完成");
+            LOGGER.info("强制清空服务器历史版本完成.");
         }
         Result result = postValues(serverUrl + "/transfer/project/exists", datas);
         if (!result.getData().equals(Boolean.TRUE)) {//project exist
+            LOGGER.info("创建项目");
             postValues(serverUrl + "/transfer/project", datas);
         }
 

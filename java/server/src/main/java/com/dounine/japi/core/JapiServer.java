@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * Created by lake on 17-2-24.
  */
 public class JapiServer {
-    private static final Integer VERSION = 8;
+    private static final Integer VERSION = 9;
 
     private static String projectsPath = null;
     private static String usersPath = null;
@@ -73,6 +73,8 @@ public class JapiServer {
                                 japiProject.setVersion(value);
                             } else if (name.equals("description")) {
                                 japiProject.setDescription(value);
+                            } else if (name.equals("url")) {
+                                japiProject.setUrl(value);
                             }
                         }
                     }

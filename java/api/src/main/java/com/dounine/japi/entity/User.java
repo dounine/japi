@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.Mapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 用户类信息
@@ -51,6 +53,11 @@ public class User {
      */
     private User user;
 
+    /**
+     * 测试users列表
+     */
+    private User[] userList;
+
     public String getUsername() {
         return username;
     }
@@ -89,5 +96,13 @@ public class User {
 
     public void setTestType(TestType testType) {
         this.testType = testType;
+    }
+
+    public User[] getUserList() {
+        return userList;
+    }
+
+    public void setUserList(User[] userList) {
+        this.userList = userList;
     }
 }

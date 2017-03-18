@@ -9,6 +9,7 @@ public class JapiProject {
     private String createTime = "";
     private boolean icon = false;
     private boolean follow = false;
+    private String url = "";
     private String version = "";
     private String description = "";
 
@@ -67,5 +68,13 @@ public class JapiProject {
 
     public void setFollow(boolean follow) {
         this.follow = follow;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
