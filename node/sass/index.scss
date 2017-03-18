@@ -190,10 +190,22 @@ header{
       margin:20px;
       padding:20px 0;
       position:relative;
+
       div{
         display:flex;
         justify-content:center;
         margin:10px 0;
+        &.icon{
+          a{
+            height:70px;
+            display:flex;
+            justify-content:center;
+            img{
+              height:100%;
+            }
+          }
+
+        }
         strong{
           font-size:16px;
         }
