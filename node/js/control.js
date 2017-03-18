@@ -344,7 +344,11 @@ function action(version){
                 if(_parent){
                     rootShowMySelfRes[subIndex] = _parent;
                     _parentClickEventStr = "onclick=_parentRes(this," + subIndex + ")";
-                    level.datas[subIndex]['type'] = 'object';
+                    if(level.datas[subIndex]['type']=='$this'){
+                        level.datas[subIndex]['type'] = 'object';
+                    }else if(level.datas[subIndex]['type']=='$this[]'){
+                        level.datas[subIndex]['type'] = 'object[]';
+                    }
                 }
                 level.datas[subIndex]["_indent1"] = level.datas[subIndex]["_indent"] + 2;
                 responseFields += ("<div class='sec-table-list %{_open}' index='%{_index}'> <ul>" +
