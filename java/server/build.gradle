@@ -18,11 +18,6 @@ apply plugin: 'maven'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 
-jar {
-    baseName = 'server'
-    version =  '1.0'
-}
-
 repositories {
     mavenCentral()
 }
