@@ -37,6 +37,13 @@ $(document).ready(function(){
     var bodyHeight = $(window).height();
     $('.nav-list').height(bodyHeight-120)
 
+
+    function absUrl(){
+        var absUrl = $.cookie("absUrl");
+        $('.absurl').html(absUrl)
+    }
+    absUrl()
+
 });
 
 
@@ -130,4 +137,6 @@ function logout(){
         }
     })
 }
+
+
 

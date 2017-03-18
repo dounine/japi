@@ -296,9 +296,12 @@ header{
     }
 
   }
+  .wrap{
+    width:100%;
+  }
   #content{
     padding: 10px;
-    //width:90%;
+    width:90%;
     flex:1;
     margin-left:20px;
     margin-right:50px;
@@ -524,6 +527,15 @@ header{
       margin-top:160px;
       justify-content:center;
     }
+  }
+  .absurl{
+    width:90%;
+    height:30px;
+    line-height:30px;
+    text-indent:30px;
+    display:flex;
+    justify-content:flex-end;
+    font-weight:bold;
   }
 }
 #modalbg{
