@@ -199,12 +199,14 @@ public class JavaFileImpl implements IJavaFile {
                 if (null == javaFile) {
                     for (String childProjectPath : JapiClient.getConfig().getIncludeProjectJavaPath()) {
                         packageFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + childProjectPath + JapiClient.getConfig().getPostfixPath()) + packageStr.replace(".", "/"));
-                        Collection<File> files = FileUtils.listFiles(packageFile, javaFileFilter, TrueFileFilter.INSTANCE);
-                        if (files.size() > 1) {
-                            javaFile = files.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList()).get(0);
-                            break;
-                        } else if (files.size() == 1) {
-                            javaFile = files.iterator().next();
+                        if(packageFile.exists()){
+                            Collection<File> files = FileUtils.listFiles(packageFile, javaFileFilter, TrueFileFilter.INSTANCE);
+                            if (files.size() > 1) {
+                                javaFile = files.stream().sorted((a, b) -> ((Integer) a.getAbsolutePath().length()).compareTo(b.getAbsolutePath().length())).collect(Collectors.toList()).get(0);
+                                break;
+                            } else if (files.size() == 1) {
+                                javaFile = files.iterator().next();
+                            }
                         }
                     }
                     if (null != javaFile) {
