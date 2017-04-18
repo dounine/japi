@@ -7,3 +7,4 @@ bower_components
 **/build
 **/node_modules
 **/nohup.out
+**/*.log
