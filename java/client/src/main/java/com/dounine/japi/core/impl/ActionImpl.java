@@ -99,10 +99,14 @@ public class ActionImpl implements IAction {
             if (isFindDocBegin) {
                 if (null == methodLines) {
                     methodLines = new ArrayList<>();
-                    methodLines.add(line);
+                    if(StringUtils.isNotBlank(line)){
+                        methodLines.add(line);
+                    }
                     newNoPackageLines.remove();
                 } else if (null != methodLines && methodLines.size() > 0) {
-                    methodLines.add(line);
+                    if(StringUtils.isNotBlank(line)){
+                        methodLines.add(line);
+                    }
                     newNoPackageLines.remove();
                 }
             }
@@ -732,11 +736,14 @@ public class ActionImpl implements IAction {
                     response.setDescription(request.getConstraint());
                 }
             }else{
+                boolean isArr= iField.getType().startsWith("array ");
+                String arrStr = isArr?"[]":"";
                 if (!"$this".equals(iField.getType())&&!"$this[]".equals(iField.getType())) {
-                    response.setType(TypeConvert.getHtmlType(iField.getType()));
+                    response.setType(TypeConvert.getHtmlType(isArr?iField.getType().substring(6):iField.getType()));
                 } else {
-                    response.setType(iField.getType());
+                    response.setType(isArr?iField.getType().substring(6):iField.getType());
                 }
+                response.setType(response.getType()+arrStr);
                 response.setDefaultValue("");
                 if (iField.getFields() != null) {
                     response.setFields(getChildFields(iField.getFields()));

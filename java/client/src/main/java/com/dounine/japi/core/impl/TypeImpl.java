@@ -176,7 +176,7 @@ public class TypeImpl implements IType {
         searchFile = searchInfo.getFile();
 
         if (null == searchFile) {
-            throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java");
+            throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java 可能包中未导入此类所在位置.");
         }
         if(searchInfo.getClassType().equals(ClassType.ENUM)){//枚          return null;
             if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){

@@ -147,7 +147,7 @@ public class JavaFileImpl implements IJavaFile {
         Optional<String> keyEndOptional = javaFileImportPackageLines.stream().filter(line -> line.endsWith("." + javaTxt + ";")).findFirst();
         if (keyEndOptional.isPresent()) {//找到有.关键字结尾的包
             String packageStr = StringUtils.substring(keyEndOptional.get(), PACKAGE_PREFIX.length(), -1).replace(".", "/").trim();
-            File javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + JapiClient.getConfig().getProjectJavaPath() + JapiClient.getConfig().getPostfixPath()) + javaTxt.replace(".", "/") + CHECK_FILE_SUFFIX);
+            File javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + JapiClient.getConfig().getProjectJavaPath() + JapiClient.getConfig().getPostfixPath()) +packageStr + CHECK_FILE_SUFFIX);
             if (!javaTxtFile.exists()) {//主项目不存在,查找其它项目
                 for (String childProjectPath : JapiClient.getConfig().getIncludeProjectJavaPath()) {
                     javaTxtFile = new File(getEndSplitPath(JapiClient.getConfig().getPrefixPath() + childProjectPath + JapiClient.getConfig().getPostfixPath()) + packageStr.replace(".", "/") + CHECK_FILE_SUFFIX);
