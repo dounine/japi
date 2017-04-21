@@ -35,7 +35,9 @@ public class PatternValid implements IMVC {
 
         constraint.append(getRegex(annoStr)+" <==> "+getDes(annoStr));
 
-        requestField.setType(TypeConvert.getHtmlType(typeStr));
+        String arrStr = typeStr.startsWith("array ")?"[]":"";
+        typeStr = typeStr.startsWith("array ")?typeStr.substring(6):typeStr;
+        requestField.setType(TypeConvert.getHtmlType(typeStr)+arrStr);
         requestField.setDescription(description);
         requestField.setConstraint(constraint.toString());
         requestField.setRequired(required);

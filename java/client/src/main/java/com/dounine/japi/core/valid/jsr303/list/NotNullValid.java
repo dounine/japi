@@ -37,7 +37,10 @@ public class NotNullValid implements IMVC {
         String description = getDescription(docs);
         boolean required = isRequired(annoStr,interfaceGroups,javaFilePath);
 
-        requestField.setType(TypeConvert.getHtmlType(typeStr));
+        String arrStr = typeStr.startsWith("array ")?"[]":"";
+        typeStr = typeStr.startsWith("array ")?typeStr.substring(6):typeStr;
+        typeStr = typeStr.startsWith("array ")?typeStr.substring(6):typeStr;
+        requestField.setType(TypeConvert.getHtmlType(typeStr)+arrStr);
         requestField.setDescription(description);
         requestField.setRequired(required);
         requestField.setConstraint("非空字符串");
