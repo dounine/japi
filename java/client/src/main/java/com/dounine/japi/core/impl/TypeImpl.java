@@ -228,7 +228,6 @@ public class TypeImpl implements IType {
         List<IField> fieldImpls = new ArrayList<>(fieldBodyAndDocs.size());
         for (List<String> fieldLines : fieldBodyAndDocs) {
             FieldImpl fieldImpl = new FieldImpl();
-
             List<IFieldDoc> fieldDocs = extractDoc(fieldLines);//提取属性注释信息
             FieldImpl extractField = extractField(fieldLines);//提取属性信息
 
