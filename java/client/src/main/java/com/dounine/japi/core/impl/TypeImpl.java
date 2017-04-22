@@ -58,17 +58,17 @@ public class TypeImpl implements IType {
     @Override
     public String getName() {
 
-        if(BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt)){
+        if (BuiltInJavaImpl.getInstance().isBuiltInType(javaKeyTxt)) {
             return javaKeyTxt;
         }
-        if("void".equals(javaKeyTxt)){
+        if ("void".equals(javaKeyTxt)) {
             return javaKeyTxt;
         }
 
         searchFile = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(javaKeyTxt, javaFile.getAbsolutePath()).getFile();
 
         if (null == searchFile) {
-            throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java");
+            throw new JapiException(javaFile.getAbsolutePath() + " 找不到相关文件：" + javaKeyTxt + ".java");
         }
         List<String> javaFileLines = null;
         try {
@@ -138,12 +138,12 @@ public class TypeImpl implements IType {
             }
             if (null != fieldLines && fieldLines.size() > 0) {
                 for (Pattern methodPattern : JapiPattern.FIELD_KEYWORD) {
-                    if(JapiPattern.getPattern("ArrayList<\\s*[a-zA-Z0-9_$]*\\s*>[(]\\s*\\d*\\s*[)];").matcher(line).find()){
+                    if (JapiPattern.getPattern("ArrayList<\\s*[a-zA-Z0-9_$]*\\s*>[(]\\s*\\d*\\s*[)];").matcher(line).find()) {
                         fieldBodyAndDocs.add(fieldLines);
                         fieldLines = null;
                         isFindDocBegin = false;
                         break;
-                    }else{
+                    } else {
                         Matcher matcher = methodPattern.matcher(line);
                         if (matcher.find()) {//匹配到属性
                             fieldBodyAndDocs.add(fieldLines);
@@ -166,9 +166,9 @@ public class TypeImpl implements IType {
         }
         Matcher arrMatcher = JapiPattern.getPattern("[a-zA-Z]*(?=\\[\\])").matcher(javaKeyTxt);
         Matcher listMatcher = JapiPattern.getPattern("(?<=\\<)(\\S+)(?=\\>)").matcher(javaKeyTxt);
-        if(arrMatcher.find()){
+        if (arrMatcher.find()) {
             javaKeyTxt = arrMatcher.group();
-        }else if(listMatcher.find()){
+        } else if (listMatcher.find()) {
             javaKeyTxt = listMatcher.group();
         }
 
@@ -176,10 +176,10 @@ public class TypeImpl implements IType {
         searchFile = searchInfo.getFile();
 
         if (null == searchFile) {
-            throw new JapiException(javaFile.getAbsolutePath()+" 找不到相关文件：" + javaKeyTxt + ".java 可能包中未导入此类所在位置.");
+            throw new JapiException(javaFile.getAbsolutePath() + " 找不到相关文件：" + javaKeyTxt + ".java 可能包中未导入此类所在位置.");
         }
-        if(searchInfo.getClassType().equals(ClassType.ENUM)){//枚          return null;
-            if(null!=searchInfo.getFile()&& ClassType.ENUM.equals(searchInfo.getClassType())){
+        if (searchInfo.getClassType().equals(ClassType.ENUM)) {//枚          return null;
+            if (null != searchInfo.getFile() && ClassType.ENUM.equals(searchInfo.getClassType())) {
                 RequestImpl requestField = new RequestImpl();
                 requestField.setType("string");
                 requestField.setDefaultValue("");
@@ -235,8 +235,8 @@ public class TypeImpl implements IType {
             fieldImpl.setAnnotations(extractField.getAnnotations());
             fieldImpl.setType(extractField.getType());
             String name = extractField.getName();
-            if(!name.matches("^[a-z]+[a-z0-9A-Z]*")){
-                throw new JapiException(searchFile.getPath()+" 文件中的 [ "+name+" ] 不符号RESTFul字段命名规范，请检查.");
+            if (!name.matches("^[a-z]+[a-z0-9A-Z]*") && !JapiPattern.getPattern("[(]\\s*[)]$").matcher(name).find()) {
+                throw new JapiException(searchFile.getPath() + " 文件中的 [ " + name + " ] 不符号RESTFul字段命名规范，请检查.");
             }
             name = name.contains("(") ? name.substring(3, name.lastIndexOf("(")).toLowerCase() : name;//method
             fieldImpl.setName(name);
@@ -244,7 +244,7 @@ public class TypeImpl implements IType {
             if ((StringUtils.isNotBlank(genericStr) && genericStr.contains(type))) {//generic type
                 fieldImpl.setName(name);
                 fieldImpl.setType("object");
-            } else if (type.startsWith("array ")){
+            } else if (type.startsWith("array ")) {
                 type = type.split(" ")[1];
                 if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
                     SearchInfo searchInfo1 = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
@@ -252,7 +252,7 @@ public class TypeImpl implements IType {
                     if (null != childTypeFile) {
                         if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
                             fieldImpl.setName(name);
-                            fieldImpl.setType(MY_SELF_REF+"[]");
+                            fieldImpl.setType(MY_SELF_REF + "[]");
                         } else {
                             TypeImpl returnTypeImpl = new TypeImpl();
                             returnTypeImpl.setJavaFile(searchFile.getAbsoluteFile());
@@ -264,9 +264,9 @@ public class TypeImpl implements IType {
                     }
                 }
             } else if (!BuiltInJavaImpl.getInstance().isBuiltInType(type)) {//不是java内置类型,属于算定义类型,递归查找
-                SearchInfo searchInfo1 =JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
+                SearchInfo searchInfo1 = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(type, searchFile.getAbsolutePath());
                 File childTypeFile = searchInfo1.getFile();
-                if(null!=childTypeFile){
+                if (null != childTypeFile) {
                     if (childTypeFile.getAbsoluteFile().equals(searchFile.getAbsoluteFile())) {//自身对象
                         fieldImpl.setName(name);
                         fieldImpl.setType(MY_SELF_REF);
@@ -276,8 +276,8 @@ public class TypeImpl implements IType {
                         returnTypeImpl.setJavaKeyTxt(type);
                         fieldImpl.setFields(returnTypeImpl.getFields());
                     }
-                }else {
-                    throw new JapiException(searchFile.getAbsolutePath()+" 找不到相关文件：" + type + ".java");
+                } else {
+                    throw new JapiException(searchFile.getAbsolutePath() + " 找不到相关文件：" + type + ".java");
                 }
 
             }
@@ -367,9 +367,9 @@ public class TypeImpl implements IType {
         fieldImpl.setAnnotations(annotationStrs);
         fieldLineStr = fieldLineStr.endsWith(";") ? StringUtils.substring(fieldLineStr, 0, -1) : fieldLineStr;
         Matcher nameMatcher = JapiPattern.getPattern("(?<=\\>)\\s+\\S+\\s+(?=\\=)").matcher(fieldLineStr);
-        if(nameMatcher.find()){
+        if (nameMatcher.find()) {
             fieldImpl.setName(nameMatcher.group());
-        }else{
+        } else {
             String[] typeOrName = fieldLineStr.split(StringUtils.SPACE);
             fieldImpl.setName(typeOrName[typeOrName.length - 1]);
         }
@@ -380,10 +380,10 @@ public class TypeImpl implements IType {
     private String getFieldTypeStr(final String fieldLineStr) {
         Matcher arrMatcher = JapiPattern.getPattern("[a-zA-Z]*(?=\\[\\])").matcher(fieldLineStr);
         Matcher listMatcher = JapiPattern.getPattern("(?<=\\<)(\\S+)(?=\\>)").matcher(fieldLineStr);
-        if(arrMatcher.find()){
-            return "array "+arrMatcher.group();
-        }else if(listMatcher.find()){
-            return "array "+listMatcher.group();
+        if (arrMatcher.find()) {
+            return "array " + arrMatcher.group();
+        } else if (listMatcher.find()) {
+            return "array " + listMatcher.group();
         }
         String typeStr = null;
         for (Pattern typePattern : JapiPattern.FIELD_KEYWORD) {
@@ -398,9 +398,9 @@ public class TypeImpl implements IType {
             if (typeStr.split(" ").length == 2) {
                 returnType = typeStr.substring(0, typeStr.trim().lastIndexOf(" "));
             } else {
-                if(typeStr.contains(" ")){
+                if (typeStr.contains(" ")) {
                     returnType = typeStr.substring(typeStr.indexOf(StringUtils.SPACE), typeStr.lastIndexOf(StringUtils.SPACE));
-                }else{
+                } else {
                     returnType = typeStr;
                 }
             }
