@@ -39,11 +39,25 @@ public class NotNullValid implements IMVC {
 
         String arrStr = typeStr.startsWith("array ")?"[]":"";
         typeStr = typeStr.startsWith("array ")?typeStr.substring(6):typeStr;
-        typeStr = typeStr.startsWith("array ")?typeStr.substring(6):typeStr;
-        requestField.setType(TypeConvert.getHtmlType(typeStr)+arrStr);
+        String s = TypeConvert.getHtmlType(typeStr);
+        requestField.setType(s+arrStr);
         requestField.setDescription(description);
         requestField.setRequired(required);
-        requestField.setConstraint("非空字符串");
+        String alias = null;
+        if(s.equals("string")){
+            alias = "字符串";
+        }else if(s.equals("number")){
+            alias = "数字";
+        }else if(s.equals("boolean")){
+            alias = "布而";
+        }else if(s.equals("object")){
+            alias = "对象";
+        }
+        if(arrStr.equals("[]")){
+            requestField.setConstraint("非空"+alias+"数组");
+        }else{
+            requestField.setConstraint("非空"+alias);
+        }
         requestField.setDefaultValue(defaultValue);
         requestField.setName(newNameStr);
         return requestField;

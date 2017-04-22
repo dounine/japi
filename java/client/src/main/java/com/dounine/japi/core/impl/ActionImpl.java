@@ -717,6 +717,9 @@ public class ActionImpl implements IAction {
         for (IField iField : iFields) {
             ResponseImpl response = new ResponseImpl();
             String description = "";
+            if(!iField.getName().matches("^[a-z]+[a-z0-9A-Z]*")){
+                throw new JapiException(iField.getName()+" 不符号RESTFul字段命名规范，请检查.");
+            }
             response.setName(iField.getName());
 
             for (IFieldDoc fieldDoc : iField.getDocs()) {

@@ -41,7 +41,11 @@ public class NotBlankValid implements IMVC {
         requestField.setType(TypeConvert.getHtmlType(typeStr)+arrStr);
         requestField.setDescription(description);
         requestField.setRequired(required);
-        requestField.setConstraint("非空字符串");
+        if(typeStr.equals("[]")){
+            requestField.setConstraint("非空字符串数组");
+        }else{
+            requestField.setConstraint("非空字符串");
+        }
         requestField.setDefaultValue(defaultValue);
         requestField.setName(newNameStr);
         return requestField;

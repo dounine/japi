@@ -236,6 +236,9 @@ public class TypeImpl implements IType {
             fieldImpl.setAnnotations(extractField.getAnnotations());
             fieldImpl.setType(extractField.getType());
             String name = extractField.getName();
+            if(!name.matches("^[a-z]+[a-z0-9A-Z]*")){
+                throw new JapiException(searchFile.getPath()+" 文件中的 [ "+name+" ] 不符号RESTFul字段命名规范，请检查.");
+            }
             name = name.contains("(") ? name.substring(3, name.lastIndexOf("(")).toLowerCase() : name;//method
             fieldImpl.setName(name);
             String type = extractField.getType();
