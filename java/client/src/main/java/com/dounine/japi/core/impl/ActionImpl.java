@@ -534,7 +534,7 @@ public class ActionImpl implements IAction {
             }
             ActionInfoRequest actionInfoRequest = new ActionInfoRequest();
             for(String url : actionMethod.getRequest().getUrls()){
-                if(!url.matches("^([a-z]+[a-z0-9-A-Z]*/*)*$")){
+                if(!url.matches("^([a-z{]+[a-z0-9-A-Z{}]*/*)*$")){
                     throw new JapiException(url+" 请求URL不符合RESTFul命名规则，请检查.");
                 }
             }
