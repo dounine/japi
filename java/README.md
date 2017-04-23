@@ -46,6 +46,7 @@ japi.name=test-japi
 japi.uuid=43a600877430438596de3d330e4bd06e
 japi.version=1.0.0
 japi.author=lake
+japi.url=http://192.168.0.123:8080
 japi.description=this is project description.
 japi.createTime=2017-02-23 10:44:44
 japi.icon=/home/lake/github/test-japi/src/main/resources/logo.png
@@ -62,6 +63,8 @@ japi.uuid : 第个项目对应的唯一编号,防止项目重名
 japi.version : 版本号
 
 japi.author : 作者
+
+japi.url : 项目访问地扯
 
 japi.description : 项目描述
 
