@@ -24,4 +24,5 @@ node app.js
 * 第五步
 
 访问浏览器即可，默认访问端口为 http://localhost:7777
+
 以上端口可自己修改`config.json`配置文件中`port`
