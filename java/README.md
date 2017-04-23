@@ -14,9 +14,10 @@ compile group: 'com.dounine.japi', name: 'client', version: '${version}'
 </dependency>
 ```
 ## 文档服务端配置
-这个项目是SpringMVC项目,Gradle管理
+这个项目是SpringMVC项目
 ### 文件说明
 japi/java/server/src/main/resources/logo.png : 项目默认图标
+
 japi/java/server/src/main/resources/users.properties : 用户管理
 
 **cat users.properties**
@@ -33,6 +34,7 @@ gradle bootRun
 ```
 ## 文档客户端配置
 客户端japi配置文件如下
+
 **cat japi.properties**
 ```
 japi.name=test
@@ -47,6 +49,7 @@ japi.server.username=japi
 japi.server.password=japi123
 ```
 **配置文件说明**
+
 japi.name : 项目名
 japi.uuid : 第个项目对应的唯一编号,防止项目重名
 japi.version : 版本号
