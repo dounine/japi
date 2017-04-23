@@ -51,14 +51,23 @@ japi.server.password=japi123
 **配置文件说明**
 
 japi.name : 项目名
+
 japi.uuid : 第个项目对应的唯一编号,防止项目重名
+
 japi.version : 版本号
+
 japi.author : 作者
+
 japi.description : 项目描述
+
 japi.createTime : 项目创建日期
+
 japi.icon : 项目logo
+
 japi.server : server服务器地扯
+
 japi.server.username : 传输用户名
+
 japi.server.password : 传输密码
 
 ### 生成文档并传输
