@@ -80,22 +80,22 @@ JapiCreateTest.java
 ```
     @Test
     public void testCreate(){
-    JapiClient.setPrefixPath("/home/lake/github/test-japi/java/");//项目路径前缀
-    JapiClient.setpostfixPath("/src/main/java");//项目路径后缀
-    
-    JapiClient.setProjectJavaPath("client");//主项目地扯
-    JapiClient.setActionReletivePath("com/dounine/test-japi/action");//相对主项目action包所在路径
-    //JapiClient.setIncludeProjectJavaPath(new String[]{"api"});//主项目中关联的其它项目包路径
-    JapiClient.setIncludePackages(new String[]{"com.dounine.test-japi"});//关联的包,用于准确快速搜索
-    JapiClient.saveHistory(true);//是否保留本地历史版本
-    JapiClient.setFlushServer(false);//强制同步本地与服务器所有的版本（会先删除服务器以前的历史版本）
-     
-    IProject project = ProjectImpl.init();
-    JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
-    japiClientStorage.setProject(project);
-    japiClientStorage.autoSaveToDisk();//自动使用到本地磁盘==> 用户目录/.japi-client/
-    new JapiClientTransfer().autoTransfer(japiClientStorage);//文件传输到主服务器.
-}
+        JapiClient.setPrefixPath("/home/lake/github/test-japi/java/");//项目路径前缀
+        JapiClient.setpostfixPath("/src/main/java");//项目路径后缀
+
+        JapiClient.setProjectJavaPath("client");//主项目地扯
+        JapiClient.setActionReletivePath("com/dounine/test-japi/action");//相对主项目action包所在路径
+        //JapiClient.setIncludeProjectJavaPath(new String[]{"api"});//主项目中关联的其它项目包路径
+        JapiClient.setIncludePackages(new String[]{"com.dounine.test-japi"});//关联的包,用于准确快速搜索
+        JapiClient.saveHistory(true);//是否保留本地历史版本
+        JapiClient.setFlushServer(false);//强制同步本地与服务器所有的版本（会先删除服务器以前的历史版本）
+
+        IProject project = ProjectImpl.init();
+        JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();
+        japiClientStorage.setProject(project);
+        japiClientStorage.autoSaveToDisk();//自动使用到本地磁盘==> 用户目录/.japi-client/
+        new JapiClientTransfer().autoTransfer(japiClientStorage);//文件传输到主服务器.
+    }
 ```
 
 
