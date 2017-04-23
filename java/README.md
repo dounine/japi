@@ -1,16 +1,21 @@
 # japi (RESTFul API 生成框架)
 
 ## 客户端使用方法
+记得先编译打包噢
+```
+cd japi/java
+gradle install -xtest
+```
 ### gradle
 ```
-compile group: 'com.dounine.japi', name: 'client', version: '${version}'
+compile group: 'com.dounine.japi', name: 'client', version: '1.0'
 ```
 ### maven
 ```
 <dependency>
     <groupId>com.dounine.japi</groupId>
     <artifactId>client</artifactId>
-    <version>${version}</version>
+    <version>1.0</version>
 </dependency>
 ```
 ## 文档服务端配置
