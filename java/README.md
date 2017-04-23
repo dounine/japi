@@ -42,13 +42,13 @@ gradle bootRun
 
 **cat japi.properties**
 ```
-japi.name=test
+japi.name=test-japi
 japi.uuid=43a600877430438596de3d330e4bd06e
 japi.version=1.0.0
 japi.author=lake
 japi.description=this is project description.
 japi.createTime=2017-02-23 10:44:44
-japi.icon=/home/lake/github/japi/html/img/logo.png
+japi.icon=/home/lake/github/test-japi/src/main/resources/logo.png
 japi.server=http://192.168.0.179:7778
 japi.server.username=japi
 japi.server.password=japi123
@@ -80,13 +80,13 @@ JapiCreateTest.java
 ```
     @Test
     public void testCreate(){
-    JapiClient.setPrefixPath("/home/lake/github/japi/java/");//项目路径前缀
+    JapiClient.setPrefixPath("/home/lake/github/test-japi/java/");//项目路径前缀
     JapiClient.setpostfixPath("/src/main/java");//项目路径后缀
     
     JapiClient.setProjectJavaPath("client");//主项目地扯
-    JapiClient.setActionReletivePath("com/dounine/japi/core/action");//相对主项目action包所在路径
-    JapiClient.setIncludeProjectJavaPath(new String[]{"api"});//主项目中关联的其它包路径
-    JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//关联的包,用于准确快速搜索
+    JapiClient.setActionReletivePath("com/dounine/test-japi/action");//相对主项目action包所在路径
+    //JapiClient.setIncludeProjectJavaPath(new String[]{"api"});//主项目中关联的其它项目包路径
+    JapiClient.setIncludePackages(new String[]{"com.dounine.test-japi"});//关联的包,用于准确快速搜索
     JapiClient.saveHistory(true);//是否保留本地历史版本
     JapiClient.setFlushServer(false);//强制同步本地与服务器所有的版本（会先删除服务器以前的历史版本）
      
@@ -137,7 +137,7 @@ action/vipuser/package-info.java
  * 用户集合功能
  * Created by lake on 2017/2/24.
  */
-package com.dounine.demo.action.user;
+package com.dounine.test-japi.action.vipuser;
 ```
 **Action类也必需包含说明**
 ```
