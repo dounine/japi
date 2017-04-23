@@ -124,7 +124,7 @@ test-japi 项目目录结构如下
 ```
 **action的每一个子包中必需包含一个package-info.java文件,用于注释此包作用**
 ```
-action/user/package-info.java
+action/vipuser/package-info.java
 ```
 **内容必需包含包说明**
 ```
