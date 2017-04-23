@@ -4,7 +4,7 @@
 这个项目是为 `SpringMVC` 框架而做的，因为 `SpringMVC` 做为现在大众用得相对比较多的一个MVC框架，所以就优先用它孵化出了这个项目`JAPI`
 
 ## 说明
-这个项目需要依赖以下两个子项目,两个项目具体使用说明可自行查看。
+这个项目需要依赖以下两个子项目,两个项目 [java](https://github.com/dounine/japi/tree/master/java) [node](https://github.com/dounine/japi/tree/master/node) 具体使用说明可自行查看。
 
 ### 第一个：java
 
