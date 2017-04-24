@@ -31,6 +31,7 @@ public class JapiClient {
     }
 
     public static void main(String[] args) {
+        JapiClient.setClassLoader(JapiClient.class);//用于读取外部配置文件
         JapiClient.setPrefixPath("/home/lake/github/japi/java/");//路径前缀
         JapiClient.setpostfixPath("/src/main/java");
 
