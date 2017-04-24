@@ -22,33 +22,30 @@ import java.util.List;
 public class BuiltInActionImpl implements IBuiltIn {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuiltInActionImpl.class);
 
-    private List<String> types;
+    private List<String> types = new ArrayList<>();
     private static final BuiltInActionImpl builtIn = new BuiltInActionImpl();
 
     static {
-        List<String> _types = new ArrayList<>();
-        _types.add("org.springframework.validation.BindingResult");
-        _types.add("javax.servlet.http.HttpServletRequest");
-        _types.add("javax.servlet.http.HttpServletResponse");
-        _types.add("org.springframework.web.multipart.MultipartFile");
-        if(null==builtIn.types){
-            builtIn.types = _types;
-        }else{
-            builtIn.types.removeAll(_types);
-            builtIn.types.addAll(_types);
-        }
+        builtIn.types.add("org.springframework.validation.BindingResult");
+        builtIn.types.add("javax.servlet.http.HttpServletRequest");
+        builtIn.types.add("javax.servlet.http.HttpServletResponse");
+        builtIn.types.add("org.springframework.web.multipart.MultipartFile");
     }
 
     private BuiltInActionImpl() {
-        URL url = JapiClient.class.getResource("/action-builtIn-types.txt");
+
+        URL url = null;
+        if(null!=JapiClient.getClassLoader()){
+            url = JapiClient.getClassLoader().getResource("/action-builtIn-types.txt");
+            if(!new File(url.getFile()).exists()){
+                url = JapiClient.getClassLoader().getResource("/japi/action-builtIn-types.txt");
+            }
+        }
+
+
         File builtInFile = null;
         if (null != url) {
             builtInFile = new File(url.getFile());
-        } else {
-            url = JapiClient.class.getResource("/japi/action-builtIn-types.txt");
-            if (null != url) {
-                builtInFile = new File(url.getFile());
-            }
         }
         if (url == null) {
 //            LOGGER.warn("action-builtIn-types.txt 文件不存在,使用默认参数.");
@@ -59,7 +56,7 @@ public class BuiltInActionImpl implements IBuiltIn {
                 if(file.exists()){
                     String typesStr = FileUtils.readFileToString(file, Charset.forName("utf-8"));
                     typesStr = typesStr.replaceAll("\\s", "");//去掉回车
-                    types = new ArrayList<>(Arrays.asList(typesStr.split(",")));
+                    types.addAll(Arrays.asList(typesStr.split(",")));
                 }
 
             } catch (IOException e) {

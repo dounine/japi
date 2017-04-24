@@ -22,34 +22,28 @@ import java.util.List;
 public class ExcludesActionImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExcludesActionImpl.class);
 
-    private List<String> types;
+    private List<String> types = new ArrayList<>();
     private static final ExcludesActionImpl builtIn = new ExcludesActionImpl();
 
     static {
-        List<String> _types = new ArrayList<>();
-        _types.add("throws");
-        _types.add("version");
-        _types.add("return");
-        _types.add("param");
-
-        if(null==builtIn.types){
-            builtIn.types = _types;
-        }else{
-            builtIn.types.removeAll(_types);
-            builtIn.types.addAll(_types);
-        }
+        builtIn.types.add("throws");
+        builtIn.types.add("version");
+        builtIn.types.add("return");
+        builtIn.types.add("param");
     }
 
     private ExcludesActionImpl() {
-        URL url = JapiClient.class.getResource("/action-excludes-tags.txt");
+        URL url = null;
+        if(null!=JapiClient.getClassLoader()){
+            url = JapiClient.getClassLoader().getResource("/action-excludes-tags.txt");
+            if(!new File(url.getFile()).exists()){
+                url = JapiClient.getClassLoader().getResource("/japi/action-excludes-tags.txt");
+            }
+        }
+
         File excludesFile = null;
         if (null != url) {
             excludesFile = new File(url.getFile());
-        } else {
-            url = JapiClient.class.getResource("/japi/action-excludes-tags.txt");
-            if (null != url) {
-                excludesFile = new File(url.getFile());
-            }
         }
         if (url == null) {
 //                LOGGER.warn("action-excludes-tags 文件不存在,使用默认参数.");
@@ -58,7 +52,7 @@ public class ExcludesActionImpl {
             try {
                 File file= new File(excludesPath);
                 if (file.exists()){
-                    types = FileUtils.readLines(file, Charset.forName("utf-8"));
+                    types.addAll(FileUtils.readLines(file, Charset.forName("utf-8")));
                 }
             } catch (IOException e) {
                 LOGGER.error(e.getMessage());

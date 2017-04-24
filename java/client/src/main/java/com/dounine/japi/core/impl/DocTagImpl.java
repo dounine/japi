@@ -22,11 +22,10 @@ public class DocTagImpl implements IDocTag {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DocTagImpl.class);
 
-    private Map<String, String> types;
+    private Map<String, String> types = new HashMap<>();
     private static final DocTagImpl DOC_TAG = new DocTagImpl();
 
     static {
-        DOC_TAG.types = new HashMap<>();
         DOC_TAG.types.put("return.", "返回值");
         DOC_TAG.types.put("param", "参数");
         DOC_TAG.types.put("deprecated.", "过时");
@@ -40,15 +39,16 @@ public class DocTagImpl implements IDocTag {
     }
 
     private DocTagImpl() {
-        URL url = JapiClient.class.getResource("/doc-tags.txt");
+        URL url = null;
+        if(null!=JapiClient.getClassLoader()){
+            url = JapiClient.getClassLoader().getResource("/doc-tags.txt");
+            if(!new File(url.getFile()).exists()){
+                url = JapiClient.getClassLoader().getResource("/japi/doc-tags.txt");
+            }
+        }
         File docTagFile = null;
         if (null != url) {
             docTagFile = new File(url.getFile());
-        } else {
-            url = JapiClient.class.getResource("/japi/doc-tags.txt");
-            if (null != url) {
-                docTagFile = new File(url.getFile());
-            }
         }
         if (null == url) {
 //            LOGGER.warn("doc-tags.txt 文件不存在,使用默认参数.");
@@ -57,7 +57,6 @@ public class DocTagImpl implements IDocTag {
             try {
                 File file = new File(builtInPath);
                 if(file.exists()){
-                    types = new HashMap<>();
                     List<String> tagDocs = FileUtils.readLines(file, Charset.forName("utf-8"));
                     tagDocs.forEach(td -> {
                         String[] tds = td.split(StringUtils.SPACE);

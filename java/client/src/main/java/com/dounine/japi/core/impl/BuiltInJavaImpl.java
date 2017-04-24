@@ -21,49 +21,44 @@ import java.util.List;
 public class BuiltInJavaImpl implements IBuiltIn {
     private static final Logger LOGGER = LoggerFactory.getLogger(BuiltInJavaImpl.class);
 
-    private List<String> types;
+    private List<String> types = new ArrayList<>();
     private static final BuiltInJavaImpl builtIn = new BuiltInJavaImpl();
 
     static {
-        List<String> _types = new ArrayList<>();
-        _types.add("int");
-        _types.add("Integer");
-        _types.add("String");
-        _types.add("Boolean");
-        _types.add("boolean");
-        _types.add("long");
-        _types.add("Long");
-        _types.add("float");
-        _types.add("Float");
-        _types.add("double");
-        _types.add("Double");
-        _types.add("char");
-        _types.add("byte");
-        _types.add("Byte");
-        _types.add("Object");
-        _types.add("LocalDateTime");
-        _types.add("LocalDate");
-        _types.add("LocaTime");
-        _types.add("short");
+        builtIn.types.add("int");
+        builtIn.types.add("Integer");
+        builtIn.types.add("String");
+        builtIn.types.add("Boolean");
+        builtIn.types.add("boolean");
+        builtIn.types.add("long");
+        builtIn.types.add("Long");
+        builtIn.types.add("float");
+        builtIn.types.add("Float");
+        builtIn.types.add("double");
+        builtIn.types.add("Double");
+        builtIn.types.add("char");
+        builtIn.types.add("byte");
+        builtIn.types.add("Byte");
+        builtIn.types.add("Object");
+        builtIn.types.add("LocalDateTime");
+        builtIn.types.add("LocalDate");
+        builtIn.types.add("LocaTime");
+        builtIn.types.add("short");
 
-        if(null==builtIn.types){
-            builtIn.types = _types;
-        }else{
-            builtIn.types.removeAll(_types);
-            builtIn.types.addAll(_types);
-        }
     }
 
     private BuiltInJavaImpl() {
-        URL url = JapiClient.class.getResource("/class-builtIn-types.txt");
+        URL url = null;
+        if(null!=JapiClient.getClassLoader()){
+            url = JapiClient.getClassLoader().getResource("/class-builtIn-types.txt");
+            if(!new File(url.getFile()).exists()){
+                url = JapiClient.getClassLoader().getResource("/japi/class-builtIn-types.txt");
+            }
+        }
+
         File builtInFile = null;
         if (null != url) {
             builtInFile = new File(url.getFile());
-        } else {
-            url = JapiClient.class.getResource("/japi/class-builtIn-types.txt");
-            if (null != url) {
-                builtInFile = new File(url.getFile());
-            }
         }
         if (null == url) {
 //            LOGGER.warn("class-builtIn-types.txt 文件不存在,使用默认参数.");
@@ -74,7 +69,7 @@ public class BuiltInJavaImpl implements IBuiltIn {
                 if(file.exists()){
                     String typesStr = FileUtils.readFileToString(file, Charset.forName("utf-8"));
                     typesStr = typesStr.replaceAll("\\s", "");//去掉回车
-                    types = new ArrayList<>(Arrays.asList(typesStr.split(",")));
+                    types.addAll(Arrays.asList(typesStr.split(",")));
                 }
 
             } catch (IOException e) {

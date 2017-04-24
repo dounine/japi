@@ -251,6 +251,12 @@ public class JapiClientTransfer {
         datas.add(new String[]{"projectName", projectName});
         datas.add(new String[]{"uuid", japiClientStorage.getProject().getProperties().get("japi.uuid")});
         datas.add(new String[]{"clientVersion", JapiClient.CLIENT_VERSION+""});
+        if(JapiClient.isDel()){
+            LOGGER.info("删除服务器上的项目.");
+            postValues(serverUrl + "/transfer/project/flush", datas);
+            LOGGER.info("删除服务器上的项目完成.");
+            return;
+        }
         if(JapiClient.isFlushServer()){
             LOGGER.info("强制清空服务器历史版本.");
             postValues(serverUrl + "/transfer/project/flush", datas);
