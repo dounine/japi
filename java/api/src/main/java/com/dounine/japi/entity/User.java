@@ -2,48 +2,28 @@ package com.dounine.japi.entity;
 
 import com.dounine.japi.entity.u.UserChild;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.Mapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * 用户类信息
  */
 public class User {
-    public interface UserADD {
-    }
-
-    public interface UserDEL {
-    }
-
-    public interface UserUPDATE {
-    }
-
-    public interface UserPUT {
-    }
-
     /**
      * 用户名
+     *
      * @des 优先级大于用户名
      * @req true
      * @def 这是默认值
      * @con 这是约束条件
      */
     protected String username;
-
     /**
      * 验证带正则字符串
      */
-    @Pattern(regexp = "IKE\\d{6}",message = "员工编号为IKE开头,后面为6位数字")
+    @Pattern(groups = {User.UserADD.class}, regexp = "IKE\\d{6}", message = "员工编号为IKE开头,后面为6位数字")
     private String peopleNumber;
-
-
     /**
      * 用户密码
      */
@@ -62,7 +42,6 @@ public class User {
      * 我是我
      */
     private User user;
-
     /**
      * 测试users列表
      */
@@ -122,5 +101,17 @@ public class User {
 
     public void setPeopleNumber(String peopleNumber) {
         this.peopleNumber = peopleNumber;
+    }
+
+    public interface UserADD {
+    }
+
+    public interface UserDEL {
+    }
+
+    public interface UserUPDATE {
+    }
+
+    public interface UserPUT {
     }
 }

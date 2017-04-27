@@ -99,10 +99,11 @@ public interface IMVC {
             Pattern pattern = JapiPattern.getPattern("groups\\s*[=]\\s*");
             Matcher matcher = pattern.matcher(annoStr);
             if (matcher.find()) {
-                Pattern leftPattern = JapiPattern.getPattern("groups\\s*[=]\\s*[{]");
+                Pattern leftPattern = JapiPattern.getPattern("groups\\s*=\\s*[{a-zA-Z._, ]*[}]");
                 Matcher leftMatcher = leftPattern.matcher(annoStr);
                 if (leftMatcher.find()) {//interfaces
-                    String groupAndInterface = annoStr.substring(annoStr.indexOf("{") + 1, annoStr.lastIndexOf("}"));
+                    String groupStr = leftMatcher.group();
+                    String groupAndInterface = groupStr.substring(groupStr.indexOf("{") + 1, groupStr.lastIndexOf("}"));
                     myGroupInterfaces.addAll(Arrays.asList(groupAndInterface.split(",")));
                 } else {//single interface
                     Pattern groupAndInterfacePattern = JapiPattern.getPattern("groups\\s*[=]\\s*[a-zA-Z0-9_]*[.]class");
