@@ -40,6 +40,9 @@ public class ProjectAct {
         TIPS.add("为了便于观查,响应参数都是{code:0,msg:null,data:null}此格式,响应参数都将默认填充于data字段中.");
         TIPS.add("请使用接口的最新更新的时间版本为主,更新时间列表只是为了对比接口所作的更改.");
         TIPS.add("凡是POST,PUT,PATCH,DELETE请求，必需添加幂等请求rtoken.");
+        TIPS.add("GET请求排除数据字段:params key:_excludes(该参数为数组) value(过滤字段) 如过滤name,age属性 _excludes:name _excludes:age");
+        TIPS.add("GET请求筛选数据字段，(只查询_includes字段):params key:_includes(该参数为数组) value(过滤字段) 如只查询name,age属性 _includes:name _includes:age");
+
     }
 
     private String getToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
