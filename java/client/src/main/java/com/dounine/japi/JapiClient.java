@@ -15,7 +15,7 @@ import java.util.UUID;
  * Created by lake on 17-2-23.
  */
 public class JapiClient {
-    public static final Integer CLIENT_VERSION = 12;
+    public static final Integer CLIENT_VERSION = 13;
     private static final JapiClient JAPI_CLIENT = new JapiClient();
 
     private ConfigImpl config = new ConfigImpl();
@@ -41,7 +41,7 @@ public class JapiClient {
         JapiClient.setIncludePackages(new String[]{"com.dounine.japi"});//可以准确快速搜索
         JapiClient.saveHistory(true);//保留本地历史版本
         JapiClient.setFlushServer(false);//强制同步本地与服务器所有版本
-        JapiClient.delete(true);//删除服务器上的项目
+//        JapiClient.delete(true);//删除服务器上的项目
 
         IProject project = ProjectImpl.init();
         JapiClientStorage japiClientStorage = JapiClientStorage.getInstance();

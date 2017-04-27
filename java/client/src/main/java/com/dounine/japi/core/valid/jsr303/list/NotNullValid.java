@@ -2,6 +2,7 @@ package com.dounine.japi.core.valid.jsr303.list;
 
 import com.dounine.japi.common.JapiPattern;
 import com.dounine.japi.core.IFieldDoc;
+import com.dounine.japi.core.impl.EnumParser;
 import com.dounine.japi.core.impl.JavaFileImpl;
 import com.dounine.japi.core.impl.SearchInfo;
 import com.dounine.japi.core.impl.TypeConvert;
@@ -40,6 +41,14 @@ public class NotNullValid implements IMVC {
         String arrStr = typeStr.startsWith("array ")?"[]":"";
         typeStr = typeStr.startsWith("array ")?typeStr.substring(6):typeStr;
         String s = TypeConvert.getHtmlType(typeStr);
+        String enumContent = null;
+        if(s.equals("object")){
+            SearchInfo searchInfo = JavaFileImpl.getInstance().searchTxtJavaFileForProjectsPath(typeStr,javaFilePath);
+            if(null!=searchInfo.getFile()){
+                enumContent= EnumParser.getInstance().getTypes(searchInfo.getFile());
+                s = "string";
+            }
+        }
         requestField.setType(s+arrStr);
         requestField.setDescription(description);
         requestField.setRequired(required);
@@ -56,7 +65,11 @@ public class NotNullValid implements IMVC {
         if(arrStr.equals("[]")){
             requestField.setConstraint("非空"+alias+"数组");
         }else{
-            requestField.setConstraint("非空"+alias);
+            if(null!=enumContent){
+               requestField.setConstraint(enumContent);
+            }else{
+                requestField.setConstraint("非空"+alias);
+            }
         }
         requestField.setDefaultValue(defaultValue);
         requestField.setName(newNameStr);

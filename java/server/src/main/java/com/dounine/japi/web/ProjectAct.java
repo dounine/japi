@@ -253,7 +253,4 @@ public class ProjectAct {
         rest.setData(japiProjects);
         return rest;
     }
-
-
-
 }

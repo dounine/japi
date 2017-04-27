@@ -56,6 +56,7 @@ public class User {
     /**
      * 测试enum类型
      */
+    @NotNull(message = "enum type 不能为空")
     private TestType testType;
     /**
      * 我是我
