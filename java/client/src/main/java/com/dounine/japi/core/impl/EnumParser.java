@@ -31,7 +31,7 @@ public class EnumParser {
         if (javaFile.exists()) {
             try {
                 List<String> lines = FileUtils.readLines(javaFile, Charset.forName("utf-8"));
-                Pattern enumHeaderPattern = JapiPattern.getPattern("enum\\s*[a-zA-Z0-9_]+");
+                Pattern enumHeaderPattern = JapiPattern.getPattern("enum\\s+[a-zA-Z0-9_]+");
                 Pattern docBegin = JapiPattern.getPattern("/[*]{2}");
                 Pattern enumEdnd = JapiPattern.getPattern("^[A-Z0-9_]+");
                 List<List<String>> enumAndDocs = new ArrayList<>();
