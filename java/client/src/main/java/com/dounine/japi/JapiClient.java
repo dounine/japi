@@ -15,7 +15,7 @@ import java.util.UUID;
  * Created by lake on 17-2-23.
  */
 public class JapiClient {
-    public static final Integer CLIENT_VERSION = 14;
+    public static final Integer CLIENT_VERSION = 15;
     private static final JapiClient JAPI_CLIENT = new JapiClient();
 
     private ConfigImpl config = new ConfigImpl();
