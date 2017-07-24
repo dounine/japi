@@ -1,5 +1,5 @@
 # JAPI
-## SpringMVC RESTFul文档生成(不依赖注解,完全读取注释)
+## SpringMVC RESTFul文档生成(完全基于注释,不)
 
 这个项目是为 `SpringMVC` 框架而做的，因为 `SpringMVC` 做为现在大众用得相对比较多的一个MVC框架，所以就优先用它孵化出了这个项目`JAPI`
 
