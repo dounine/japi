@@ -18,7 +18,8 @@ module.exports = function(){
         var token = this.cookies.get('token');
         var $self = this;
         var pages = this.request.body.pageSize
-        yield (server().pagesList(pages, token)
+        var searchKey = this.request.body.searchKey
+        yield (server().pagesList(pages,searchKey, token)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
