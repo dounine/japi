@@ -17,8 +17,8 @@ module.exports = function(){
     }).post('/lists', function*(){
         var token = this.cookies.get('token');
         var $self = this;
-        var pages = this.request.body.pageSize
-        var searchKey = this.request.body.searchKey
+        var pages = this.request.body.pageSize;
+        var searchKey = this.request.body.searchKey;
         yield (server().pagesList(pages,searchKey, token)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
@@ -43,8 +43,9 @@ module.exports = function(){
     }).post('/pageSize', function*(){
         var token = this.cookies.get('token');
         var page = this.request.body.limit;
+        var searchKey = this.request.body.searchKey;
         var $self = this;
-        yield (server().pageSizes(token, page)
+        yield (server().pageSizes(token,searchKey, page)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
@@ -53,8 +54,10 @@ module.exports = function(){
             }));
     }).get('/sizes', function*(){
         var token = this.cookies.get('token');
+        var searchKey = this.request.query.searchKey
+        searchKey = searchKey | ''
         var $self = this;
-        yield (server().sizes(token)
+        yield (server().sizes(searchKey,token)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
@@ -76,7 +79,7 @@ module.exports = function(){
         var token = this.cookies.get('token');
         var delFollow = this.request.body;
         var $self = this;
-        yield (server().deleteFollow(delFollow,token)
+        console.info(sortName);        yield (server().deleteFollow(delFollow,token)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
@@ -97,7 +100,6 @@ module.exports = function(){
     }).post("/sortList", function*(){
         var token = this.cookies.get('token');
         var sortName = this.request.body;
-        console.info(sortName);
         var $self = this;
         yield (server().sortList(sortName,token)
             .then((parsedBody) =>{
