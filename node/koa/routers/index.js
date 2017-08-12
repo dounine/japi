@@ -18,7 +18,7 @@ module.exports = function(){
         var token = this.cookies.get('token');
         var $self = this;
         var pages = this.request.body.pageSize;
-        var searchKey = this.request.body.searchKey;
+        var searchKey = this.request.body.searchKey || '';
         yield (server().pagesList(pages,searchKey, token)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
@@ -43,19 +43,18 @@ module.exports = function(){
     }).post('/pageSize', function*(){
         var token = this.cookies.get('token');
         var page = this.request.body.limit;
-        var searchKey = this.request.body.searchKey;
+        var searchKey = this.request.body.searchKey || '';
         var $self = this;
         yield (server().pageSizes(token,searchKey, page)
             .then((parsedBody) =>{
-                var responseText = JSON.parse(parsedBody);
-                $self.body = responseText;
-            }).catch((error) =>{
-                $self.body = {'msg' : error.error, errno : 3};
-            }));
+            var responseText = JSON.parse(parsedBody);
+        $self.body = responseText;
+    }).catch((error) =>{
+            $self.body = {'msg' : error.error, errno : 3};
+    }));
     }).get('/sizes', function*(){
         var token = this.cookies.get('token');
-        var searchKey = this.request.query.searchKey
-        searchKey = searchKey | ''
+        var searchKey = this.request.query.searchKey || ''
         var $self = this;
         yield (server().sizes(searchKey,token)
             .then((parsedBody) =>{

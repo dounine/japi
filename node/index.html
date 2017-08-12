@@ -6,10 +6,25 @@
     <link rel="Shortcut Icon" href="favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="./css/index.css">
 </head>
-<body>
+<body onkeydown="BindEnter(event)">
 <header>
     <div class="h-wrap">
         <section class="logo"><a href="/index"> <img src="/images/logo.png" alt=""></a></section>
+
+        <div><input type="text" id="searchKey" name="searchKey" style="
+        text-indent: 4px;
+height: 30px;
+line-height: 30px;
+width: 200px;
+"><button onclick="search()" style="
+height: 30px;
+line-height: 30px;
+padding: 0 20px;
+background: #424d58;
+color: #ffffff;
+/* font-weight: 700; */
+">搜索
+        </button></div>
 
         <section class="head-r">
 

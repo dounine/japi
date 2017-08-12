@@ -194,14 +194,25 @@ public class ProjectAct {
     }
 
     @GetMapping("count")
-    public Result count() throws JapiException {
+    public Result count(String searchKey) throws JapiException {
+        List<JapiProject> projects = japiServer.getAllProjects();
+        List<JapiProject> filterProjects = new ArrayList<>();
+        if(StringUtils.isNotBlank(searchKey)){
+            for(JapiProject jp : projects){
+                if(jp.getName().contains(searchKey)){
+                    filterProjects.add(jp);
+                }
+            }
+        }else{
+            filterProjects = projects;
+        }
         ResultImpl rest = new ResultImpl();
-        rest.setData(japiServer.getAllProjects().size());
+        rest.setData(filterProjects.size());
         return rest;
     }
 
     @GetMapping("lists/{offset}/{limit}")
-    public Result lists(@PathVariable Integer offset, @PathVariable Integer limit, String sortName, SortTypeEnum sortType, HttpServletRequest request, HttpServletResponse response) throws JapiException {
+    public Result lists(@PathVariable Integer offset,String searchKey, @PathVariable Integer limit, String sortName, SortTypeEnum sortType, HttpServletRequest request, HttpServletResponse response) throws JapiException {
 
         if (offset <= 0) {
             offset = 1;
@@ -232,16 +243,26 @@ public class ProjectAct {
             }
         }
 
+        List<JapiProject> filterProjects = new ArrayList<>();
+        if(StringUtils.isNotBlank(searchKey)){
+            for(JapiProject jp : projects){
+                if(jp.getName().contains(searchKey)){
+                    filterProjects.add(jp);
+                }
+            }
+        }else{
+            filterProjects = projects;
+        }
         ResultImpl rest = new ResultImpl();
         int beginIndex = limit * (offset - 1);
-        if (beginIndex > projects.size()) {
+        if (beginIndex > filterProjects.size()) {
             beginIndex = 0;
         }
         int endIndex = beginIndex + limit;
-        if (endIndex > projects.size()) {
-            endIndex = projects.size();
+        if (endIndex > filterProjects.size()) {
+            endIndex = filterProjects.size();
         }
-        List<JapiProject> japiProjects = projects.subList(beginIndex, endIndex);
+        List<JapiProject> japiProjects = filterProjects.subList(beginIndex, endIndex);
         String token = getToken(request, response);
         List<String> projectNames = japiServer.getFollows(token);
         for (String projectName : projectNames) {
