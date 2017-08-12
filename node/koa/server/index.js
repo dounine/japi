@@ -5,11 +5,11 @@ var config = require(path.resolve('plugins/read-config.js'));
 var form = require(path.resolve('plugins/form.js'));
 module.exports = function(a){
     //获取第一页分页列表
-    this.pagesList = function(pages, token){
+    this.pagesList = function(pages,searchKey, token){
         var options = {
             method : 'GET',
             timeout : 3000,
-            uri : config()['rurl'] + '/project/lists/' + pages + '/8',
+            uri : config()['rurl'] + '/project/lists/' + pages + '/8?searchKey='+searchKey,
             headers : {
                 token : token
             }
@@ -28,11 +28,11 @@ module.exports = function(a){
     };
 
     //分页列表
-    this.pageSizes = function(token, page){
+    this.pageSizes = function(token,searchKey, page){
         var options = {
             method : 'GET',
             timeout : 3000,
-            uri : config()['rurl'] + '/project/lists/' + page + '/8',
+            uri : config()['rurl'] + '/project/lists/' + page + '/8?searchKey='+searchKey,
             headers : {
                 token : token
             }
@@ -40,11 +40,11 @@ module.exports = function(a){
         return request(options);
     };
     //总页数
-    this.sizes = function(token){
+    this.sizes = function(searchKey,token){
         var options = {
             method : 'GET',
             timeout : 3000,
-            uri : config()['rurl'] + '/project/count',
+            uri : config()['rurl'] + '/project/count?searchKey='+searchKey,
             headers : {
                 token : token
             }
