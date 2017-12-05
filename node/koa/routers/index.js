@@ -78,7 +78,7 @@ module.exports = function(){
         var token = this.cookies.get('token');
         var delFollow = this.request.body;
         var $self = this;
-        console.info(sortName);        yield (server().deleteFollow(delFollow,token)
+yield (server().deleteFollow(delFollow,token)
             .then((parsedBody) =>{
                 var responseText = JSON.parse(parsedBody);
                 $self.body = responseText;
