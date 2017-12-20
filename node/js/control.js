@@ -83,7 +83,7 @@ function refresh(){
 $(document).ready(function(){
     isLogin()
     //请求导航，生成nav
-    var navName = {"projectName" : location.hash.split("#")[1].split("/")[0]}
+    var navName = {"projectName" : decodeURIComponent(location.hash.split("#")[1].split("/")[0])}
     $.ajax({
         type : "post",
         url : "/detail",
