@@ -132,7 +132,7 @@ refresh()
         var load = "<div class='load'><img src='/images/load.gif' alt=''></div>";
         $("#content").html(load);
 
-        version.projectName = window.location.hash.split("#")[1].split("/")[0];
+        version.projectName = decodeURIComponent(window.location.hash.split("#")[1].split("/")[0]);
         version.packageName = $(this).parents('.root').find('.rootName').text();
         version.funName = $(this).parents('.sub').find('.subName').text();
         version.actionName = $(this).text();
