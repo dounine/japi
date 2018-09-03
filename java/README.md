@@ -19,11 +19,11 @@ compile group: 'com.dounine.japi', name: 'client', version: '1.0'
 </dependency>
 ```
 ## 文档服务端配置
-这个项目是SpringMVC项目
+后台服务项目是由`SpringMVC`框架编写
 ### 文件说明
-japi/java/server/src/main/resources/logo.png : 项目默认图标
+japi/java/server/src/main/resources/logo.png : 模块默认图标
 
-japi/java/server/src/main/resources/users.properties : 用户管理
+japi/java/server/src/main/resources/users.properties : 用户权限管理
 
 **cat users.properties**
 ```
@@ -33,12 +33,12 @@ user1=abc123
 ```
 以上文件中的第一行为文档客户端传输使用的用户与密码，后面带admin标识,为了多个项目共用一个帐号不被踢出，所以建议不要使用其它帐号进行传输，以免传输断线。
 ## 运行
-因为是Gradle项目，所以要用以下方式运行
+`Gradle`项目，使用以下方式运行或者打包后再使用`jar`方式运行
 ```
 gradle bootRun
 ```
 ## 文档客户端配置
-客户端japi配置文件如下
+客户端`japi`配置文件如下
 
 **cat japi.properties**
 ```
@@ -56,9 +56,9 @@ japi.server.password=japi123
 ```
 **配置文件说明**
 
-japi.name : 项目名
+japi.name : 模块(项目)名
 
-japi.uuid : 第个项目对应的唯一编号,防止项目重名
+japi.uuid : 每个模块(项目)对应的唯一编号,防止模块(项目)重名
 
 japi.version : 版本号
 
@@ -76,7 +76,7 @@ japi.server : server服务器地扯
 
 japi.server.username : 传输用户名
 
-japi.server.password : 传输密码
+japi.server.password : 传输帐号密码
 
 ### 生成文档并传输
 JapiCreateTest.java
@@ -166,7 +166,7 @@ public class VipUserAction {
  */
 @GetMapping(value = "v1/list")
 public Result hots(@Validated({User.UserDEL.class}) User user,String customCon2, BindingResult bindingResult) throws RuntimeException {
-    //包含分组验证时,User.UserDEL接口组必需跟@Validated({User.UserDEL.class})一模一样
+    //包含分组验证时,User.UserDEL接口组必需跟@Validated({User.UserDEL.class})一致
     //例如: @NotNull(message = "用户名不能为空", groups = {User.UserDEL.class})
     return null;
 }
@@ -180,7 +180,7 @@ public Result hots(@Validated({User.UserDEL.class}) User user,String customCon2,
 @GetMapping(value = "v2/list")
 public Result hots(@Validated({User.UserDEL.class}) User user) throws RuntimeException {
     //返回值只能为接口或者类，遵守RESTFul规范
-    //@return class User 与 Result 返回值优先使用注释，如果没有注释则使用 Result
+    //@return class User 与 Result 返回值优先使用注释，如果没有注释则使用方法返回值 Result
     return null;
 }
 
@@ -330,8 +330,8 @@ Pattern
           ```
             return. 返回值
             param 请求参数
-            deprecated. 过时了没
+            deprecated. 过时啦
             version. 版本
             customer 我是自定义标签 
-            customer. 我是自定义单标签 
+            customer2. 我是自定义单标签2
           ```
