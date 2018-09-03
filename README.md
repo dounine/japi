@@ -8,7 +8,7 @@
 
 ### 第一个：[java](https://github.com/dounine/japi/tree/master/java)
 
-java项目又分着两个子模块
+java项目拆分着两个子模块
 
 * client
 这个模块是用来生成RESTFul文档的核心，我们要生成文档用它就行了。
